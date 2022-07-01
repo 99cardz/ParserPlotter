@@ -8,7 +8,7 @@ public class CanvasPlot extends Canvas {
 //	final Parser parser = new Parser();
 	
 	private int centerX, centerY;
-	private int scaleX = 50, scaleY = 40; // scale pixels equal one unit
+	private int scaleX = 100, scaleY = 40; // scale pixels equal one unit
 	private int accuracy = 100; // the higher the more accurate and expensive to compute
 
 	CanvasPlot(int widht, int height) {
@@ -22,11 +22,6 @@ public class CanvasPlot extends Canvas {
 	public void paint(Graphics g) {
 		Dimension dims = getSize();
 		
-		// paint axies
-		g.setColor(Color.black);
-		g.drawLine(0, centerY, dims.width, centerY); // x
-		g.drawLine(centerX, 0, centerX, dims.height); // y
-		
 		// smallest and largest visible x value
 		double minX = -(centerX / scaleX); 
 		double maxX = (dims.width - centerX) / scaleX;
@@ -38,14 +33,15 @@ public class CanvasPlot extends Canvas {
 		
 		// paint value indicators
 		g.setColor(Color.lightGray);
-		for (int x = 1; x < maxX; x++) 
+		for (int x = (int) minX; x <= (int) maxX; x++) 
 			g.drawLine(toXCoord(x), 0, toXCoord(x), dims.height);
-		for (int x = -1; x > minX; x--) 
-			g.drawLine(toXCoord(x), 0, toXCoord(x), dims.height);
-		for (int y = 1; y < maxY; y++)
+		for (int y = (int) minY; y <= (int) maxY; y++)
 			g.drawLine(0, toYCoord(y), dims.width, toYCoord(y));
-		for (int y = -1; y > minY; y--)
-			g.drawLine(0, toYCoord(y), dims.width, toYCoord(y));
+		
+		// paint axies
+		g.setColor(Color.black);
+		g.drawLine(0, centerY, dims.width, centerY); // x
+		g.drawLine(centerX, 0, centerX, dims.height); // y
 		
 		// calculate coords for graph
 		int[] xCoords = new int[accuracy];
@@ -70,6 +66,6 @@ public class CanvasPlot extends Canvas {
 	
 	// to be replaced by Parser.eval()
 	private double f(double x) {
-		return Math.cos(x);
+		return x*x*x;
 	}
 }
