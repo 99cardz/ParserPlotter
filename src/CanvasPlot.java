@@ -8,8 +8,7 @@ public class CanvasPlot extends Canvas {
 //	final Parser parser = new Parser();
 	
 	private int centerX, centerY;
-	private int scaleX = 80, scaleY = 80; // pixels per unit
-	private int accuracy = 50; // the higher the more accurate and expensive to compute
+	private int scaleX = 40, scaleY = 40; // pixels per unit
 
 	CanvasPlot(int widht, int height) {
 		setBackground(Color.white);
@@ -22,10 +21,9 @@ public class CanvasPlot extends Canvas {
 	public void paint(Graphics g) {
 		Dimension dims = getSize();
 		
-		// smallest and largest visible x value of coordinate system
+		// smallest and largest visible x and y value of coordinate system
 		int minX = -(centerX / scaleX); 
 		int maxX = (dims.width - centerX) / scaleX;
-		// smallest and largest visible y value of coordinate system
 		int minY = -(dims.height - centerY) / scaleY ; 
 		int maxY = centerY / scaleY;
 		
@@ -44,16 +42,21 @@ public class CanvasPlot extends Canvas {
 		// get lowest and highest visible x value of Graph
 		double minXVisible = minX;
 		while(f(minXVisible) < minY || f(minXVisible) > maxY)
-			minXVisible += 0.1;
+			minXVisible += 0.2;
 		double maxXVisible = maxX;
 		while(f(maxXVisible) < minY || f(maxXVisible) > maxY)
-			maxXVisible -= 0.1;
-		minXVisible -= 0.5; maxXVisible += 0.5; // give some space
+			maxXVisible -= 0.2;
+		minXVisible -= 1; maxXVisible += 1; // give some space
+		double visibleXRange = maxXVisible - minXVisible;
+		
+		// determine accuracy 10 points for each unit
+		int accuracy = (int) (visibleXRange * 10 > 1500 ? 1500 : visibleXRange * 10);
+		System.out.println(accuracy);
 		
 		// calculate coords for graph
 		int[] xCoords = new int[accuracy];
 		int[] yCoords = new int[accuracy];
-		double stepX = (maxXVisible - minXVisible) / accuracy;
+		double stepX = visibleXRange / accuracy;
 		for (int i = 0; i < accuracy; i++) {
 			double xValue = (minXVisible + stepX * i);
 			xCoords[i] = toXCoord(xValue);
@@ -71,6 +74,6 @@ public class CanvasPlot extends Canvas {
 	// to be replaced by Parser.eval()
 	private double f(double x) {
 //		return Math.cos(x);
-		return -4*x*x*x - 2*x*x - 2;
+		return x*x*x;
 	}
 }
