@@ -41,10 +41,10 @@ public class CanvasPlot extends Canvas {
 		
 		// get lowest and highest visible x value of Graph
 		double minXVisible = minX;
-		while(f(minXVisible) < minY || f(minXVisible) > maxY)
+		while(minXVisible > maxX && (f(minXVisible) < minY || f(minXVisible) > maxY))
 			minXVisible += 0.2;
 		double maxXVisible = maxX;
-		while(f(maxXVisible) < minY || f(maxXVisible) > maxY)
+		while(maxXVisible < minX && (f(maxXVisible) < minY || f(maxXVisible) > maxY))
 			maxXVisible -= 0.2;
 		
 		// give some space
@@ -76,7 +76,7 @@ public class CanvasPlot extends Canvas {
 	// to be replaced by Parser.eval()
 	private double f(double x) {
 //		return Math.cos(x);
-		return x;
+		return x*x-3;
 	}
 	private void thickLine(Graphics g, int x1, int y1, int x2, int y2) {
 		g.drawLine(x1, y1-1, x2, y2-1);
