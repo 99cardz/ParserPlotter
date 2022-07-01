@@ -8,8 +8,8 @@ public class CanvasPlot extends Canvas {
 //	final Parser parser = new Parser();
 	
 	private int centerX, centerY;
-	private int scaleX = 100, scaleY = 40; // scale pixels equal one unit
-	private int accuracy = 100; // the higher the more accurate and expensive to compute
+	private int scaleX = 20, scaleY = 20; // pixels per unit
+	private int accuracy = 50; // the higher the more accurate and expensive to compute
 
 	CanvasPlot(int widht, int height) {
 		setBackground(Color.white);
@@ -22,14 +22,12 @@ public class CanvasPlot extends Canvas {
 	public void paint(Graphics g) {
 		Dimension dims = getSize();
 		
-		// smallest and largest visible x value
-		double minX = -(centerX / scaleX); 
-		double maxX = (dims.width - centerX) / scaleX;
-		double rangeX = maxX - minX;
-		// smallest and largest visible y value
-		double minY = -(centerY / scaleY); 
-		double maxY = (dims.height - centerY) / scaleY;
-		double rangeY = maxY - minY;
+		// smallest and largest visible x value of coordinate system
+		double minX = -((double) centerX / scaleX); 
+		double maxX = ((double) (dims.width - centerX)) / scaleX;
+		// smallest and largest visible y value of coordinate system
+		double minY = -((double) (dims.height - centerY)) / scaleY ; 
+		double maxY = (double) centerY / scaleY;
 		
 		// paint value indicators
 		g.setColor(Color.lightGray);
@@ -46,7 +44,7 @@ public class CanvasPlot extends Canvas {
 		// calculate coords for graph
 		int[] xCoords = new int[accuracy];
 		int[] yCoords = new int[accuracy];
-		double stepX = rangeX / (accuracy-1);
+		double stepX = (maxX - minX) / accuracy;
 		for (int i = 0; i < accuracy; i++) {
 			double xValue = (minX + stepX * i);
 			xCoords[i] = toXCoord(xValue);
@@ -58,14 +56,11 @@ public class CanvasPlot extends Canvas {
 		for (int i = 1; i < accuracy; i++)
 			g.drawLine(xCoords[i-1], yCoords[i-1], xCoords[i], yCoords[i]);
 	}
-	
-	private int toXCoord(int x) { return centerX + x * scaleX; }
-	private int toYCoord(int y) { return centerY - y * scaleY; }
 	private int toXCoord(double x) { return (int) (centerX + x * scaleX); }
 	private int toYCoord(double y) { return (int) (centerY - y * scaleY); }
 	
 	// to be replaced by Parser.eval()
 	private double f(double x) {
-		return x*x*x;
+		return x*x*x - 2*x*x - 2;
 	}
 }
