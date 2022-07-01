@@ -5,9 +5,9 @@ public class Main {
 	final Frame window = new Frame("Funktionsplotter");
 	
 	Main() {
-		window.add(new CanvasPlot());
+		window.add(new CanvasPlot(700, 700));
 		window.setLayout(null);    
-		window.setSize(400, 400);    
+		window.setSize(700, 700);    
 		window.setVisible(true); 
 	}
 
