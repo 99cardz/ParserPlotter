@@ -36,8 +36,8 @@ public class CanvasPlot extends Canvas {
 		
 		// paint axies
 		g.setColor(Color.black);
-		g.drawLine(0, centerY, dims.width, centerY); // x
-		g.drawLine(centerX, 0, centerX, dims.height); // y
+		thickLine(g, 0, centerY, dims.width, centerY); // x
+		thickLine(g, centerX, 0, centerX, dims.height); // y
 		
 		// get lowest and highest visible x value of Graph
 		double minXVisible = minX;
@@ -46,12 +46,14 @@ public class CanvasPlot extends Canvas {
 		double maxXVisible = maxX;
 		while(f(maxXVisible) < minY || f(maxXVisible) > maxY)
 			maxXVisible -= 0.2;
-		minXVisible -= 1; maxXVisible += 1; // give some space
+		
+		// give some space
+		minXVisible = Math.floor(minXVisible) - 1; 
+		maxXVisible = Math.ceil(maxXVisible) + 1; 
 		double visibleXRange = maxXVisible - minXVisible;
 		
-		// determine accuracy 10 points for each unit
+		// determine accuracy: 10 points for each unit but not above 1500
 		int accuracy = (int) (visibleXRange * 10 > 1500 ? 1500 : visibleXRange * 10);
-		System.out.println(accuracy);
 		
 		// calculate coords for graph
 		int[] xCoords = new int[accuracy];
@@ -66,7 +68,7 @@ public class CanvasPlot extends Canvas {
 		// paint graph
 		g.setColor(Color.blue);
 		for (int i = 1; i < accuracy; i++)
-			g.drawLine(xCoords[i-1], yCoords[i-1], xCoords[i], yCoords[i]);
+			thickLine(g, xCoords[i-1], yCoords[i-1], xCoords[i], yCoords[i]);
 	}
 	private int toXCoord(double x) { return (int) (centerX + x * scaleX); }
 	private int toYCoord(double y) { return (int) (centerY - y * scaleY); }
@@ -74,6 +76,11 @@ public class CanvasPlot extends Canvas {
 	// to be replaced by Parser.eval()
 	private double f(double x) {
 //		return Math.cos(x);
-		return x*x*x;
+		return x;
+	}
+	private void thickLine(Graphics g, int x1, int y1, int x2, int y2) {
+		g.drawLine(x1, y1-1, x2, y2-1);
+		g.drawLine(x1, y1, x2, y2);
+		g.drawLine(x1+1, y1, x2+1, y2);
 	}
 }
