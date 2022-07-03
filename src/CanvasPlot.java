@@ -9,7 +9,9 @@ public class CanvasPlot extends Canvas {
 //	final Parser parser = new Parser();
 	
 	private int centerX, centerY;
-	private int scaleX = 40, scaleY = 40; // pixels per unit
+	private int scaleX = 30, scaleY = 30; // pixels per unit
+	
+	final int DEFAULT_SCALE = 30;
 
 	CanvasPlot(int width, int height) {
 		setBackground(Color.white);
@@ -18,10 +20,24 @@ public class CanvasPlot extends Canvas {
 		centerX = width / 2;
 		centerY = height / 2;
 	}
-	public void setScale(int factorX, int factorY) {
-		scaleX = factorX != 0 ? scaleX * factorY : scaleX;
+	public void scale(int factorX, int factorY) {
+		scaleX = factorX != 0 ? scaleX * factorX : scaleX;
 		scaleY = factorY != 0 ? scaleY * factorY : scaleY;
-		
+		invalidate();
+	}
+	public void resetScale() {
+		scaleX = DEFAULT_SCALE;
+		scaleY = DEFAULT_SCALE;
+		invalidate();
+	}
+	public void offset(int offsetX, int offsetY) {
+		centerX += scaleX * offsetX;
+		centerY += scaleY * offsetY;
+		invalidate();
+	}
+	public void resetOffset() {
+		centerX = getWidth() / 2;
+		centerY = getHeight() / 2;
 		invalidate();
 	}
 	
@@ -38,11 +54,8 @@ public class CanvasPlot extends Canvas {
 		
 		// paint value indicator lines
 		g.setColor(Color.lightGray);
-		for (double x = Math.ceil(minX); x < maxX; x++) {
+		for (double x = Math.ceil(minX); x < maxX; x++)
 			g.drawLine(toXCoord(x), 0, toXCoord(x), dims.height);
-//			String str = toString(x);
-//			g.drawString(str, toXCoord(x) - str.length() * 4, centerY - 10);
-		}
 		for (double y = Math.ceil(minY); y < maxY; y++)
 			g.drawLine(0, toYCoord(y), dims.width, toYCoord(y));
 		
@@ -65,12 +78,13 @@ public class CanvasPlot extends Canvas {
 	private int toXCoord(double x) { return (int) (centerX + x * scaleX); }
 	private int toYCoord(double y) { return (int) (centerY - y * scaleY); }
 	private double toXValue(int x) { return ((double) (x - centerX)) / scaleX; }
+	private double toYValue(int y) { return ((double) -(y - centerY) / scaleY); }
 	private String toString(int a) { return String.valueOf(a); }
 	
 	// to be replaced by Parser.eval()
 	private double f(double x) {
-//		return Math.cos(x);
-		return x*x*x - 3*x;
+		return Math.cos(x);
+//		return x*x*x - 3*x;
 	}
 	private void thickLine(Graphics g, int x1, int y1, int x2, int y2) {
 		g.drawLine(x1, y1-1, x2, y2-1);
