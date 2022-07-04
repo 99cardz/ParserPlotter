@@ -22,21 +22,44 @@ public class CanvasPlot extends Canvas {
 		scaleX = DEFAULT_SCALE;
 		scaleY = DEFAULT_SCALE;
 	}
+	/**
+	 * Scales the coordinate system by the provided factors.
+	 * 'Zooming in' would be a factor above 1 and 
+	 * 'Zooming out' would be a factor below 1.
+	 * A factor of 0 will get ignored.
+	 * The Canvas will be redrawn!
+	 * @param factorX
+	 * @param factorY
+	 */
 	public void scale(double factorX, double factorY) {
 		scaleX = (int) (factorX != 0 ? scaleX * factorX : scaleX);
 		scaleY = (int) (factorY != 0 ? scaleY * factorY : scaleY);
 		invalidate();
 	}
+	/**
+	 * Sets the internal scale factors to the default value.
+	 * The Canvas will be redrawn!
+	 */
 	public void resetScale() {
 		scaleX = DEFAULT_SCALE;
 		scaleY = DEFAULT_SCALE;
 		invalidate();
 	}
+	/**
+	 * Offset the coordinate system center by a provided amount of units.
+	 * The Canvas will be redrawn!
+	 * @param offsetX
+	 * @param offsetY
+	 */
 	public void offset(int offsetX, int offsetY) {
 		centerX += scaleX * offsetX;
 		centerY += scaleY * -offsetY;
 		invalidate();
 	}
+	/**
+	 * Places the coordinate system center in the middle of the Canvas.
+	 * The Canvas will be redrawn!
+	 */
 	public void resetOffset() {
 		centerX = getWidth() / 2;
 		centerY = getHeight() / 2;
@@ -70,20 +93,20 @@ public class CanvasPlot extends Canvas {
 			prevY = currY;
 		}
 	}
-	private int toXCoord(double x) { return (int) (centerX + x * scaleX); }
-	private int toYCoord(double y) { 
-		int coord = (int) (centerY - y * scaleY);
+	// Methods to convert Values to Coorinates back and fourth.
+	private int toXCoord(double value) { return (int) (centerX + value * scaleX); }
+	private int toYCoord(double value) { 
+		int coord = (int) (centerY - value * scaleY);
 		if (coord < 0) return -3;
 		else if (coord > getHeight()) return getHeight()+3;
 		else return coord;
 	}
-	private double toXValue(int x) { return ((double) (x - centerX)) / scaleX; }
-	private double toYValue(int y) { return ((double) -(y - centerY)) / scaleY; }
-	private String toString(int a) { return String.valueOf(a); }
+	private double toXValue(int coord) { return ((double) (coord - centerX)) / scaleX; }
+	private double toYValue(int coord) { return ((double) -(coord - centerY)) / scaleY; }
+//	private String toString(int a) { return String.valueOf(a); }
 	
 	// to be replaced by Parser.eval()
 	private double f(double x) {
-//		return Math.cos(x);
 		return x*x*x - 3*x;
 	}
 	private void thickLine(Graphics g, int x1, int y1, int x2, int y2) {
