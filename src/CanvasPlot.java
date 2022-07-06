@@ -1,7 +1,5 @@
 import java.awt.Canvas;
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics;
 
 public class CanvasPlot extends Canvas {
@@ -20,7 +18,6 @@ public class CanvasPlot extends Canvas {
 		centerY = height / 2;
 		scaleX = DEFAULT_SCALE;
 		scaleY = DEFAULT_SCALE;
-//		scale(.01, .01);
 	}
 	/**
 	 * Scales the coordinate system by the provided factors.
@@ -46,14 +43,14 @@ public class CanvasPlot extends Canvas {
 		invalidate();
 	}
 	/**
-	 * Offset the coordinate system center by a provided amount of units.
+	 * Offset the coordinate system center by a provided amount of line Spacings.
 	 * The Canvas will be redrawn!
 	 * @param offsetX
 	 * @param offsetY
 	 */
 	public void offset(int offsetX, int offsetY) {
-		centerX += scaleX * offsetX;
-		centerY += scaleY * -offsetY;
+		centerX += offsetX * scaleX * determineLineSpacing(toXValue(getWidth()) - toXValue(0), getWidth());
+		centerY += -offsetY * scaleY * determineLineSpacing(toYValue(0) - toYValue(getHeight()), getHeight());
 		invalidate();
 	}
 	/**
@@ -75,7 +72,7 @@ public class CanvasPlot extends Canvas {
 		g.setColor(Color.lightGray);
 		double minX = toXValue(0);
 		double maxX = toXValue(w);
-		double lineSpaceX = determineLineSpace(maxX - minX, w);
+		double lineSpaceX = determineLineSpacing(maxX - minX, w);
 		for (double x = lineSpaceX; x < maxX; x += lineSpaceX)
 			g.drawLine(toXCoord(x), 0, toXCoord(x), h);
 		for (double x = -lineSpaceX; x > minX; x -= lineSpaceX)
@@ -83,7 +80,7 @@ public class CanvasPlot extends Canvas {
 		
 		double minY = toYValue(h);
 		double maxY = toYValue(0);
-		double lineSpaceY = determineLineSpace(maxY - minY, h);
+		double lineSpaceY = determineLineSpacing(maxY - minY, h);
 		for (double y = lineSpaceY; y < maxY; y += lineSpaceY)
 			g.drawLine(0, toYCoord(y), w, toYCoord(y));
 		for (double y = -lineSpaceY; y > minY; y -= lineSpaceY)
@@ -96,16 +93,17 @@ public class CanvasPlot extends Canvas {
 		
 		// paint graph
 		g.setColor(Color.blue);
-		int prevY = toYCoord(f(toXValue(0)));
+		double prevYValue = f(toXValue(0));
 		for (int xCoord = 1; xCoord < w; xCoord++) {
-			int currY = toYCoord(f(toXValue(xCoord)));
-			thickLine(g, xCoord-1, prevY, xCoord, currY);
-			prevY = currY;
+			double currYValue = f(toXValue(xCoord));
+			if (!Double.isNaN(prevYValue) && !Double.isNaN(currYValue))
+				thickLine(g, xCoord-1, toYCoord(prevYValue), xCoord, toYCoord(currYValue));
+			prevYValue = currYValue;
 		}
 	}
-	// Methods to convert Values to Coorinates back and fourth.
+	// Methods to convert Values to Coordinates back and fourth.
 	private int toXCoord(double value) { return (int) (centerX + value * scaleX); }
-	private int toYCoord(double value) { 
+	private int toYCoord(double value) {
 		int coord = (int) (centerY - value * scaleY);
 		int max = getHeight();
 		return coord < 0 ? -3 : coord > max ? max+3 : coord;
@@ -115,7 +113,7 @@ public class CanvasPlot extends Canvas {
 //	private String toString(int a) { return String.valueOf(a); }
 	
 	final static double[] lineSpaces = { 0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000 };
-	private double determineLineSpace(double valueRange, int pixels) {
+	private double determineLineSpacing(double valueRange, int pixels) {
 		for (double lineSpace : lineSpaces)
 			if (pixels / valueRange * lineSpace > 35) // each line only spans aprox 35 px
 				return lineSpace;
@@ -124,7 +122,7 @@ public class CanvasPlot extends Canvas {
 	
 	// to be replaced by Parser.eval()
 	private double f(double x) {
-		return x*x;
+		return Math.log(x);
 	}
 	private void thickLine(Graphics g, int x1, int y1, int x2, int y2) {
 		g.drawLine(x1, y1-1, x2, y2-1);
