@@ -96,7 +96,7 @@ public class CanvasPlot extends Canvas {
 		double prevYValue = f(toXValue(0));
 		for (int xCoord = 1; xCoord < w; xCoord++) {
 			double currYValue = f(toXValue(xCoord));
-			if (!Double.isNaN(prevYValue) && !Double.isNaN(currYValue))
+			if (Double.isFinite(prevYValue) && Double.isFinite(currYValue))
 				thickLine(g, xCoord-1, toYCoord(prevYValue), xCoord, toYCoord(currYValue));
 			prevYValue = currYValue;
 		}
@@ -122,7 +122,7 @@ public class CanvasPlot extends Canvas {
 	
 	// to be replaced by Parser.eval()
 	private double f(double x) {
-		return Math.log(x);
+		return 1/x;
 	}
 	private void thickLine(Graphics g, int x1, int y1, int x2, int y2) {
 		g.drawLine(x1, y1-1, x2, y2-1);
