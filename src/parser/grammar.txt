@@ -8,6 +8,7 @@
          |  empty
 <pow>   :=  <fact> "^" <pow>
          |  <fact>
+         |  "-" <pow>
 <fact>  :=  number
          |  func_id "(" <expr> ")"
          |  "(" <expr> ")"
