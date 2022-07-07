@@ -52,6 +52,7 @@ public class Parser {
                     continue;
             }
 
+            // Read number literal
             if(Character.isDigit(string.charAt(pos))) {
                 // Get the number!
                 numberMatcher.find();
@@ -65,6 +66,18 @@ public class Parser {
                 continue;
             }
 
+            // Else, check for function names
+            boolean found = false;
+            for(FunctionType ft : FunctionType.values()) {
+                String funcName = ft.name().toLowerCase();
+                if(string.indexOf(funcName) == pos) {
+                    found = true;
+
+                    tokens.add(new Token(funcName, pos, pos + funcName.length(), TokenType.FUNC_ID, ft));
+                    pos += funcName.length();
+                }
+            }
+            if(found) continue;
 
             throw new SyntaxException(string.substring(pos, pos + 1), pos, pos + 1);
         }

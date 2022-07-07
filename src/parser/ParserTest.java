@@ -11,7 +11,7 @@ public class ParserTest {
 
     public static void main(String[] args) {
         try {
-            printTokenList(Parser.lex("x + x -255 * x / *"));
+            printTokenList(Parser.lex("x + x -255 * x / * sin()"));
         }
         catch (SyntaxException e) {
             System.out.println("Illegal symbol \"" + e.getString() + "\" at position " + e.getStartIndex());
