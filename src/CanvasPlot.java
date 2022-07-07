@@ -6,7 +6,7 @@ import java.awt.Graphics;
 
 public class CanvasPlot extends Canvas {
 	
-//	final Parser parser = new Parser();
+//	final parser.Parser parser = new parser.Parser();
 	
 	private int centerX, centerY;
 	private int scaleX, scaleY; // pixels per unit
@@ -105,7 +105,7 @@ public class CanvasPlot extends Canvas {
 	private double toYValue(int coord) { return ((double) -(coord - centerY)) / scaleY; }
 //	private String toString(int a) { return String.valueOf(a); }
 	
-	// to be replaced by Parser.eval()
+	// to be replaced by parser.Parser.eval()
 	private double f(double x) {
 		return x*x*x - 3*x;
 	}
