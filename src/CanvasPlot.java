@@ -49,8 +49,8 @@ public class CanvasPlot extends Canvas {
 	 * @param offsetY
 	 */
 	public void offset(int offsetX, int offsetY) {
-		centerX += offsetX * scaleX * determineLineSpacing(toXValue(getWidth()) - toXValue(0), getWidth());
-		centerY += -offsetY * scaleY * determineLineSpacing(toYValue(0) - toYValue(getHeight()), getHeight());
+		centerX += offsetX * scaleX * determineLineSpacing(getWidth() / (toXValue(getWidth()) - toXValue(0)));
+		centerY += -offsetY * scaleY * determineLineSpacing(getHeight() / (toYValue(0) - toYValue(getHeight())));
 		invalidate();
 	}
 	/**
@@ -61,7 +61,6 @@ public class CanvasPlot extends Canvas {
 		centerX = getWidth() / 2;
 		centerY = getHeight() / 2;
 		invalidate();
-		
 	}
 	
 	public void paint(Graphics g) {
@@ -72,7 +71,7 @@ public class CanvasPlot extends Canvas {
 		g.setColor(Color.lightGray);
 		double minX = toXValue(0);
 		double maxX = toXValue(w);
-		double lineSpaceX = determineLineSpacing(maxX - minX, w);
+		double lineSpaceX = determineLineSpacing(w / (maxX - minX));
 		for (double x = lineSpaceX; x < maxX; x += lineSpaceX)
 			g.drawLine(toXCoord(x), 0, toXCoord(x), h);
 		for (double x = -lineSpaceX; x > minX; x -= lineSpaceX)
@@ -80,7 +79,7 @@ public class CanvasPlot extends Canvas {
 		
 		double minY = toYValue(h);
 		double maxY = toYValue(0);
-		double lineSpaceY = determineLineSpacing(maxY - minY, h);
+		double lineSpaceY = determineLineSpacing(h / (maxY - minY));
 		for (double y = lineSpaceY; y < maxY; y += lineSpaceY)
 			g.drawLine(0, toYCoord(y), w, toYCoord(y));
 		for (double y = -lineSpaceY; y > minY; y -= lineSpaceY)
@@ -94,11 +93,15 @@ public class CanvasPlot extends Canvas {
 		// paint graph
 		g.setColor(Color.blue);
 		double prevYValue = f(toXValue(0));
+		int prevYCoord = toYCoord(prevYValue);
 		for (int xCoord = 1; xCoord < w; xCoord++) {
 			double currYValue = f(toXValue(xCoord));
-			if (Double.isFinite(prevYValue) && Double.isFinite(currYValue))
-				thickLine(g, xCoord-1, toYCoord(prevYValue), xCoord, toYCoord(currYValue));
+			int currYCoord = toYCoord(currYValue);
+			// ignore if Values are NaN or Infinity, or if distance of Coords is grater than the height 
+			if (Double.isFinite(prevYValue) && Double.isFinite(currYValue) && Math.abs(prevYCoord - currYCoord) < h)
+				thickLine(g, xCoord-1, prevYCoord, xCoord, currYCoord);
 			prevYValue = currYValue;
+			prevYCoord = currYCoord;
 		}
 	}
 	// Methods to convert Values to Coordinates back and fourth.
@@ -112,17 +115,25 @@ public class CanvasPlot extends Canvas {
 	private double toYValue(int coord) { return ((double) -(coord - centerY)) / scaleY; }
 //	private String toString(int a) { return String.valueOf(a); }
 	
-	final static double[] lineSpaces = { 0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000 };
-	private double determineLineSpacing(double valueRange, int pixels) {
-		for (double lineSpace : lineSpaces)
-			if (pixels / valueRange * lineSpace > 35) // each line only spans aprox 35 px
-				return lineSpace;
-		return 100000;
+	
+	private double determineLineSpacing(double pixelsPerUnit) {
+		double[] choices = {1, 2, 5};
+		int index = 0;
+		double factor = 1;
+		while (pixelsPerUnit * choices[index] * factor < 40) {
+			factor *= index + 1 > 2 ? 10 : 1;
+			index = (index + 1) % 3;
+		}
+		while (pixelsPerUnit * choices[index] * factor > 100) {
+			factor /= index - 1 < 0 ? 10 : 1;
+			index = (index + 2) % 3;
+		}
+		return choices[index] * factor;
 	}
 	
 	// to be replaced by Parser.eval()
 	private double f(double x) {
-		return 1/x;
+		return Math.tan(x) + x*x;
 	}
 	private void thickLine(Graphics g, int x1, int y1, int x2, int y2) {
 		g.drawLine(x1, y1-1, x2, y2-1);
