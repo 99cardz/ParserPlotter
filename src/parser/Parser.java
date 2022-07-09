@@ -84,4 +84,18 @@ public class Parser {
 
         return tokens;
     }
+
+    List<Token> tokens = null;
+    int tokenIndex = 0;
+    Token nextToken = null;
+
+    // Get the next token from the list
+    private void scanToken() {
+        try {
+            nextToken = tokens.get(tokenIndex++);
+        }
+        catch (Exception e) {
+            nextToken = null;
+        }
+    }
 }

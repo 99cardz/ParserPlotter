@@ -1,11 +1,6 @@
-<expr>  ::=  <term> <expr1>
-<expr1> ::=  "+" <term> <expr1>
-         |   "-" <term> <expr1>
-         |   empty
+<expr>  ::=  <term> {( "+" | "-" ) <term> }
 <term>  ::=  <pow> <term1>
-<term1> ::=  "*" <pow> <term1>
-         |   "/" <pow> <term1>
-         |   empty
+<term1> ::=  <pow>  {( "*" | "/" ) <pow>  }
 <pow>   ::=  <fact> "^" <pow>
          |   <fact>
          |   "-" <pow>
