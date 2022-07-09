@@ -1,9 +1,8 @@
 <expr>  ::=  <term> {( "+" | "-" ) <term> }
-<term>  ::=  <pow> <term1>
-<term1> ::=  <pow>  {( "*" | "/" ) <pow>  }
-<pow>   ::=  <fact> "^" <pow>
+<term>  ::=  <pow>  {( "*" | "/" ) <pow>  }
+<pow>   ::=  "-" <pow>
+         |   <fact> "^" <pow>
          |   <fact>
-         |   "-" <pow>
 <fact>  ::=  number
          |   func_id "(" <expr> ")"
          |   "(" <expr> ")"
