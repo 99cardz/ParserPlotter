@@ -13,6 +13,6 @@ public class NegateNode extends UnarySyntaxNode {
     }
 
     public double eval(double x) {
-        return 0;
+        return -left.eval(x);
     }
 }

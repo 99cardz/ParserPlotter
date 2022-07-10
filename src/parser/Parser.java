@@ -229,6 +229,7 @@ public class Parser {
             if(nextToken.getType() != TokenType.PAR_CLOSE) {
                 throw new SyntaxException(nextToken.getString(), nextToken.getStartIndex(), nextToken.getEndIndex());
             }
+            scanToken();
 
             return a;
         }
