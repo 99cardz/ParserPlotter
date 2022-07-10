@@ -29,8 +29,10 @@ public class CanvasPlot extends Canvas {
 	 * @param factorY
 	 */
 	public void scale(double factorX, double factorY) {
-		scaleX = factorX != 0 ? scaleX * factorX : scaleX;
-		scaleY = factorY != 0 ? scaleY * factorY : scaleY;
+		scaleX *= factorX != 0 ? factorX : 1;
+//		scaleX = factorX != 0 ? scaleX * factorX : scaleX;
+		scaleY *= factorY != 0 ? factorY : 1;
+//		scaleY = factorY != 0 ? scaleY * factorY : scaleY;
 		invalidate();
 	}
 	/**
@@ -106,11 +108,7 @@ public class CanvasPlot extends Canvas {
 	}
 	// Methods to convert Values to Coordinates back and fourth.
 	private int toXCoord(double value) { return (int) (centerX + value * scaleX); }
-	private int toYCoord(double value) {
-		int coord = (int) (centerY - value * scaleY);
-		int max = getHeight();
-		return coord < 0 ? -3 : coord > max ? max+3 : coord;
-	}
+	private int toYCoord(double value) { return (int) (centerY - value * scaleY); }
 	private double toXValue(int coord) { return ((double) (coord - centerX)) / scaleX; }
 	private double toYValue(int coord) { return ((double) -(coord - centerY)) / scaleY; }
 //	private String toString(int a) { return String.valueOf(a); }
@@ -133,7 +131,7 @@ public class CanvasPlot extends Canvas {
 	
 	// to be replaced by Parser.eval()
 	private double f(double x) {
-		return Math.tan(x) + x*x;
+		return 1/x;
 	}
 	private void thickLine(Graphics g, int x1, int y1, int x2, int y2) {
 		g.drawLine(x1, y1-1, x2, y2-1);
