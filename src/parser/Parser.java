@@ -108,7 +108,14 @@ public class Parser {
 
         scanToken();
 
-        return parseExpr();
+        SyntaxNode root = parseExpr();
+
+        // Make sure all the tokens got used!
+        if(nextToken != null) {
+            throw new SyntaxException(nextToken.getString(), nextToken.getStartIndex(), nextToken.getEndIndex());
+        }
+
+        return root;
     }
 
     private SyntaxNode parseExpr() throws SyntaxException {
@@ -199,26 +206,36 @@ public class Parser {
             // Keep record which function it is
             FunctionType funcType = nextToken.getFuncType();
 
-            // Check for opening parenthesis
+
             scanToken();
+            // Null check
+            if(nextToken == null)
+                throw new SyntaxException("", -1, -1);
+
+            // Make sure its a left parenthesis else
             if(nextToken.getType() != TokenType.PAR_OPEN) {
                 throw new SyntaxException(nextToken.getString(), nextToken.getStartIndex(), nextToken.getEndIndex());
             }
 
+            scanToken();
             // Parse the function argument
             SyntaxNode a = parseExpr();
 
+            // Null check
+            if(nextToken == null)
+                throw new SyntaxException("", -1, -1);
             // Check for closing parenthesis
             if(nextToken.getType() != TokenType.PAR_CLOSE) {
                 throw new SyntaxException(nextToken.getString(), nextToken.getStartIndex(), nextToken.getEndIndex());
             }
+            scanToken();
 
             // Build and return the node
             switch(funcType) {
-                case COS: return new CosNode(a);
-                case LOG: return new LogNode(a);
-                case SIN: return new SinNode(a);
-                case TAN: return new TanNode(a);
+                case COS:  return new CosNode(a);
+                case LOG:  return new LogNode(a);
+                case SIN:  return new SinNode(a);
+                case TAN:  return new TanNode(a);
                 case SQRT: return new SqrtNode(a);
             }
         }
