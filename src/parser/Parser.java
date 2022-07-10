@@ -44,7 +44,7 @@ public class Parser {
                     tokens.add(new Token("^", pos, ++pos, TokenType.POW));
                     continue;
                 case 'x':
-                    tokens.add(new Token("-", pos, ++pos, TokenType.VARIABLE));
+                    tokens.add(new Token("x", pos, ++pos, TokenType.VARIABLE));
                     continue;
                 case '(':
                     tokens.add(new Token("(", pos, ++pos, TokenType.PAR_OPEN));
@@ -101,33 +101,26 @@ public class Parser {
         }
     }
 
-    public SyntaxNode buildSyntaxTree(final String string) {
-        try {
-            tokens = lex(string);
-        }
-        catch (SyntaxException e) {
-            System.out.println("Syntax error: '" + e.getString() + "' at index " + e.getStartIndex() + " to " + e.getEndIndex());
-            return null;
-        }
+    public SyntaxNode buildSyntaxTree(final String string) throws SyntaxException {
+
+        tokens = lex(string);
         tokenIndex = 0;
 
         scanToken();
 
-        try {
-            SyntaxNode root = parseExpr();
-
-            return root;
-        }
-        catch(SyntaxException e) {
-            System.out.println("Error while building syntax tree!");
-            return null;
-        }
+        return parseExpr();
     }
 
     private SyntaxNode parseExpr() throws SyntaxException {
+        if(nextToken == null)
+            throw new SyntaxException("", -1, -1);
+
         SyntaxNode a = parseTerm();
 
         while(true) {
+            if(nextToken == null)
+                return a;
+
             if(nextToken.getType() == TokenType.PLUS) {
                 scanToken();
                 SyntaxNode b = parseTerm();
@@ -145,9 +138,15 @@ public class Parser {
     }
 
     private SyntaxNode parseTerm() throws SyntaxException {
+        if(nextToken == null)
+            throw new SyntaxException("", -1, -1);
+
         SyntaxNode a = parsePow();
 
         while(true) {
+            if(nextToken == null)
+                return a;
+
             if(nextToken.getType() == TokenType.MUL) {
                 scanToken();
                 SyntaxNode b = parsePow();
@@ -166,6 +165,8 @@ public class Parser {
 
     private SyntaxNode parsePow() throws SyntaxException {
 
+        if(nextToken == null)
+            throw new SyntaxException("", -1, -1);
 
         // Check for negation
         if(nextToken.getType() == TokenType.MINUS) {
@@ -175,7 +176,7 @@ public class Parser {
         else {
             SyntaxNode a = parseFact();
 
-            if (nextToken.getType() == TokenType.POW) {
+            if (nextToken != null && nextToken.getType() == TokenType.POW) {
                 scanToken();
                 return new PowNode(a, parsePow());
             } else {
@@ -185,8 +186,14 @@ public class Parser {
     }
 
     private SyntaxNode parseFact() throws SyntaxException {
+
+        if(nextToken == null)
+            throw new SyntaxException("", -1, -1);
+
         if(nextToken.getType() == TokenType.NUMBER) {
-            return new NumberNode(nextToken.getValue());
+            SyntaxNode a = new NumberNode(nextToken.getValue());
+            scanToken();
+            return a;
         }
         else if(nextToken.getType() == TokenType.FUNC_ID) {
             // Keep record which function it is
@@ -218,16 +225,22 @@ public class Parser {
         else if(nextToken.getType() == TokenType.PAR_OPEN) {
             scanToken();
             SyntaxNode a = parseExpr();
-            scanToken();
+
+            if(nextToken.getType() != TokenType.PAR_CLOSE) {
+                throw new SyntaxException(nextToken.getString(), nextToken.getStartIndex(), nextToken.getEndIndex());
+            }
 
             return a;
         }
-        else
+        else if(nextToken.getType() == TokenType.VARIABLE)
         {
-            return new VariableNode();
+            SyntaxNode a = new VariableNode();
+            scanToken();
+            return a;
         }
 
-        // This should never happen
-        return null;
+        // Otherwise, syntax is incorrect
+        throw new SyntaxException(nextToken.getString(), nextToken.getStartIndex(), nextToken.getEndIndex());
+
     }
 }

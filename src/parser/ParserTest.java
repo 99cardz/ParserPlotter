@@ -3,6 +3,7 @@ package parser;
 import parser.syntaxtree.SyntaxNode;
 
 import java.util.List;
+import java.util.Scanner;
 
 public class ParserTest {
     private static void printTokenList(List<Token> tokens) {
@@ -11,19 +12,30 @@ public class ParserTest {
         }
     }
 
-    private static final String[] testEpxressions = { "x + x"};
-
     public static void main(String[] args) {
-        try {
-            printTokenList(Parser.lex("x + x -255 * x / * sin()"));
-        }
-        catch (SyntaxException e) {
-            System.out.println("Illegal symbol \"" + e.getString() + "\" at position " + e.getStartIndex());
-        }
-
         Parser parser = new Parser();
+        SyntaxNode root;
+        Scanner input = new Scanner(System.in);
 
-        SyntaxNode root = parser.buildSyntaxTree("x + 2 + 20.0 + (-5^2)");
-        root.print();
+        while(true) {
+            String expr = input.nextLine();
+
+            try {
+                // printTokenList(Parser.lex(expr));
+                root = parser.buildSyntaxTree(expr);
+                root.print();
+                System.out.println();
+                System.out.println(root.eval(1));
+            }
+            catch(SyntaxException e) {
+                if(e.getStartIndex() == -1) {
+                    System.out.println("Unexpected end of input!");
+                }
+                else {
+                    System.out.println("Illegal symbol \"" + e.getString() + "\" at position " + e.getStartIndex());
+                }
+                root = null;
+            }
+        }
     }
 }
