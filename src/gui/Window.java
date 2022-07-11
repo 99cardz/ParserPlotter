@@ -4,6 +4,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
 import javax.swing.*;
+import canvas.CanvasPlot;
 
 public class Window extends JFrame {
 	
@@ -27,7 +28,7 @@ public class Window extends JFrame {
 	private JLabel 			errorLabel 			= new JLabel("Error. Everything that could be wrong, is.");
 	
 	private JPanel 			canvasPanel 		= new JPanel();
-	private Canvas 			canvas;
+	private CanvasPlot		canvas;
 	
 	private JPanel 			bottomPanel 		= new JPanel();
 	private double[]		currScale 			= {1.000, 1.000};
@@ -38,7 +39,7 @@ public class Window extends JFrame {
 	private JButton 		yZoomInButton 		= new JButton("+");
 	private JButton			resetButton 		= new JButton("R");
 	
-	public Window(Canvas c) {
+	public Window() {
 		
 		// general stuff
 		this.setTitle(title);
@@ -61,7 +62,7 @@ public class Window extends JFrame {
 		this.addComponent(topPanel, hideButton, 2, 0, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.REMAINDER, .5, .5);
 		
 		// canvasPanel setup
-		canvas = c;
+		canvas = new CanvasPlot(canvasPanel.getWidth(), canvasPanel.getHeight());
 		canvasPanel.setLayout(new BorderLayout());
 		canvasPanel.add(canvas);
 		canvasPanel.addMouseWheelListener(e -> {
@@ -70,7 +71,7 @@ public class Window extends JFrame {
 			else if (e.getWheelRotation() > 0)
 				setCanvasScale(2, 2);
 		});
-		canvas.setBackground(BG_COLOR);
+		canvas.setBackground(Color.white);
 		
 		// bottomPanel setup
 		bottomPanel.setLayout(new GridLayout(1, 8));

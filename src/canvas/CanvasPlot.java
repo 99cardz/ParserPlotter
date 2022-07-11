@@ -1,3 +1,4 @@
+package canvas;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -13,7 +14,7 @@ public class CanvasPlot extends Canvas {
 	
 	static final int DEFAULT_SCALE = 40;
 
-	CanvasPlot(int width, int height) {
+	public CanvasPlot(int width, int height) {
 		setBackground(Color.white);
 		setSize(width, height);
 		// center is in middle of canvas by default
