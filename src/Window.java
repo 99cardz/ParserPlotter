@@ -17,7 +17,7 @@ public class Window extends JFrame {
 	private final Dimension BUTTON_SIZE = new Dimension(50, 50);
 	private final int 		TOP_HEIGHT = 60;
 	private final int		ERR_HEIGHT = 40;
-	private final int		BOT_HEIGHT = TOP_HEIGHT;
+	private final int		BOT_HEIGHT = 60;
  	
 	// components
 	private JPanel 			topPanel = new JPanel();
@@ -47,7 +47,7 @@ public class Window extends JFrame {
 		// window setup
 		this.setSize(MIN_WINDOW_SIZE);
 		this.setTitle("Funky");
-		this.setLayout(new BorderLayout());
+		this.setLayout(null);
 		this.setResizable(true);
 		this.setMinimumSize(MIN_WINDOW_SIZE);
 		
@@ -86,7 +86,7 @@ public class Window extends JFrame {
 		// canvas panel setup
 		canvasPanel.setLayout(null);
 //		canvasPanel.setBounds(0, TOP_HEIGHT + ERR_HEIGHT, this.getWidth(), this.getHeight() - TOP_HEIGHT - ERR_HEIGHT - BOT_HEIGHT);
-		canvasPanel.setBackground(Color.orange);
+		canvasPanel.setBackground(Color.white);
 		canvasPanel.add(canvas);
 		
 		// bottom panel setup
@@ -96,7 +96,7 @@ public class Window extends JFrame {
 		for(int i = 0; i < buttons.length; i++) {
 			buttons[i].setBounds(20 + (i*(BUTTON_SIZE.width + 20)), bottomPanel.getY() + 20, BUTTON_SIZE.width, BUTTON_SIZE.height);
 			final int j = i;
-			buttons[i].addActionListener(e -> updateScale(scalars[j][0], scalars[j][1]));
+			buttons[i].addActionListener(e -> setScale(scalars[j][0], scalars[j][1]));
 			bottomPanel.add(buttons[i]);
 		}
 		
@@ -110,14 +110,16 @@ public class Window extends JFrame {
 		        updateBounds();
 		    }
 		});
+		
+		System.out.println(this.getHeight());
 	}
 	
-	private void updateScale(double x, double y) {
+	private void setScale(double x, double y) {
 		
 		if(x == 0 && y == 0) {
 			currScale[0] = 1.0;
 			currScale[1] = 1.0;
-		}
+		} 
 		else {
 			currScale[0] *= x;
 			currScale[1] *= y;
@@ -130,14 +132,16 @@ public class Window extends JFrame {
 	}
 	
 	private void updateBounds() {
+
 		topPanel.setBounds		(0, 0, 
 								this.getWidth(), TOP_HEIGHT);
 		errorPanel.setBounds	(0, TOP_HEIGHT,
 								this.getWidth(), ERR_HEIGHT);
 		canvasPanel.setBounds	(0, TOP_HEIGHT + ERR_HEIGHT,
 								this.getWidth(), this.getHeight() - TOP_HEIGHT - ERR_HEIGHT - BOT_HEIGHT);
-		bottomPanel.setBounds	(0, this.getHeight() - BOT_HEIGHT,
+		bottomPanel.setBounds	(0, TOP_HEIGHT + ERR_HEIGHT + this.canvasPanel.getHeight(),
 								this.getWidth(), BOT_HEIGHT);
 		repaint();
 	}
+
 }

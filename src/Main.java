@@ -2,11 +2,18 @@ import java.awt.Frame;
 
 public class Main {
 	
+	final Frame window = new Frame("Funktionsplotter");
+	
+	Main() {
+		window.add(new CanvasPlot(700, 700));
+		window.setLayout(null);    
+		window.setSize(700, 700);    
+		window.setVisible(true); 
+	}
+
 	public static void main(String[] args) {
 		
-		CanvasPlot plot = new CanvasPlot();
-		Window window = new Window(plot);
-		window.setVisible(true);
+		Main programm = new Main();
 	}
 
 }
