@@ -7,7 +7,7 @@ import canvas.CanvasPlot;
 public class Main {
 	
 	public static void main(String[] args) {
-		Window window = new Window(new Canvas());
+		Window window = new Window();
 		window.setVisible(true); 
 	}
 
