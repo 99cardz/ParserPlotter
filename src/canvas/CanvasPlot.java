@@ -10,11 +10,18 @@ public class CanvasPlot extends Canvas {
 	private int centerX, centerY;
 	private double scaleX, scaleY; // pixels per unit
 	static final int DEFAULT_SCALE = 40;
+	private double lineSpacingX, lineSpacingY;
+	static final double DEFAULT_LINESPACING = 1;
+	private double lineSpacingFactorX, lineSpacingFactorY;
+	static final double DEFAULT_LINESPACINGFACTOR = 1;
 
 	public CanvasPlot() {
-		// center is in middle of canvas by default
 		scaleX = DEFAULT_SCALE;
 		scaleY = DEFAULT_SCALE;
+		lineSpacingX = DEFAULT_LINESPACING;
+		lineSpacingY = DEFAULT_LINESPACING;
+		lineSpacingFactorX = DEFAULT_LINESPACINGFACTOR;
+		lineSpacingFactorY = DEFAULT_LINESPACINGFACTOR;
 	}
 	public void size(int width, int height) {
 		setSize(width, height);
@@ -33,9 +40,33 @@ public class CanvasPlot extends Canvas {
 	 */
 	public void scale(double factorX, double factorY) {
 		scaleX *= factorX != 0 ? factorX : 1;
-//		scaleX = factorX != 0 ? scaleX * factorX : scaleX;
 		scaleY *= factorY != 0 ? factorY : 1;
-//		scaleY = factorY != 0 ? scaleY * factorY : scaleY;
+		
+		double pixelsPerUnitX = getWidth() / (toXValue(getWidth()) - toXValue(0));
+		double pixelsPerUnitY = getHeight() / (toYValue(0) - toYValue(getHeight()));
+		
+		double[] choices = {1, 2, 5};
+		int iX = 0;
+		while (pixelsPerUnitX * choices[iX] * lineSpacingFactorX < 40) {
+			lineSpacingFactorX *= iX + 1 > 2 ? 10 : 1;
+			iX = (iX + 1) % 3;
+		}
+		while (pixelsPerUnitX * choices[iX] * lineSpacingFactorX > 100) {
+			lineSpacingFactorX /= iX - 1 < 0 ? 10 : 1;
+			iX = (iX + 2) % 3;
+		}
+		lineSpacingX = choices[iX] * lineSpacingFactorX;
+		int iY = 0;
+		while (pixelsPerUnitY * choices[iY] * lineSpacingFactorY < 40) {
+			lineSpacingFactorY *= iY + 1 > 2 ? 10 : 1;
+			iY = (iY + 1) % 3;
+		}
+		while (pixelsPerUnitY * choices[iY] * lineSpacingFactorY > 100) {
+			lineSpacingFactorY /= iY - 1 < 0 ? 10 : 1;
+			iY = (iY + 2) % 3;
+		}
+		lineSpacingY = choices[iY] * lineSpacingFactorY;
+		
 		super.repaint();
 	}
 	/**
@@ -45,6 +76,10 @@ public class CanvasPlot extends Canvas {
 	public void resetScale() {
 		scaleX = DEFAULT_SCALE;
 		scaleY = DEFAULT_SCALE;
+		lineSpacingX = DEFAULT_LINESPACING;
+		lineSpacingY = DEFAULT_LINESPACING;
+		lineSpacingFactorX = DEFAULT_LINESPACINGFACTOR;
+		lineSpacingFactorY = DEFAULT_LINESPACINGFACTOR;
 		super.repaint();
 	}
 	/**
@@ -54,10 +89,16 @@ public class CanvasPlot extends Canvas {
 	 * @param offsetY
 	 */
 	public void offset(int offsetX, int offsetY) {
-		centerX += offsetX * scaleX * determineLineSpacing(getWidth() / (toXValue(getWidth()) - toXValue(0)));
-		centerY += -offsetY * scaleY * determineLineSpacing(getHeight() / (toYValue(0) - toYValue(getHeight())));
+		centerX += offsetX * scaleX * lineSpacingX;
+		centerY += -offsetY * scaleY * lineSpacingY;
 		super.repaint();
 	}
+	/**
+	 * Offset the coordinate system center by a provided amount of pixels.
+	 * The Canvas will be redrawn!
+	 * @param x
+	 * @param y
+	 */
 	public void offsetPx(int x, int y) {
 		centerX += x;
 		centerY += y;
@@ -82,38 +123,36 @@ public class CanvasPlot extends Canvas {
 		double minX = toXValue(0);
 		double maxX = toXValue(w);
 		int yTextCoord = centerY - 10;
-		double lineSpaceX = determineLineSpacing(w / (maxX - minX));
-		for (double x = lineSpaceX; x < maxX; x += lineSpaceX) {
+		for (double x = lineSpacingX; x < maxX; x += lineSpacingX) {
 			int xCoord = toXCoord(x);
 			g.setColor(Color.lightGray);
 			g.drawLine(xCoord, 0, xCoord, h);
 			g.setColor(Color.black);
-			g.drawString(formatToDecimal(x), xCoord, yTextCoord);
+			g.drawString(formatToDecimal(x, lineSpacingFactorX), xCoord, yTextCoord);
 		}
-		for (double x = -lineSpaceX; x > minX; x -= lineSpaceX) {
+		for (double x = -lineSpacingX; x > minX; x -= lineSpacingX) {
 			int xCoord = toXCoord(x);
 			g.setColor(Color.lightGray);
 			g.drawLine(xCoord, 0, xCoord, h);
 			g.setColor(Color.black);
-			g.drawString(formatToDecimal(x), xCoord, yTextCoord);
+			g.drawString(formatToDecimal(x, lineSpacingFactorX), xCoord, yTextCoord);
 		}
 		double minY = toYValue(h);
 		double maxY = toYValue(0);
 		int xTextCoord = centerX + 10;
-		double lineSpaceY = determineLineSpacing(h / (maxY - minY));
-		for (double y = lineSpaceY; y < maxY; y += lineSpaceY) {
+		for (double y = lineSpacingY; y < maxY; y += lineSpacingY) {
 			int yCoord = toYCoord(y);
 			g.setColor(Color.lightGray);
 			g.drawLine(0, yCoord, w, yCoord);
 			g.setColor(Color.black);
-			g.drawString(formatToDecimal(y), xTextCoord, yCoord);
+			g.drawString(formatToDecimal(y, lineSpacingFactorY), xTextCoord, yCoord);
 		}
-		for (double y = -lineSpaceY; y > minY; y -= lineSpaceY) {
+		for (double y = -lineSpacingY; y > minY; y -= lineSpacingY) {
 			int yCoord = toYCoord(y);
 			g.setColor(Color.lightGray);
 			g.drawLine(0, yCoord, w, yCoord);
 			g.setColor(Color.black);
-			g.drawString(formatToDecimal(y), xTextCoord, yCoord);
+			g.drawString(formatToDecimal(y, lineSpacingFactorY), xTextCoord, yCoord);
 		}
 		
 		// paint axies
@@ -140,27 +179,11 @@ public class CanvasPlot extends Canvas {
 	private int toYCoord(double value) { return (int) (centerY - value * scaleY); }
 	private double toXValue(int coord) { return ((double) (coord - centerX)) / scaleX; }
 	private double toYValue(int coord) { return ((double) -(coord - centerY)) / scaleY; }
-	private String toString(double a) { return String.valueOf(a); }
-	
-	private double determineLineSpacing(double pixelsPerUnit) {
-		double[] choices = {1, 2, 5};
-		int index = 0;
-		double factor = 1;
-		while (pixelsPerUnit * choices[index] * factor < 40) {
-			factor *= index + 1 > 2 ? 10 : 1;
-			index = (index + 1) % 3;
-		}
-		while (pixelsPerUnit * choices[index] * factor > 100) {
-			factor /= index - 1 < 0 ? 10 : 1;
-			index = (index + 2) % 3;
-		}
-		return choices[index] * factor;
-	}
-	private String formatToDecimal(double value) {
-		double positiveValue = Math.abs(value);
-		int decimalAmount = (int) Math.abs(Math.log10(positiveValue - Math.round(positiveValue))) + 2;
-		if (decimalAmount < 1)
-			decimalAmount = 1;
+
+	private String formatToDecimal(double value, double factor) {
+		int decimalAmount = -(int) Math.ceil((Math.log10(factor)));
+		if (decimalAmount < 0)
+			decimalAmount = 0;
 		return String.format("%." + decimalAmount + "f", value);
 	}
 	private double f(double x) {

@@ -2,6 +2,8 @@ package gui;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -81,9 +83,23 @@ public class Window extends JFrame {
 		canvasPanel.add(canvas);
 		canvasPanel.addMouseWheelListener(e -> {
 			if(e.getWheelRotation() < 0)
-				canvas.scale(.5, .5);
+				canvas.scale(.9, .9);
 			else if (e.getWheelRotation() > 0)
-				canvas.scale(2, 2);
+				canvas.scale(1.1, 1.1);
+		});
+		canvas.addMouseMotionListener(new MouseMotionListener() {
+			private int beforeX, beforeY;
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				canvas.offsetPx(e.getX() - beforeX, e.getY() - beforeY);
+				beforeX = e.getX();
+				beforeY = e.getY();
+			}
+			@Override
+			public void mouseMoved(MouseEvent e) { 
+				beforeX = e.getX();
+				beforeY = e.getY();
+			}
 		});
 		canvasPanel.add(scaleLabel, BorderLayout.SOUTH);
 		canvasPanel.setBackground(Color.white);
