@@ -5,13 +5,14 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import gui.Function;
 import parser.syntaxtree.*;
 
 public class Parser {
 
     /**
      * Lexical analysis of a string.
-     * @param The string to be analyzed and split into tokens.
+     * @param string - The string to be analyzed and split into tokens.
      * @return a list of Tokens.
      * @throws SyntaxException if invalid symbol is found.
      */
@@ -130,6 +131,13 @@ public class Parser {
         }
 
         return root;
+    }
+
+    public Function buildFunction(final String string) throws SyntaxException {
+
+        SyntaxNode root = buildSyntaxTree(string);
+
+        return new Function(string, root);
     }
 
     // expr production rule
