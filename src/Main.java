@@ -1,5 +1,7 @@
 import java.awt.Frame;
 
+import canvas.CanvasPlot;
+
 public class Main {
 	
 	final Frame window = new Frame("Funktionsplotter");
