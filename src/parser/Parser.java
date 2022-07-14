@@ -133,6 +133,12 @@ public class Parser {
         return root;
     }
 
+    /**
+     * Returns a function object.
+     * @param string - The expression.
+     * @return The Function object containing the input string, syntax tree and color.
+     * @throws SyntaxException - if the input expression is not syntacically correct.
+     */
     public Function buildFunction(final String string) throws SyntaxException {
 
         SyntaxNode root = buildSyntaxTree(string);
