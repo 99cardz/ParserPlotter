@@ -29,7 +29,7 @@ public class CanvasPlot extends Canvas {
 	 * @param factorX
 	 * @param factorY
 	 */
-	public void scale(double factorX, double factorY) 
+	public void scale(double factorX, double factorY) {
 		scaleX *= factorX != 0 ? factorX : 1;
 //		scaleX = factorX != 0 ? scaleX * factorX : scaleX;
 		scaleY *= factorY != 0 ? factorY : 1;
@@ -114,7 +114,24 @@ public class CanvasPlot extends Canvas {
 	private double toYValue(int coord) { return ((double) -(coord - centerY)) / scaleY; }
 //	private String toString(int a) { return String.valueOf(a); }
 	
+	private double determineLineSpacing(double pixelsPerUnit) {
+		double[] choices = {1, 2, 5};
+		int index = 0;
+		double factor = 1;
+		while (pixelsPerUnit * choices[index] * factor < 40) {
+			factor *= index + 1 > 2 ? 10 : 1;
+			index = (index + 1) % 3;
+		}
+		while (pixelsPerUnit * choices[index] * factor > 100) {
+			factor /= index - 1 < 0 ? 10 : 1;
+			index = (index + 2) % 3;
+		}
+		return choices[index] * factor;
 	}
+	private double f(double x) {
+		return 1/x;
+	}
+	
 	private void thickLine(Graphics g, int x1, int y1, int x2, int y2) {
 		g.drawLine(x1, y1-1, x2, y2-1);
 		g.drawLine(x1, y1, x2, y2);
