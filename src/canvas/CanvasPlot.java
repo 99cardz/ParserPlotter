@@ -54,8 +54,13 @@ public class CanvasPlot extends Canvas {
 	 * @param offsetY
 	 */
 	public void offset(int offsetX, int offsetY) {
-//		centerX += offsetX * scaleX * determineLineSpacing(getWidth() / (toXValue(getWidth()) - toXValue(0)));
-//		centerY += -offsetY * scaleY * determineLineSpacing(getHeight() / (toYValue(0) - toYValue(getHeight())));
+		centerX += offsetX * scaleX * determineLineSpacing(getWidth() / (toXValue(getWidth()) - toXValue(0)));
+		centerY += -offsetY * scaleY * determineLineSpacing(getHeight() / (toYValue(0) - toYValue(getHeight())));
+		super.repaint();
+	}
+	public void offsetPx(int x, int y) {
+		centerX += x;
+		centerY += y;
 		super.repaint();
 	}
 	/**
@@ -74,31 +79,42 @@ public class CanvasPlot extends Canvas {
 		int h = getHeight();
 		
 		// paint value indicator lines
-		g.setColor(Color.lightGray);
 		double minX = toXValue(0);
 		double maxX = toXValue(w);
 		int yTextCoord = centerY - 10;
-		double[] lsX = determineLineSpacing(w / (maxX - minX));
-		double lineSpaceX = lsX[0];
-		double lineSpaceFactorX = lsX[1];
+		double lineSpaceX = determineLineSpacing(w / (maxX - minX));
 		for (double x = lineSpaceX; x < maxX; x += lineSpaceX) {
 			int xCoord = toXCoord(x);
-			System.out.println("raw: " + x / lineSpaceFactorX + " round: " + Math.round(x / lineSpaceFactorX) + " back: " + Math.round(x / lineSpaceFactorX) * lineSpaceFactorX);
+			g.setColor(Color.lightGray);
 			g.drawLine(xCoord, 0, xCoord, h);
-			g.drawString(toString(Math.round(x / lineSpaceFactorX) * lineSpaceFactorX), xCoord, yTextCoord);
+			g.setColor(Color.black);
+			g.drawString(formatToDecimal(x), xCoord, yTextCoord);
 		}
 		for (double x = -lineSpaceX; x > minX; x -= lineSpaceX) {
 			int xCoord = toXCoord(x);
+			g.setColor(Color.lightGray);
 			g.drawLine(xCoord, 0, xCoord, h);
-			g.drawString(toString(x), xCoord, yTextCoord);
+			g.setColor(Color.black);
+			g.drawString(formatToDecimal(x), xCoord, yTextCoord);
 		}
-//		double minY = toYValue(h);
-//		double maxY = toYValue(0);
-//		double lineSpaceY = determineLineSpacing(h / (maxY - minY));
-//		for (double y = lineSpaceY; y < maxY; y += lineSpaceY)
-//			g.drawLine(0, toYCoord(y), w, toYCoord(y));
-//		for (double y = -lineSpaceY; y > minY; y -= lineSpaceY)
-//			g.drawLine(0, toYCoord(y), w, toYCoord(y));
+		double minY = toYValue(h);
+		double maxY = toYValue(0);
+		int xTextCoord = centerX + 10;
+		double lineSpaceY = determineLineSpacing(h / (maxY - minY));
+		for (double y = lineSpaceY; y < maxY; y += lineSpaceY) {
+			int yCoord = toYCoord(y);
+			g.setColor(Color.lightGray);
+			g.drawLine(0, yCoord, w, yCoord);
+			g.setColor(Color.black);
+			g.drawString(formatToDecimal(y), xTextCoord, yCoord);
+		}
+		for (double y = -lineSpaceY; y > minY; y -= lineSpaceY) {
+			int yCoord = toYCoord(y);
+			g.setColor(Color.lightGray);
+			g.drawLine(0, yCoord, w, yCoord);
+			g.setColor(Color.black);
+			g.drawString(formatToDecimal(y), xTextCoord, yCoord);
+		}
 		
 		// paint axies
 		g.setColor(Color.black);
@@ -126,7 +142,7 @@ public class CanvasPlot extends Canvas {
 	private double toYValue(int coord) { return ((double) -(coord - centerY)) / scaleY; }
 	private String toString(double a) { return String.valueOf(a); }
 	
-	private double[] determineLineSpacing(double pixelsPerUnit) {
+	private double determineLineSpacing(double pixelsPerUnit) {
 		double[] choices = {1, 2, 5};
 		int index = 0;
 		double factor = 1;
@@ -138,8 +154,14 @@ public class CanvasPlot extends Canvas {
 			factor /= index - 1 < 0 ? 10 : 1;
 			index = (index + 2) % 3;
 		}
-		double[] ret = { choices[index] * factor, factor };
-		return ret;
+		return choices[index] * factor;
+	}
+	private String formatToDecimal(double value) {
+		double positiveValue = Math.abs(value);
+		int decimalAmount = (int) Math.abs(Math.log10(positiveValue - Math.round(positiveValue))) + 2;
+		if (decimalAmount < 1)
+			decimalAmount = 1;
+		return String.format("%." + decimalAmount + "f", value);
 	}
 	private double f(double x) {
 		return 1/x;
