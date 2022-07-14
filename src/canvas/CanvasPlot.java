@@ -11,14 +11,16 @@ public class CanvasPlot extends Canvas {
 	private double scaleX, scaleY; // pixels per unit
 	static final int DEFAULT_SCALE = 40;
 
-	public CanvasPlot(int width, int height) {
-		setBackground(Color.white);
-		setSize(width, height);
+	public CanvasPlot() {
 		// center is in middle of canvas by default
-		centerX = width / 2;
-		centerY = height / 2;
 		scaleX = DEFAULT_SCALE;
 		scaleY = DEFAULT_SCALE;
+	}
+	public void size(int width, int height) {
+		setSize(width, height);
+		centerX = width / 2;
+		centerY = height / 2;
+		super.repaint();
 	}
 	/**
 	 * Scales the coordinate system by the provided factors.
@@ -34,7 +36,7 @@ public class CanvasPlot extends Canvas {
 //		scaleX = factorX != 0 ? scaleX * factorX : scaleX;
 		scaleY *= factorY != 0 ? factorY : 1;
 //		scaleY = factorY != 0 ? scaleY * factorY : scaleY;
-		invalidate();
+		super.repaint();
 	}
 	/**
 	 * Sets the internal scale factors to the default value.
@@ -43,7 +45,7 @@ public class CanvasPlot extends Canvas {
 	public void resetScale() {
 		scaleX = DEFAULT_SCALE;
 		scaleY = DEFAULT_SCALE;
-		invalidate();
+		super.repaint();
 	}
 	/**
 	 * Offset the coordinate system center by a provided amount of line Spacings.
@@ -52,9 +54,9 @@ public class CanvasPlot extends Canvas {
 	 * @param offsetY
 	 */
 	public void offset(int offsetX, int offsetY) {
-		centerX += offsetX * scaleX * determineLineSpacing(getWidth() / (toXValue(getWidth()) - toXValue(0)));
-		centerY += -offsetY * scaleY * determineLineSpacing(getHeight() / (toYValue(0) - toYValue(getHeight())));
-		invalidate();
+//		centerX += offsetX * scaleX * determineLineSpacing(getWidth() / (toXValue(getWidth()) - toXValue(0)));
+//		centerY += -offsetY * scaleY * determineLineSpacing(getHeight() / (toYValue(0) - toYValue(getHeight())));
+		super.repaint();
 	}
 	/**
 	 * Places the coordinate system center in the middle of the Canvas.
@@ -63,10 +65,11 @@ public class CanvasPlot extends Canvas {
 	public void resetOffset() {
 		centerX = getWidth() / 2;
 		centerY = getHeight() / 2;
-		invalidate();
+		super.repaint();
 	}
 	
 	public void paint(Graphics g) {
+		super.paint(g);
 		int w = getWidth();
 		int h = getHeight();
 		
@@ -74,19 +77,28 @@ public class CanvasPlot extends Canvas {
 		g.setColor(Color.lightGray);
 		double minX = toXValue(0);
 		double maxX = toXValue(w);
-		double lineSpaceX = determineLineSpacing(w / (maxX - minX));
-		for (double x = lineSpaceX; x < maxX; x += lineSpaceX)
-			g.drawLine(toXCoord(x), 0, toXCoord(x), h);
-		for (double x = -lineSpaceX; x > minX; x -= lineSpaceX)
-			g.drawLine(toXCoord(x), 0, toXCoord(x), h);
-		
-		double minY = toYValue(h);
-		double maxY = toYValue(0);
-		double lineSpaceY = determineLineSpacing(h / (maxY - minY));
-		for (double y = lineSpaceY; y < maxY; y += lineSpaceY)
-			g.drawLine(0, toYCoord(y), w, toYCoord(y));
-		for (double y = -lineSpaceY; y > minY; y -= lineSpaceY)
-			g.drawLine(0, toYCoord(y), w, toYCoord(y));
+		int yTextCoord = centerY - 10;
+		double[] lsX = determineLineSpacing(w / (maxX - minX));
+		double lineSpaceX = lsX[0];
+		double lineSpaceFactorX = lsX[1];
+		for (double x = lineSpaceX; x < maxX; x += lineSpaceX) {
+			int xCoord = toXCoord(x);
+			System.out.println("raw: " + x / lineSpaceFactorX + " round: " + Math.round(x / lineSpaceFactorX) + " back: " + Math.round(x / lineSpaceFactorX) * lineSpaceFactorX);
+			g.drawLine(xCoord, 0, xCoord, h);
+			g.drawString(toString(Math.round(x / lineSpaceFactorX) * lineSpaceFactorX), xCoord, yTextCoord);
+		}
+		for (double x = -lineSpaceX; x > minX; x -= lineSpaceX) {
+			int xCoord = toXCoord(x);
+			g.drawLine(xCoord, 0, xCoord, h);
+			g.drawString(toString(x), xCoord, yTextCoord);
+		}
+//		double minY = toYValue(h);
+//		double maxY = toYValue(0);
+//		double lineSpaceY = determineLineSpacing(h / (maxY - minY));
+//		for (double y = lineSpaceY; y < maxY; y += lineSpaceY)
+//			g.drawLine(0, toYCoord(y), w, toYCoord(y));
+//		for (double y = -lineSpaceY; y > minY; y -= lineSpaceY)
+//			g.drawLine(0, toYCoord(y), w, toYCoord(y));
 		
 		// paint axies
 		g.setColor(Color.black);
@@ -112,9 +124,9 @@ public class CanvasPlot extends Canvas {
 	private int toYCoord(double value) { return (int) (centerY - value * scaleY); }
 	private double toXValue(int coord) { return ((double) (coord - centerX)) / scaleX; }
 	private double toYValue(int coord) { return ((double) -(coord - centerY)) / scaleY; }
-//	private String toString(int a) { return String.valueOf(a); }
+	private String toString(double a) { return String.valueOf(a); }
 	
-	private double determineLineSpacing(double pixelsPerUnit) {
+	private double[] determineLineSpacing(double pixelsPerUnit) {
 		double[] choices = {1, 2, 5};
 		int index = 0;
 		double factor = 1;
@@ -126,7 +138,8 @@ public class CanvasPlot extends Canvas {
 			factor /= index - 1 < 0 ? 10 : 1;
 			index = (index + 2) % 3;
 		}
-		return choices[index] * factor;
+		double[] ret = { choices[index] * factor, factor };
+		return ret;
 	}
 	private double f(double x) {
 		return 1/x;

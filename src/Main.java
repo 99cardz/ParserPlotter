@@ -10,5 +10,4 @@ public class Main {
 		Window window = new Window();
 		window.setVisible(true); 
 	}
-
 }
