@@ -9,7 +9,13 @@ import parser.syntaxtree.*;
 
 public class Parser {
 
-    public static List<Token> lex(final String string) throws SyntaxException {
+    /**
+     * Lexical analysis of a string.
+     * @param The string to be analyzed and split into tokens.
+     * @return a list of Tokens.
+     * @throws SyntaxException if invalid symbol is found.
+     */
+    private static List<Token> lex(final String string) throws SyntaxException {
         List<Token> tokens = new ArrayList<Token>();
 
         // The matcher for numbers
@@ -91,7 +97,9 @@ public class Parser {
     int tokenIndex = 0;
     Token nextToken = null;
 
-    // Get the next token from the list
+    /**
+     * Sets member variable 'token' to the next token in token list 'tokens'.
+     */
     private void scanToken() {
         try {
             nextToken = tokens.get(tokenIndex++);
@@ -101,6 +109,12 @@ public class Parser {
         }
     }
 
+    /**
+     * Build a syntax tree from the given expression.
+     * @param string - The expression to be parsed.
+     * @return The root of the syntax tree.
+     * @throws SyntaxException - if the expression is not syntactically correct.
+     */
     public SyntaxNode buildSyntaxTree(final String string) throws SyntaxException {
 
         tokens = lex(string);
@@ -118,6 +132,7 @@ public class Parser {
         return root;
     }
 
+    // expr production rule
     private SyntaxNode parseExpr() throws SyntaxException {
         if(nextToken == null)
             throw new SyntaxException("", -1, -1);
@@ -144,6 +159,7 @@ public class Parser {
         }
     }
 
+    // term production rule
     private SyntaxNode parseTerm() throws SyntaxException {
         if(nextToken == null)
             throw new SyntaxException("", -1, -1);
@@ -170,6 +186,7 @@ public class Parser {
         }
     }
 
+    // pow production rule
     private SyntaxNode parsePow() throws SyntaxException {
 
         if(nextToken == null)
@@ -192,6 +209,7 @@ public class Parser {
         }
     }
 
+    // fact production rule
     private SyntaxNode parseFact() throws SyntaxException {
 
         if(nextToken == null)

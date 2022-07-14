@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Scanner;
 
 public class ParserTest {
+    /**
+     * Prints the List of tokens.
+     * @param tokens
+     */
     private static void printTokenList(List<Token> tokens) {
         for(Token token : tokens) {
             System.out.println(token.getType().name() + " " + token.getString());
