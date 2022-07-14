@@ -6,16 +6,8 @@ import java.util.List;
 import java.util.Scanner;
 
 public class ParserTest {
-    /**
-     * Prints the List of tokens.
-     * @param tokens
-     */
-    private static void printTokenList(List<Token> tokens) {
-        for(Token token : tokens) {
-            System.out.println(token.getType().name() + " " + token.getString());
-        }
-    }
 
+    // Simple REPL to test the expression parser and evaluator
     public static void main(String[] args) {
         Parser parser = new Parser();
         SyntaxNode root;
@@ -26,7 +18,6 @@ public class ParserTest {
             String expr = input.nextLine();
 
             try {
-                // printTokenList(Parser.lex(expr));
                 root = parser.buildSyntaxTree(expr);
                 root.print();
                 System.out.println();
