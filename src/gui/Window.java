@@ -33,7 +33,7 @@ public class Window extends JFrame {
 	
 	private JPanel 			canvasPanel 		= new JPanel();
 	private CanvasPlot		canvas				= new CanvasPlot();
-	private JLabel			scaleLabel 			= new JLabel(("x: 1.000 y: 1.000"),  SwingConstants.CENTER);
+	private JLabel			scaleLabel 			= new JLabel((""),  SwingConstants.CENTER);
 	
 	private JPanel 			bottomPanel 		= new JPanel();
 	private double[]		currScale 			= {1., 1.};
@@ -41,7 +41,7 @@ public class Window extends JFrame {
 	private JButton 		xZoomInButton 		= new JButton("+");
 	private JButton 		yZoomOutButton 		= new JButton("-");
 	private JButton 		yZoomInButton 		= new JButton("+");
-	private JButton			resetButton 		= new JButton("R");
+	private JButton			resetButton 		= new JButton("Reset");
 	
 	public Window() {
 		
@@ -86,6 +86,7 @@ public class Window extends JFrame {
 				canvas.scale(.9, .9);
 			else if (e.getWheelRotation() > 0)
 				canvas.scale(1.1, 1.1);
+			scaleLabel.setText("x: " + canvas.toXValue(e.getX()) + " y: " + canvas.toYValue(e.getY()));
 		});
 		canvas.addMouseMotionListener(new MouseMotionListener() {
 			private int beforeX, beforeY;
@@ -96,9 +97,10 @@ public class Window extends JFrame {
 				beforeY = e.getY();
 			}
 			@Override
-			public void mouseMoved(MouseEvent e) { 
+			public void mouseMoved(MouseEvent e) {
 				beforeX = e.getX();
 				beforeY = e.getY();
+				scaleLabel.setText("x: " + canvas.toXValue(beforeX) + " y: " + canvas.toYValue(beforeY));
 			}
 		});
 		canvasPanel.add(scaleLabel, BorderLayout.SOUTH);
@@ -129,8 +131,6 @@ public class Window extends JFrame {
 		this.add(topPanel, BorderLayout.NORTH);
 		this.add(canvasPanel, BorderLayout.CENTER);
 		this.add(bottomPanel, BorderLayout.SOUTH);
-		
-		canvas.size(getWidth(), getWidth());
 	}
 	
 //	private void addToWindow(Component component, int gridx, int gridy, int gridwidth, int gridheight, int anchor, int fill, double weightx, double weighty) {
