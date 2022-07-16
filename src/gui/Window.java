@@ -4,14 +4,19 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import canvas.CanvasPlot;
+import parser.Parser;
+import parser.SyntaxException;
 
 public class Window extends JFrame {
+	
+	private ArrayList<Function> functions		= new ArrayList<Function>();
 	
 	// layout
 	GridBagLayout 			layout 				= new GridBagLayout();
@@ -32,7 +37,7 @@ public class Window extends JFrame {
 	private JLabel 			errorLabel 			= new JLabel("Enter a function.", SwingConstants.CENTER);
 	
 	private JPanel 			canvasPanel 		= new JPanel();
-	private CanvasPlot		canvas				= new CanvasPlot();
+	private CanvasPlot		canvas				= new CanvasPlot(functions);
 	private JLabel			scaleLabel 			= new JLabel((""),  SwingConstants.CENTER);
 	
 	private JPanel 			bottomPanel 		= new JPanel();
@@ -44,6 +49,17 @@ public class Window extends JFrame {
 	private JButton			resetButton 		= new JButton("Reset");
 	
 	public Window() {
+		
+		// just for testing
+		Parser p = new Parser();
+		try {
+			functions.add(new Function("cos(x)*x", p.buildSyntaxTree("cos(x)*x")));
+			functions.add(new Function("1/x", p.buildSyntaxTree("1/x")));
+			functions.add(new Function("x^3-4*x", p.buildSyntaxTree("x^3-4*x")));
+		} catch (SyntaxException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 		// general stuff
 		this.setTitle(title);

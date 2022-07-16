@@ -2,6 +2,9 @@ package canvas;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.ArrayList;
+
+import gui.Function;
 
 public class CanvasPlot extends Canvas {
 	
@@ -24,8 +27,12 @@ public class CanvasPlot extends Canvas {
 	// formats to draw values
 	private String valueFormatterX, valueFormatterY;
 	static final String DEFAULT_VALUEFORMATTER = "%.0f";
+	
+	// function list reference
+	ArrayList<Function> functions;
 
-	public CanvasPlot() {
+	public CanvasPlot(ArrayList<Function> f) {
+		functions = f;
 		resetScale();
 		resetOffset();
 	}
@@ -168,18 +175,23 @@ public class CanvasPlot extends Canvas {
 		thickLine(g, centerX, 0, centerX, h); // y
 		
 		// paint graph
-		g.setColor(Color.blue);
-		double prevYValue = f(toXValue(0));
-		int prevYCoord = toYCoord(prevYValue);
-		for (int xCoord = 1; xCoord < w; xCoord++) {
-			double currYValue = f(toXValue(xCoord));
-			int currYCoord = toYCoord(currYValue);
-			// ignore if Values are NaN or Infinity, or if distance of Coords is grater than the height 
-			if (Double.isFinite(prevYValue) && Double.isFinite(currYValue) && Math.abs(prevYCoord - currYCoord) < h)
-				thickLine(g, xCoord-1, prevYCoord, xCoord, currYCoord);
-			prevYValue = currYValue;
-			prevYCoord = currYCoord;
-		}
+		double[] xValues = new double[w];
+		for (int xCoord = 0; xCoord < w; xCoord++)
+			xValues[xCoord] = toXValue(xCoord);
+		
+		for (Function f : functions) {
+			g.setColor(f.getColor());
+			double prevYValue = f.eval(xValues[0]);
+			int prevYCoord = toYCoord(prevYValue);
+			for (int xCoord = 1; xCoord < w; xCoord++) {
+				double currYValue = f.eval(xValues[xCoord]);
+				int currYCoord = toYCoord(currYValue);
+				if (Double.isFinite(prevYValue) && Double.isFinite(currYValue) && Math.abs(prevYCoord - currYCoord) < h)
+					thickLine(g, xCoord-1, prevYCoord, xCoord, currYCoord);
+				prevYValue = currYValue;
+				prevYCoord = currYCoord;
+			}
+		}	
 	}
 	// Methods to convert Values to Coordinates back and fourth.
 	public int toXCoord(double value) { return (int) (centerX + value * scaleX); }

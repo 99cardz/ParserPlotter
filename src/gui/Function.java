@@ -40,6 +40,10 @@ public class Function {
         this.color = getNextColor();
         this.UUID = generateUUID();
     }
+    
+    public double eval(double x) {
+    	return treeRoot.eval(x);
+    }
 
     final private long UUID;
     final private String expressionString;
