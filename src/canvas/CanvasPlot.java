@@ -71,7 +71,7 @@ public class CanvasPlot extends Canvas {
 		lineSpacingY = choices[iY] * lineSpacingFactorY;
 		valueFormatterY = "%." + decimalAmount(lineSpacingFactorY) + "f";
 		
-		super.repaint();
+		repaint();
 	}
 	/**
 	 * Sets the internal scale factors to the default value.
@@ -86,7 +86,7 @@ public class CanvasPlot extends Canvas {
 		lineSpacingFactorY = DEFAULT_LINESPACINGFACTOR;
 		valueFormatterX = DEFAULT_VALUEFORMATTER;
 		valueFormatterY = DEFAULT_VALUEFORMATTER;
-		super.repaint();
+		repaint();
 	}
 	/**
 	 * Offset the coordinate system center by a provided amount of line Spacings.
@@ -97,7 +97,7 @@ public class CanvasPlot extends Canvas {
 	public void offset(int offsetX, int offsetY) {
 		centerOffsetX += offsetX * scaleX * lineSpacingX;
 		centerOffsetY += -offsetY * scaleY * lineSpacingY;
-		super.repaint();
+		repaint();
 	}
 	/**
 	 * Offset the coordinate system center by a provided amount of pixels.
@@ -108,7 +108,7 @@ public class CanvasPlot extends Canvas {
 	public void offsetPx(int x, int y) {
 		centerOffsetX += x;
 		centerOffsetY += y;
-		super.repaint();
+		repaint();
 	}
 	/**
 	 * Places the coordinate system center in the middle of the Canvas.
@@ -117,11 +117,10 @@ public class CanvasPlot extends Canvas {
 	public void resetOffset() {
 		centerOffsetX = 0;
 		centerOffsetY = 0;
-		super.repaint();
+		repaint();
 	}
 	
 	public void paint(Graphics g) {
-		super.paint(g);
 		int w = getWidth();
 		int h = getHeight();
 		centerX = w / 2 + centerOffsetX;
@@ -189,7 +188,7 @@ public class CanvasPlot extends Canvas {
 	public double toYValue(int coord) { return ((double) -(coord - centerY)) / scaleY; }
 
 	private double f(double x) {
-		return x*x*x - 10*x;
+		return Math.sin(x) * x;
 	}
 	
 	private int decimalAmount(double factor) {
