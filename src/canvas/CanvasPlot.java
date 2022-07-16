@@ -7,18 +7,27 @@ public class CanvasPlot extends Canvas {
 	
 //	final Parser parser = new Parser();
 	
+	// location of coordinate center on canvas
+	private int centerOffsetX, centerOffsetY;
 	private int centerX, centerY;
+	
+	// pixels per unit
 	private double scaleX, scaleY; // pixels per unit
 	static final int DEFAULT_SCALE = 40;
+	
+	// value indicator line spacing values and factor
+	private double lineSpacingX, lineSpacingY;
+	static final double DEFAULT_LINESPACING = 1;
+	private double lineSpacingFactorX, lineSpacingFactorY;
+	static final double DEFAULT_LINESPACINGFACTOR = 1;
+	
+	// formats to draw values
+	private String valueFormatterX, valueFormatterY;
+	static final String DEFAULT_VALUEFORMATTER = "%.0f";
 
-	public CanvasPlot(int width, int height) {
-		setBackground(Color.white);
-		setSize(width, height);
-		// center is in middle of canvas by default
-		centerX = width / 2;
-		centerY = height / 2;
-		scaleX = DEFAULT_SCALE;
-		scaleY = DEFAULT_SCALE;
+	public CanvasPlot() {
+		resetScale();
+		resetOffset();
 	}
 	/**
 	 * Scales the coordinate system by the provided factors.
@@ -31,10 +40,38 @@ public class CanvasPlot extends Canvas {
 	 */
 	public void scale(double factorX, double factorY) {
 		scaleX *= factorX != 0 ? factorX : 1;
-//		scaleX = factorX != 0 ? scaleX * factorX : scaleX;
 		scaleY *= factorY != 0 ? factorY : 1;
-//		scaleY = factorY != 0 ? scaleY * factorY : scaleY;
-		invalidate();
+		
+		double pixelsPerUnitX = getWidth() / (toXValue(getWidth()) - toXValue(0));
+		double pixelsPerUnitY = getHeight() / (toYValue(0) - toYValue(getHeight()));
+		
+		// recalculate lineSpacingFactor and lineSpacing of both x and y
+		final double[] choices = {1, 2, 5};
+		int iX = 0;
+		while (pixelsPerUnitX * choices[iX] * lineSpacingFactorX < 40) {
+			lineSpacingFactorX *= iX + 1 > 2 ? 10 : 1;
+			iX = (iX + 1) % 3;
+		}
+		while (pixelsPerUnitX * choices[iX] * lineSpacingFactorX > 100) {
+			lineSpacingFactorX /= iX - 1 < 0 ? 10 : 1;
+			iX = (iX + 2) % 3;
+		}
+		lineSpacingX = choices[iX] * lineSpacingFactorX;
+		valueFormatterX = "%." + decimalAmount(lineSpacingFactorX) + "f";
+		
+		int iY = 0;
+		while (pixelsPerUnitY * choices[iY] * lineSpacingFactorY < 40) {
+			lineSpacingFactorY *= iY + 1 > 2 ? 10 : 1;
+			iY = (iY + 1) % 3;
+		}
+		while (pixelsPerUnitY * choices[iY] * lineSpacingFactorY > 100) {
+			lineSpacingFactorY /= iY - 1 < 0 ? 10 : 1;
+			iY = (iY + 2) % 3;
+		}
+		lineSpacingY = choices[iY] * lineSpacingFactorY;
+		valueFormatterY = "%." + decimalAmount(lineSpacingFactorY) + "f";
+		
+		repaint();
 	}
 	/**
 	 * Sets the internal scale factors to the default value.
@@ -43,7 +80,13 @@ public class CanvasPlot extends Canvas {
 	public void resetScale() {
 		scaleX = DEFAULT_SCALE;
 		scaleY = DEFAULT_SCALE;
-		invalidate();
+		lineSpacingX = DEFAULT_LINESPACING;
+		lineSpacingY = DEFAULT_LINESPACING;
+		lineSpacingFactorX = DEFAULT_LINESPACINGFACTOR;
+		lineSpacingFactorY = DEFAULT_LINESPACINGFACTOR;
+		valueFormatterX = DEFAULT_VALUEFORMATTER;
+		valueFormatterY = DEFAULT_VALUEFORMATTER;
+		repaint();
 	}
 	/**
 	 * Offset the coordinate system center by a provided amount of line Spacings.
@@ -52,41 +95,72 @@ public class CanvasPlot extends Canvas {
 	 * @param offsetY
 	 */
 	public void offset(int offsetX, int offsetY) {
-		centerX += offsetX * scaleX * determineLineSpacing(getWidth() / (toXValue(getWidth()) - toXValue(0)));
-		centerY += -offsetY * scaleY * determineLineSpacing(getHeight() / (toYValue(0) - toYValue(getHeight())));
-		invalidate();
+		centerOffsetX += offsetX * scaleX * lineSpacingX;
+		centerOffsetY += -offsetY * scaleY * lineSpacingY;
+		repaint();
+	}
+	/**
+	 * Offset the coordinate system center by a provided amount of pixels.
+	 * The Canvas will be redrawn!
+	 * @param x
+	 * @param y
+	 */
+	public void offsetPx(int x, int y) {
+		centerOffsetX += x;
+		centerOffsetY += y;
+		repaint();
 	}
 	/**
 	 * Places the coordinate system center in the middle of the Canvas.
 	 * The Canvas will be redrawn!
 	 */
 	public void resetOffset() {
-		centerX = getWidth() / 2;
-		centerY = getHeight() / 2;
-		invalidate();
+		centerOffsetX = 0;
+		centerOffsetY = 0;
+		repaint();
 	}
 	
 	public void paint(Graphics g) {
 		int w = getWidth();
 		int h = getHeight();
+		centerX = w / 2 + centerOffsetX;
+		centerY = h / 2 + centerOffsetY;
 		
 		// paint value indicator lines
-		g.setColor(Color.lightGray);
 		double minX = toXValue(0);
 		double maxX = toXValue(w);
-		double lineSpaceX = determineLineSpacing(w / (maxX - minX));
-		for (double x = lineSpaceX; x < maxX; x += lineSpaceX)
-			g.drawLine(toXCoord(x), 0, toXCoord(x), h);
-		for (double x = -lineSpaceX; x > minX; x -= lineSpaceX)
-			g.drawLine(toXCoord(x), 0, toXCoord(x), h);
-		
+		int yTextCoord = centerY < 0 || centerY > h ? h - 10 : centerY - 10;
+		for (double x = lineSpacingX; x < maxX; x += lineSpacingX) {
+			int xCoord = toXCoord(x);
+			g.setColor(Color.lightGray);
+			g.drawLine(xCoord, 0, xCoord, h);
+			g.setColor(Color.black);
+			g.drawString(String.format(valueFormatterX, x), xCoord, yTextCoord);
+		}
+		for (double x = -lineSpacingX; x > minX; x -= lineSpacingX) {
+			int xCoord = toXCoord(x);
+			g.setColor(Color.lightGray);
+			g.drawLine(xCoord, 0, xCoord, h);
+			g.setColor(Color.black);
+			g.drawString(String.format(valueFormatterX, x), xCoord, yTextCoord);
+		}
 		double minY = toYValue(h);
 		double maxY = toYValue(0);
-		double lineSpaceY = determineLineSpacing(h / (maxY - minY));
-		for (double y = lineSpaceY; y < maxY; y += lineSpaceY)
-			g.drawLine(0, toYCoord(y), w, toYCoord(y));
-		for (double y = -lineSpaceY; y > minY; y -= lineSpaceY)
-			g.drawLine(0, toYCoord(y), w, toYCoord(y));
+		int xTextCoord = centerX < 0 || centerX > w ? 10 : centerX + 10;
+		for (double y = lineSpacingY; y < maxY; y += lineSpacingY) {
+			int yCoord = toYCoord(y);
+			g.setColor(Color.lightGray);
+			g.drawLine(0, yCoord, w, yCoord);
+			g.setColor(Color.black);
+			g.drawString(String.format(valueFormatterY, y), xTextCoord, yCoord);
+		}
+		for (double y = -lineSpacingY; y > minY; y -= lineSpacingY) {
+			int yCoord = toYCoord(y);
+			g.setColor(Color.lightGray);
+			g.drawLine(0, yCoord, w, yCoord);
+			g.setColor(Color.black);
+			g.drawString(String.format(valueFormatterY, y), xTextCoord, yCoord);
+		}
 		
 		// paint axies
 		g.setColor(Color.black);
@@ -108,28 +182,18 @@ public class CanvasPlot extends Canvas {
 		}
 	}
 	// Methods to convert Values to Coordinates back and fourth.
-	private int toXCoord(double value) { return (int) (centerX + value * scaleX); }
-	private int toYCoord(double value) { return (int) (centerY - value * scaleY); }
-	private double toXValue(int coord) { return ((double) (coord - centerX)) / scaleX; }
-	private double toYValue(int coord) { return ((double) -(coord - centerY)) / scaleY; }
-//	private String toString(int a) { return String.valueOf(a); }
-	
-	private double determineLineSpacing(double pixelsPerUnit) {
-		double[] choices = {1, 2, 5};
-		int index = 0;
-		double factor = 1;
-		while (pixelsPerUnit * choices[index] * factor < 40) {
-			factor *= index + 1 > 2 ? 10 : 1;
-			index = (index + 1) % 3;
-		}
-		while (pixelsPerUnit * choices[index] * factor > 100) {
-			factor /= index - 1 < 0 ? 10 : 1;
-			index = (index + 2) % 3;
-		}
-		return choices[index] * factor;
-	}
+	public int toXCoord(double value) { return (int) (centerX + value * scaleX); }
+	public int toYCoord(double value) { return (int) (centerY - value * scaleY); }
+	public double toXValue(int coord) { return ((double) (coord - centerX)) / scaleX; }
+	public double toYValue(int coord) { return ((double) -(coord - centerY)) / scaleY; }
+
 	private double f(double x) {
-		return 1/x;
+		return Math.sin(x) * x;
+	}
+	
+	private int decimalAmount(double factor) {
+		int decimals = -(int) Math.ceil((Math.log10(lineSpacingFactorX)));
+		return decimals < 0 ? 0 : decimals;
 	}
 	
 	private void thickLine(Graphics g, int x1, int y1, int x2, int y2) {

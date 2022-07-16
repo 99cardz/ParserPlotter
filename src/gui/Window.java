@@ -2,6 +2,8 @@ package gui;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -17,7 +19,7 @@ public class Window extends JFrame {
 	Insets 					insets 				= new Insets(5, 5, 5, 5);
 	
 	// beauty stuff
-	private final String	title 				= "Funky";
+	private final String	title 				= "Funktionsplotter";
 	private final Color 	BG_COLOR 			= Color.orange;
 	private Font 			mathFont 			= new Font("Arial", Font.BOLD, 30);
 	private Font 			genericFont 		= new Font("Verdana", Font.PLAIN, 30);
@@ -30,8 +32,8 @@ public class Window extends JFrame {
 	private JLabel 			errorLabel 			= new JLabel("Enter a function.", SwingConstants.CENTER);
 	
 	private JPanel 			canvasPanel 		= new JPanel();
-	private CanvasPlot		canvas;
-	private JLabel			scaleLabel 			= new JLabel(("x: 1.000 y: 1.000"),  SwingConstants.CENTER);
+	private CanvasPlot		canvas				= new CanvasPlot();
+	private JLabel			scaleLabel 			= new JLabel((""),  SwingConstants.CENTER);
 	
 	private JPanel 			bottomPanel 		= new JPanel();
 	private double[]		currScale 			= {1., 1.};
@@ -39,7 +41,7 @@ public class Window extends JFrame {
 	private JButton 		xZoomInButton 		= new JButton("+");
 	private JButton 		yZoomOutButton 		= new JButton("-");
 	private JButton 		yZoomInButton 		= new JButton("+");
-	private JButton			resetButton 		= new JButton("R");
+	private JButton			resetButton 		= new JButton("Reset");
 	
 	public Window() {
 		
@@ -76,14 +78,30 @@ public class Window extends JFrame {
 		this.addComponent(topPanel, errorLabel, 0, 1, 2, 1, GridBagConstraints.CENTER, GridBagConstraints.REMAINDER, .5, .5);
 		
 		// canvasPanel setup
-		canvas = new CanvasPlot(canvasPanel.getWidth(), canvasPanel.getHeight());
+		
 		canvasPanel.setLayout(new BorderLayout());
 		canvasPanel.add(canvas);
 		canvasPanel.addMouseWheelListener(e -> {
 			if(e.getWheelRotation() < 0)
-				setCanvasScale(.5, .5);
+				canvas.scale(.9, .9);
 			else if (e.getWheelRotation() > 0)
-				setCanvasScale(2, 2);
+				canvas.scale(1.1, 1.1);
+			scaleLabel.setText("x: " + canvas.toXValue(e.getX()) + " y: " + canvas.toYValue(e.getY()));
+		});
+		canvas.addMouseMotionListener(new MouseMotionListener() {
+			private int beforeX, beforeY;
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				canvas.offsetPx(e.getX() - beforeX, e.getY() - beforeY);
+				beforeX = e.getX();
+				beforeY = e.getY();
+			}
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				beforeX = e.getX();
+				beforeY = e.getY();
+				scaleLabel.setText("x: " + canvas.toXValue(beforeX) + " y: " + canvas.toYValue(beforeY));
+			}
 		});
 		canvasPanel.add(scaleLabel, BorderLayout.SOUTH);
 		canvasPanel.setBackground(Color.white);
@@ -97,7 +115,7 @@ public class Window extends JFrame {
 			buttons[i].setMinimumSize(new Dimension(50,50));
 			buttons[i].setMaximumSize(new Dimension(50,50));
 			int j = i;
-			buttons[i].addActionListener(e -> setCanvasScale(scalars[j][0], scalars[j][1]));
+			buttons[i].addActionListener(e -> canvas.scale(scalars[j][0], scalars[j][1]));
 		}
 
 		bottomPanel.add(new JLabel("X:", SwingConstants.CENTER));
@@ -123,22 +141,6 @@ public class Window extends JFrame {
 	private void addComponent(Container outer, Component inner, int gridx, int gridy, int gridwidth, int gridheight, int anchor, int fill, double weightx, double weighty) {
 		GridBagConstraints gbc = new GridBagConstraints(gridx, gridy, gridwidth, gridheight, weightx, weighty, anchor, fill, insets, 0, 0);
 		outer.add(inner, gbc);
-	}
-
-	private void setCanvasScale(double x, double y) {
-		
-		if(x == 0 && y == 0) {
-			currScale[0] = 1.0;
-			currScale[1] = 1.0;
-		} 
-		else {
-			currScale[0] *= x;
-			currScale[1] *= y;
-		}
-		// noch zu implementieren
-		// canvas.setScale(x, y);
-		scaleLabel.setText(String.format("X: %.3f Y: %.3f", currScale[0], currScale[1]));
-		this.repaint();
 	}
 	
 }
