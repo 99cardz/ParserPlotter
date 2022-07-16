@@ -21,16 +21,13 @@ public class CanvasPlot extends Canvas {
 	private double lineSpacingFactorX, lineSpacingFactorY;
 	static final double DEFAULT_LINESPACINGFACTOR = 1;
 	
-	// round value indicator numbers to these
-	private int decimalsX = 0, decimalsY = 0;
+	// formats to draw values
+	private String valueFormatterX, valueFormatterY;
+	static final String DEFAULT_VALUEFORMATTER = "%.0f";
 
 	public CanvasPlot() {
-		scaleX = DEFAULT_SCALE;
-		scaleY = DEFAULT_SCALE;
-		lineSpacingX = DEFAULT_LINESPACING;
-		lineSpacingY = DEFAULT_LINESPACING;
-		lineSpacingFactorX = DEFAULT_LINESPACINGFACTOR;
-		lineSpacingFactorY = DEFAULT_LINESPACINGFACTOR;
+		resetScale();
+		resetOffset();
 	}
 	/**
 	 * Scales the coordinate system by the provided factors.
@@ -60,8 +57,7 @@ public class CanvasPlot extends Canvas {
 			iX = (iX + 2) % 3;
 		}
 		lineSpacingX = choices[iX] * lineSpacingFactorX;
-		decimalsX = -(int) Math.ceil((Math.log10(lineSpacingFactorX)));
-		if (decimalsX < 0) decimalsX = 0;
+		valueFormatterX = "%." + decimalAmount(lineSpacingFactorX) + "f";
 		
 		int iY = 0;
 		while (pixelsPerUnitY * choices[iY] * lineSpacingFactorY < 40) {
@@ -73,8 +69,7 @@ public class CanvasPlot extends Canvas {
 			iY = (iY + 2) % 3;
 		}
 		lineSpacingY = choices[iY] * lineSpacingFactorY;
-		decimalsY = -(int) Math.ceil((Math.log10(lineSpacingFactorY)));
-		if (decimalsY < 0) decimalsY = 0;
+		valueFormatterY = "%." + decimalAmount(lineSpacingFactorY) + "f";
 		
 		super.repaint();
 	}
@@ -89,6 +84,8 @@ public class CanvasPlot extends Canvas {
 		lineSpacingY = DEFAULT_LINESPACING;
 		lineSpacingFactorX = DEFAULT_LINESPACINGFACTOR;
 		lineSpacingFactorY = DEFAULT_LINESPACINGFACTOR;
+		valueFormatterX = DEFAULT_VALUEFORMATTER;
+		valueFormatterY = DEFAULT_VALUEFORMATTER;
 		super.repaint();
 	}
 	/**
@@ -139,14 +136,14 @@ public class CanvasPlot extends Canvas {
 			g.setColor(Color.lightGray);
 			g.drawLine(xCoord, 0, xCoord, h);
 			g.setColor(Color.black);
-			g.drawString(formatToDecimal(x, decimalsX), xCoord, yTextCoord);
+			g.drawString(String.format(valueFormatterX, x), xCoord, yTextCoord);
 		}
 		for (double x = -lineSpacingX; x > minX; x -= lineSpacingX) {
 			int xCoord = toXCoord(x);
 			g.setColor(Color.lightGray);
 			g.drawLine(xCoord, 0, xCoord, h);
 			g.setColor(Color.black);
-			g.drawString(formatToDecimal(x, decimalsX), xCoord, yTextCoord);
+			g.drawString(String.format(valueFormatterX, x), xCoord, yTextCoord);
 		}
 		double minY = toYValue(h);
 		double maxY = toYValue(0);
@@ -156,14 +153,14 @@ public class CanvasPlot extends Canvas {
 			g.setColor(Color.lightGray);
 			g.drawLine(0, yCoord, w, yCoord);
 			g.setColor(Color.black);
-			g.drawString(formatToDecimal(y, decimalsY), xTextCoord, yCoord);
+			g.drawString(String.format(valueFormatterY, y), xTextCoord, yCoord);
 		}
 		for (double y = -lineSpacingY; y > minY; y -= lineSpacingY) {
 			int yCoord = toYCoord(y);
 			g.setColor(Color.lightGray);
 			g.drawLine(0, yCoord, w, yCoord);
 			g.setColor(Color.black);
-			g.drawString(formatToDecimal(y, decimalsY), xTextCoord, yCoord);
+			g.drawString(String.format(valueFormatterY, y), xTextCoord, yCoord);
 		}
 		
 		// paint axies
@@ -191,11 +188,13 @@ public class CanvasPlot extends Canvas {
 	public double toXValue(int coord) { return ((double) (coord - centerX)) / scaleX; }
 	public double toYValue(int coord) { return ((double) -(coord - centerY)) / scaleY; }
 
-	private String formatToDecimal(double value, int decimals) {
-		return String.format("%." + decimals + "f", value);
-	}
 	private double f(double x) {
 		return x*x*x - 10*x;
+	}
+	
+	private int decimalAmount(double factor) {
+		int decimals = -(int) Math.ceil((Math.log10(lineSpacingFactorX)));
+		return decimals < 0 ? 0 : decimals;
 	}
 	
 	private void thickLine(Graphics g, int x1, int y1, int x2, int y2) {
