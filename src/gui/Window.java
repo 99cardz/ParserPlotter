@@ -38,7 +38,7 @@ public class Window extends JFrame {
 	
 	private JPanel 			canvasPanel 		= new JPanel();
 	private CanvasPlot		canvas				= new CanvasPlot(functions);
-	private JLabel			scaleLabel 			= new JLabel((""),  SwingConstants.CENTER);
+	private JLabel			valueLable 			= new JLabel((""),  SwingConstants.CENTER);
 	
 	private JPanel 			bottomPanel 		= new JPanel();
 	private double[]		currScale 			= {1., 1.};
@@ -56,6 +56,7 @@ public class Window extends JFrame {
 			functions.add(new Function("cos(x)*x", p.buildSyntaxTree("cos(x)*x")));
 			functions.add(new Function("1/x", p.buildSyntaxTree("1/x")));
 			functions.add(new Function("x^3-4*x", p.buildSyntaxTree("x^3-4*x")));
+			functions.add(new Function("tan(x)", p.buildSyntaxTree("tan(x)")));
 		} catch (SyntaxException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -102,7 +103,7 @@ public class Window extends JFrame {
 				canvas.scale(.9, .9);
 			else if (e.getWheelRotation() > 0)
 				canvas.scale(1.1, 1.1);
-			scaleLabel.setText("x: " + canvas.toXValue(e.getX()) + " y: " + canvas.toYValue(e.getY()));
+			valueLable.setText("x: " + canvas.toXValue(e.getX()) + " y: " + canvas.toYValue(e.getY()));
 		});
 		canvas.addMouseMotionListener(new MouseMotionListener() {
 			private int beforeX, beforeY;
@@ -116,10 +117,10 @@ public class Window extends JFrame {
 			public void mouseMoved(MouseEvent e) {
 				beforeX = e.getX();
 				beforeY = e.getY();
-				scaleLabel.setText("x: " + canvas.toXValue(beforeX) + " y: " + canvas.toYValue(beforeY));
+				valueLable.setText("x: " + canvas.toXValue(beforeX) + " y: " + canvas.toYValue(beforeY));
 			}
 		});
-		canvasPanel.add(scaleLabel, BorderLayout.SOUTH);
+		canvasPanel.add(valueLable, BorderLayout.SOUTH);
 		canvasPanel.setBackground(Color.white);
 		
 		// bottomPanel setup
@@ -133,6 +134,7 @@ public class Window extends JFrame {
 			int j = i;
 			buttons[i].addActionListener(e -> canvas.scale(scalars[j][0], scalars[j][1]));
 		}
+		resetButton.addActionListener(e -> canvas.resetOffset());
 
 		bottomPanel.add(new JLabel("X:", SwingConstants.CENTER));
 		bottomPanel.add(xZoomInButton);

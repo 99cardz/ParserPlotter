@@ -20,34 +20,31 @@ public class CanvasPlot extends Canvas {
 	
 	// value indicator line spacing values and factor
 	private double lineSpacingX, lineSpacingY;
-	static final double DEFAULT_LINESPACING = 1;
-	private double lineSpacingFactorX, lineSpacingFactorY;
-	static final double DEFAULT_LINESPACINGFACTOR = 1;
+	private double lineSpacingFactorX = 1, lineSpacingFactorY = 1;
 	
 	// formats to draw values
 	private String valueFormatterX, valueFormatterY;
-	static final String DEFAULT_VALUEFORMATTER = "%.0f";
 	
 	// function list reference
 	ArrayList<Function> functions;
 
 	public CanvasPlot(ArrayList<Function> f) {
 		functions = f;
-		resetScale();
+		scale(0,0); // calculate linespacing and linespacingfactors
 		resetOffset();
 	}
 	/**
 	 * Scales the coordinate system by the provided factors.
 	 * 'Zooming in' would be a factor above 1 and 
 	 * 'Zooming out' would be a factor below 1.
-	 * A factor of 0 will get ignored.
+	 * A factor of 0 will will reset the scale to the default value.
 	 * The Canvas will be redrawn!
 	 * @param factorX
 	 * @param factorY
 	 */
 	public void scale(double factorX, double factorY) {
-		scaleX *= factorX != 0 ? factorX : 1;
-		scaleY *= factorY != 0 ? factorY : 1;
+		scaleX = factorX == 0 ? DEFAULT_SCALE : scaleX * factorX;
+		scaleY = factorY == 0 ? DEFAULT_SCALE : scaleY * factorY;
 		
 		double pixelsPerUnitX = getWidth() / (toXValue(getWidth()) - toXValue(0));
 		double pixelsPerUnitY = getHeight() / (toYValue(0) - toYValue(getHeight()));
@@ -78,21 +75,6 @@ public class CanvasPlot extends Canvas {
 		lineSpacingY = choices[iY] * lineSpacingFactorY;
 		valueFormatterY = "%." + decimalAmount(lineSpacingFactorY) + "f";
 		
-		repaint();
-	}
-	/**
-	 * Sets the internal scale factors to the default value.
-	 * The Canvas will be redrawn!
-	 */
-	public void resetScale() {
-		scaleX = DEFAULT_SCALE;
-		scaleY = DEFAULT_SCALE;
-		lineSpacingX = DEFAULT_LINESPACING;
-		lineSpacingY = DEFAULT_LINESPACING;
-		lineSpacingFactorX = DEFAULT_LINESPACINGFACTOR;
-		lineSpacingFactorY = DEFAULT_LINESPACINGFACTOR;
-		valueFormatterX = DEFAULT_VALUEFORMATTER;
-		valueFormatterY = DEFAULT_VALUEFORMATTER;
 		repaint();
 	}
 	/**
@@ -198,10 +180,6 @@ public class CanvasPlot extends Canvas {
 	public int toYCoord(double value) { return (int) (centerY - value * scaleY); }
 	public double toXValue(int coord) { return ((double) (coord - centerX)) / scaleX; }
 	public double toYValue(int coord) { return ((double) -(coord - centerY)) / scaleY; }
-
-	private double f(double x) {
-		return Math.sin(x) * x;
-	}
 	
 	private int decimalAmount(double factor) {
 		int decimals = -(int) Math.ceil((Math.log10(lineSpacingFactorX)));
