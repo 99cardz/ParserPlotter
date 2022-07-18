@@ -7,8 +7,16 @@ import java.util.List;
 public class Function {
     // ! If more than eight functions are in use, expect undefined behaviour.
     private static final Color[] colors =
-            { Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.CYAN,
-                    Color.ORANGE, Color.MAGENTA, Color.LIGHT_GRAY };
+    	{
+    			new Color(39, 88, 216), // blue
+    			new Color(150, 30, 225), // purple
+    			new Color(225, 52, 30), // red
+    			new Color(106, 225, 30), // green
+    			new Color(223, 205, 32), // yellow
+    			new Color(223, 109, 32), // orange
+    			new Color(36, 206, 219), // cyan
+    			new Color(119, 136, 119) // gray
+    	};
     private static int colorIndex = 0;
 
     private static long  uuidCounter = 1L;
@@ -39,6 +47,10 @@ public class Function {
         this.treeRoot = root;
         this.color = getNextColor();
         this.UUID = generateUUID();
+    }
+    
+    public double eval(double x) {
+    	return treeRoot.eval(x);
     }
 
     final private long UUID;
