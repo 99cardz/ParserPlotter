@@ -11,6 +11,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import canvas.CanvasPlot;
+import gui.LabeledInput;
 import parser.Parser;
 import parser.SyntaxException;
 
@@ -19,9 +20,7 @@ public class Window extends JFrame {
 	private ArrayList<Function> functions		= new ArrayList<Function>();
 	
 	// layout
-	GridBagLayout 			layout 				= new GridBagLayout();
-	GridBagConstraints 		gbc 				= new GridBagConstraints();
-	Insets 					insets 				= new Insets(5, 5, 5, 5);
+	private final Dimension	defaultSize			= new Dimension(600, 450);
 	
 	// beauty stuff
 	private final String	title 				= "Funktionsplotter";
@@ -30,11 +29,9 @@ public class Window extends JFrame {
 	private Font 			genericFont 		= new Font("Verdana", Font.PLAIN, 30);
 	
 	// components
-	private JPanel 			topPanel 			= new JPanel();
-	private JLabel 			funcLabel 			= new JLabel("f(x) =");
-	private JTextField 		textInput 			= new JTextField("");
-	
-	private JLabel 			errorLabel 			= new JLabel("Enter a function.", SwingConstants.CENTER);
+	private JPanel 			leftPanel 			= new JPanel();
+	private ArrayList<LabeledInput> inputArray 	= new ArrayList<LabeledInput>();
+	private int 			inputPanelSize 		= 8;
 	
 	private JPanel 			canvasPanel 		= new JPanel();
 	private CanvasPlot		canvas				= new CanvasPlot(functions);
@@ -57,44 +54,38 @@ public class Window extends JFrame {
 			functions.add(new Function("1/x", p.buildSyntaxTree("1/x")));
 			functions.add(new Function("x^3-4*x", p.buildSyntaxTree("x^3-4*x")));
 			functions.add(new Function("tan(x)", p.buildSyntaxTree("tan(x)")));
-		} catch (SyntaxException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		} catch (SyntaxException e) {
+			e.printStackTrace();
 		}
 		
 		// general stuff
 		this.setTitle(title);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		this.setSize(new Dimension(400, 500));
-		this.setMinimumSize(new Dimension(400, 500));
+		this.setSize(defaultSize);
+		this.setMinimumSize(defaultSize);
 		this.setLayout(new BorderLayout());
 		
 		// topPanel setup
-		topPanel.setPreferredSize(new Dimension(this.getWidth(), 100));
-		topPanel.setBackground(BG_COLOR);
-		topPanel.setLayout(new GridBagLayout());
-		funcLabel.setFont(mathFont);
-		textInput.setFont(genericFont);
-		textInput.getDocument().addDocumentListener(new DocumentListener() {
-			@Override
-			public void insertUpdate(DocumentEvent e) {
-				errorLabel.setText(!textInput.getText().isEmpty() ? "Parsing \"f(x) = " + textInput.getText() + "\"..." : "Enter a function.");
-			}
-			@Override
-			public void removeUpdate(DocumentEvent e) {
-				insertUpdate(e);
-			}
-			@Override
-			public void changedUpdate(DocumentEvent e) {
-				insertUpdate(e);
-			}
+		leftPanel = new JPanel(new GridLayout(inputPanelSize, 1));
+		leftPanel.setPreferredSize(new Dimension((int)(this.getWidth()*.3), this.getHeight()));
+		for(int i = 0; i < inputPanelSize; i++) {
+			LabeledInput l = new LabeledInput();
+			l.getInput().addActionListener(e -> {
+				redrawFields();
+				LabeledInput nextField = inputArray.get((inputArray.indexOf(l) + 1) % inputArray.size());
+				nextField.getInput().requestFocus();
+			});
+			inputArray.add(l);
+			leftPanel.add(l);
+		}
+		
+		this.addComponentListener(new ComponentAdapter() {
+			public void componentResized(ComponentEvent componentEvent) {
+				resizeEvent();
+		    }
 		});
-		
-		this.addComponent(topPanel, funcLabel, 0, 0, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.REMAINDER, .5, .5);
-		this.addComponent(topPanel, textInput, 1, 0, 1, 1, GridBagConstraints.WEST, GridBagConstraints.BOTH, 10, .5);
-		this.addComponent(topPanel, errorLabel, 0, 1, 2, 1, GridBagConstraints.CENTER, GridBagConstraints.REMAINDER, .5, .5);
-		
-		// canvasPanel setup
+		this.add(leftPanel, BorderLayout.WEST);
+		redrawFields();
 		
 		canvasPanel.setLayout(new BorderLayout());
 		canvasPanel.add(canvas);
@@ -146,19 +137,27 @@ public class Window extends JFrame {
 		bottomPanel.add(resetButton);
 		
 		// add to window
-		this.add(topPanel, BorderLayout.NORTH);
 		this.add(canvasPanel, BorderLayout.CENTER);
 		this.add(bottomPanel, BorderLayout.SOUTH);
 	}
-	
-//	private void addToWindow(Component component, int gridx, int gridy, int gridwidth, int gridheight, int anchor, int fill, double weightx, double weighty) {
-//		GridBagConstraints gbc = new GridBagConstraints(gridx, gridy, gridwidth, gridheight, weightx, weighty, anchor, fill, insets, 0, 0);
-//		this.add(component, gbc);
-//	}
-	
-	private void addComponent(Container outer, Component inner, int gridx, int gridy, int gridwidth, int gridheight, int anchor, int fill, double weightx, double weighty) {
-		GridBagConstraints gbc = new GridBagConstraints(gridx, gridy, gridwidth, gridheight, weightx, weighty, anchor, fill, insets, 0, 0);
-		outer.add(inner, gbc);
+
+	private void redrawFields() {
+		for(int i = 0; i < inputArray.size(); i++) {
+			if(inputArray.get(i).isBlank() ) {
+				for(int j = i+1; j < inputArray.size(); j++) {
+					inputArray.get(j).setVisible(false);
+				}
+				break;
+			}
+			else {
+				inputArray.get((i+1) % inputArray.size()).setVisible(true);
+			}
+		}
+		repaint();
 	}
 	
+	private void resizeEvent() {
+		leftPanel.setPreferredSize(new Dimension((int)(this.getWidth()*.3), this.getHeight()));
+		this.repaint();
+	}
 }
