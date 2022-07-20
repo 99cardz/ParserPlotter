@@ -49,8 +49,8 @@ public class Function {
         this.UUID = generateUUID();
     }
     
-    public double eval(double x) {
-    	return treeRoot.eval(x);
+    public double eval(double prev, double x, double next) {
+    	return treeRoot.eval(prev, x, next);
     }
 
     final private long UUID;

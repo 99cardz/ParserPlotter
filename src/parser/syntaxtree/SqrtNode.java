@@ -12,7 +12,7 @@ public class SqrtNode extends UnarySyntaxNode {
         System.out.print(")");
     }
 
-    public double eval(double x) {
-        return Math.sqrt(left.eval(x));
+    public double eval(double prev, double x, double next) {
+        return Math.sqrt(left.eval(prev, x, next));
     }
 }

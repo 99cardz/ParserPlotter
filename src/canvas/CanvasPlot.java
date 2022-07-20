@@ -11,27 +11,26 @@ public class CanvasPlot extends Canvas {
 //	final Parser parser = new Parser();
 	
 	// location of coordinate center on canvas
-	private int centerOffsetX, centerOffsetY;
+	private int centerOffsetX = 0, centerOffsetY = 0;
 	private int centerX, centerY;
 	
 	// pixels per unit
 	private double scaleX, scaleY; // pixels per unit
 	static final int DEFAULT_SCALE = 40;
 	
-	// value indicator line spacing values and factor
-	private double lineSpacingX, lineSpacingY;
-	private double lineSpacingFactorX = 1, lineSpacingFactorY = 1;
+	// value indicator line spacing values
+	private double lineSpacingX = 1, lineSpacingY = 1;
 	
 	// formats to draw values
-	private String valueFormatterX, valueFormatterY;
+	private String valueFormatterX = "%.0f", valueFormatterY= "%.0f";
 	
 	// function list reference
 	ArrayList<Function> functions;
 
 	public CanvasPlot(ArrayList<Function> f) {
 		functions = f;
-		scale(0,0); // calculate linespacing and linespacingfactors
-		resetOffset();
+		scaleX = DEFAULT_SCALE;
+		scaleY = DEFAULT_SCALE;
 	}
 	/**
 	 * Scales the coordinate system by the provided factors.
@@ -52,28 +51,30 @@ public class CanvasPlot extends Canvas {
 		// recalculate lineSpacingFactor and lineSpacing of both x and y
 		final double[] choices = {1, 2, 5};
 		int iX = 0;
-		while (pixelsPerUnitX * choices[iX] * lineSpacingFactorX < 40) {
-			lineSpacingFactorX *= iX + 1 > 2 ? 10 : 1;
+		factorX = 1;
+		while (pixelsPerUnitX * choices[iX] * factorX < 40) {
+			factorX *= iX + 1 > 2 ? 10 : 1;
 			iX = (iX + 1) % 3;
 		}
-		while (pixelsPerUnitX * choices[iX] * lineSpacingFactorX > 100) {
-			lineSpacingFactorX /= iX - 1 < 0 ? 10 : 1;
+		while (pixelsPerUnitX * choices[iX] * factorX > 100) {
+			factorX /= iX - 1 < 0 ? 10 : 1;
 			iX = (iX + 2) % 3;
 		}
-		lineSpacingX = choices[iX] * lineSpacingFactorX;
-		valueFormatterX = "%." + decimalAmount(lineSpacingFactorX) + "f";
+		lineSpacingX = choices[iX] * factorX;
+		valueFormatterX = "%." + decimalAmount(factorX) + "f";
 		
 		int iY = 0;
-		while (pixelsPerUnitY * choices[iY] * lineSpacingFactorY < 40) {
-			lineSpacingFactorY *= iY + 1 > 2 ? 10 : 1;
+		factorY = 1;
+		while (pixelsPerUnitY * choices[iY] * factorY < 40) {
+			factorY *= iY + 1 > 2 ? 10 : 1;
 			iY = (iY + 1) % 3;
 		}
-		while (pixelsPerUnitY * choices[iY] * lineSpacingFactorY > 100) {
-			lineSpacingFactorY /= iY - 1 < 0 ? 10 : 1;
+		while (pixelsPerUnitY * choices[iY] * factorY > 100) {
+			factorY /= iY - 1 < 0 ? 10 : 1;
 			iY = (iY + 2) % 3;
 		}
-		lineSpacingY = choices[iY] * lineSpacingFactorY;
-		valueFormatterY = "%." + decimalAmount(lineSpacingFactorY) + "f";
+		lineSpacingY = choices[iY] * factorY;
+		valueFormatterY = "%." + decimalAmount(factorY) + "f";
 		
 		repaint();
 	}
@@ -157,19 +158,22 @@ public class CanvasPlot extends Canvas {
 		thickLine(g, centerX, 0, centerX, h); // y
 		
 		// paint graph
-		double[] xValues = new double[w];
-		for (int xCoord = 0; xCoord < w; xCoord++)
+		double[] xValues = new double[w+1];
+		for (int xCoord = 0; xCoord <= w; xCoord++)
 			xValues[xCoord] = toXValue(xCoord);
+		
 		
 		for (Function f : functions) {
 			g.setColor(f.getColor());
-			double prevYValue = f.eval(xValues[0]);
+			double prevYValue = f.eval(toXValue(-1), xValues[0], xValues[1]);
 			int prevYCoord = toYCoord(prevYValue);
 			for (int xCoord = 1; xCoord < w; xCoord++) {
-				double currYValue = f.eval(xValues[xCoord]);
+				double currYValue = f.eval(xValues[xCoord-1], xValues[xCoord], xValues[xCoord+1]);
 				int currYCoord = toYCoord(currYValue);
-				if (Double.isFinite(prevYValue) && Double.isFinite(currYValue) && Math.abs(prevYCoord - currYCoord) < h)
+				
+				if (Double.isFinite(currYValue) || Double.isFinite(prevYValue))
 					thickLine(g, xCoord-1, prevYCoord, xCoord, currYCoord);
+				
 				prevYValue = currYValue;
 				prevYCoord = currYCoord;
 			}
@@ -177,12 +181,24 @@ public class CanvasPlot extends Canvas {
 	}
 	// Methods to convert Values to Coordinates back and fourth.
 	public int toXCoord(double value) { return (int) (centerX + value * scaleX); }
-	public int toYCoord(double value) { return (int) (centerY - value * scaleY); }
+	public int toYCoord(double value) { 
+		int coord = (int) (centerY - value * scaleY);
+		int max = getHeight();
+		if (value == Double.NEGATIVE_INFINITY || coord > max)
+			return getHeight()+10;
+		if (value == Double.POSITIVE_INFINITY || coord < 0)
+			return -10;
+		return (int) (centerY - value * scaleY);
+//		return coord > max ? max+10 : coord < 0 ? -10 : coord; 
+//		return (int) (centerY - value * scaleY);
+		
+		
+	}
 	public double toXValue(int coord) { return ((double) (coord - centerX)) / scaleX; }
 	public double toYValue(int coord) { return ((double) -(coord - centerY)) / scaleY; }
 	
 	private int decimalAmount(double factor) {
-		int decimals = -(int) Math.ceil((Math.log10(lineSpacingFactorX)));
+		int decimals = -(int) Math.ceil((Math.log10(factor)));
 		return decimals < 0 ? 0 : decimals;
 	}
 	

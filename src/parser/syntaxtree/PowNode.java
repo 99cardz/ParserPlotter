@@ -13,7 +13,7 @@ public class PowNode extends BinarySyntaxNode {
         System.out.print(")");
     }
 
-    public double eval(double x) {
-        return Math.pow(left.eval(x), right.eval(x));
+    public double eval(double prev, double x, double next) {
+        return Math.pow(left.eval(prev, x, next), right.eval(prev, x, next));
     }
 }

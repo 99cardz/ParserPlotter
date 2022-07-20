@@ -17,6 +17,7 @@ import parser.SyntaxException;
 public class Window extends JFrame {
 	
 	private ArrayList<Function> functions		= new ArrayList<Function>();
+	private Parser			parser				= new Parser();
 	
 	// layout
 	GridBagLayout 			layout 				= new GridBagLayout();
@@ -51,12 +52,17 @@ public class Window extends JFrame {
 	public Window() {
 		
 		// just for testing
-		Parser p = new Parser();
 		try {
-			functions.add(new Function("cos(x)*x", p.buildSyntaxTree("cos(x)*x")));
-			functions.add(new Function("1/x", p.buildSyntaxTree("1/x")));
-			functions.add(new Function("x^3-4*x", p.buildSyntaxTree("x^3-4*x")));
-			functions.add(new Function("tan(x)", p.buildSyntaxTree("tan(x)")));
+//			functions.add(new Function("cos(x)*x", p.buildSyntaxTree("cos(x)*x")));
+//			functions.add(new Function("1/x", p.buildSyntaxTree("1/x")));
+//			functions.add(new Function("x^3-4*x", p.buildSyntaxTree("x^3-4*x")));
+//			functions.add(new Function("tan(x)", p.buildSyntaxTree("tan(x)")));
+//			functions.add(new Function("sqrt(x)", p.buildSyntaxTree("sqrt(x)")));
+//			functions.add(new Function("x^(1/2)+1", p.buildSyntaxTree("x^(1/2)+1")));
+//			functions.add(new Function("", p.buildSyntaxTree("1/(2*sqrt(x))")));
+//			functions.add(new Function("1/2*x^(-1/2)", p.buildSyntaxTree("1/2*x^(-1/2) + 1")));
+			functions.add(parser.buildFunction("x^1000"));
+			functions.add(parser.buildFunction("1/sin(x)"));
 		} catch (SyntaxException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -155,6 +161,16 @@ public class Window extends JFrame {
 //		GridBagConstraints gbc = new GridBagConstraints(gridx, gridy, gridwidth, gridheight, weightx, weighty, anchor, fill, insets, 0, 0);
 //		this.add(component, gbc);
 //	}
+	
+	private void addFunction() {
+		try {
+			functions.add(parser.buildFunction("cos(x)"));
+		} catch (SyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		canvas.repaint();
+	}
 	
 	private void addComponent(Container outer, Component inner, int gridx, int gridy, int gridwidth, int gridheight, int anchor, int fill, double weightx, double weighty) {
 		GridBagConstraints gbc = new GridBagConstraints(gridx, gridy, gridwidth, gridheight, weightx, weighty, anchor, fill, insets, 0, 0);

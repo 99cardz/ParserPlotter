@@ -11,7 +11,12 @@ public class NumberNode extends SyntaxNode {
         System.out.print(value);
     }
 
-    public double eval(double x) {
+    public double eval(double prev, double x, double next) {
         return value;
     }
+
+	@Override
+	public double eval(double x) {
+		return value;
+	}
 }

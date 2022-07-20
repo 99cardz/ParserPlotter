@@ -12,7 +12,11 @@ public class SinNode extends UnarySyntaxNode {
         System.out.print(")");
     }
 
-    public double eval(double x) {
-        return Math.sin(left.eval(x));
+    public double eval(double prev, double x, double next) {
+        return Math.sin(left.eval(prev, x, next));
     }
+
+	public double eval(double x) {
+		return Math.sin(left.eval(x));
+	}
 }
