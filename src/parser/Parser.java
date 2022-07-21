@@ -79,7 +79,7 @@ public class Parser {
             boolean found = false;
             for(FunctionType ft : FunctionType.values()) {
                 String funcName = ft.name().toLowerCase();
-                if(string.indexOf(funcName) == pos) {
+                if(string.indexOf(funcName, pos) == pos) {
                     found = true;
 
                     tokens.add(new Token(funcName, pos, pos + funcName.length(), TokenType.FUNC_ID, ft));
