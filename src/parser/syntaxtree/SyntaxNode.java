@@ -8,12 +8,9 @@ public abstract class SyntaxNode {
 
     /**
      * Evaluate the given syntax tree.
-     * @param prev - the previous 
-     * @param x - The value of x.
-     * @param next - the next value to evaluate
+     * @param x - the value to evaluate
+     * @param stride - the offset to the next/previous value
      * @return the result of the expression represented by the syntax tree.
      */
-    public abstract double eval(double prev, double x, double next);
-    
-    public abstract double eval(double x);
+    public abstract double eval(double x, double stride);
 }

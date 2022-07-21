@@ -13,17 +13,16 @@ public class DivNode extends BinarySyntaxNode {
         System.out.print(")");
     }
 
-    public double eval(double prev, double x, double next) {
-    	double denomPrevY = right.eval(prev);
-    	double denomY = right.eval(x);
-    	double denomNextY = right.eval(next);
+    public double eval(double x, double stride) {
+    	double denomY = right.eval(x, stride);
+    	if (denomY == Double.NEGATIVE_INFINITY || denomY == Double.POSITIVE_INFINITY)
+    		return 0;
+    	double denomPrevY = right.eval(x - stride, stride);
+    	double denomNextY = right.eval(x + stride, stride);
     	if (denomPrevY <= 0 && denomY >= 0 || denomNextY <= 0 && denomY >= 0)
     		return Double.POSITIVE_INFINITY;
     	if (denomY <= 0 && denomNextY >= 0 || denomY <= 0 && denomPrevY >= 0)
     		return Double.NEGATIVE_INFINITY;
-        return left.eval(prev, x, next) / right.eval(prev, x, next);
-    }
-    public double eval(double x) {
-    	return left.eval(x) / right.eval(x);
+        return left.eval(x, stride) / denomY;
     }
 }

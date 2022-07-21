@@ -12,7 +12,7 @@ public class CosNode extends UnarySyntaxNode {
         System.out.print(")");
     }
 
-    public double eval(double prev, double x, double next) {
-        return Math.cos(left.eval(prev, x, next));
+    public double eval(double prev, double stride) {
+        return Math.cos(left.eval(prev, stride));
     }
 }

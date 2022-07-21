@@ -12,14 +12,11 @@ public class TanNode extends UnarySyntaxNode {
         System.out.print(")");
     }
 
-    public double eval(double prev, double x, double next) {
-    	double prevY = Math.tan(left.eval(prev));
-    	double y = Math.tan(left.eval(x));
-    	double nextY = Math.tan(left.eval(next));
+    public double eval(double x, double stride) {
+    	double prevY = Math.tan(left.eval(x - stride, stride));
+    	double y = Math.tan(left.eval(x, stride));
+    	double nextY = Math.tan(left.eval(x + stride, stride));
+//    	System.out.println(prevY + " " + y + " " + nextY);
     	return prevY > y ? Double.NEGATIVE_INFINITY : nextY < y ? Double.POSITIVE_INFINITY: y;
-    }
-    
-    public double eval(double x) {
-        return Math.tan(left.eval(x));
     }
 }

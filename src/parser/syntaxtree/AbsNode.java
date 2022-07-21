@@ -12,7 +12,7 @@ public class AbsNode extends UnarySyntaxNode {
         System.out.print(")");
     }
 
-    public double eval(double prev, double x, double next) {
-        return Math.abs(left.eval(prev, x, next));
+    public double eval(double prev, double stride) {
+        return Math.abs(left.eval(prev, stride));
     }
 }

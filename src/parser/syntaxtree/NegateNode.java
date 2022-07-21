@@ -12,7 +12,7 @@ public class NegateNode extends UnarySyntaxNode {
         System.out.print(")");
     }
 
-    public double eval(double prev, double x, double next) {
-        return -left.eval(prev, x, next);
+    public double eval(double prev, double stride) {
+        return -left.eval(prev, stride);
     }
 }
