@@ -8,8 +8,6 @@ import gui.Function;
 
 public class CanvasPlot extends Canvas {
 	
-//	final Parser parser = new Parser();
-	
 	// location of coordinate center on canvas
 	private int centerOffsetX = 0, centerOffsetY = 0;
 	private int centerX, centerY;
@@ -162,44 +160,51 @@ public class CanvasPlot extends Canvas {
 		for (int xCoord = 0; xCoord <= w; xCoord++)
 			xValues[xCoord] = toXValue(xCoord);
 		
+		double stride = xValues[1] - xValues[0];
 		
 		for (Function f : functions) {
 			g.setColor(f.getColor());
-			double prevYValue = f.eval(toXValue(-1), xValues[0], xValues[1]);
+			double prevYValue = f.eval(xValues[0], stride);
 			int prevYCoord = toYCoord(prevYValue);
 			for (int xCoord = 1; xCoord < w; xCoord++) {
-				double currYValue = f.eval(xValues[xCoord-1], xValues[xCoord], xValues[xCoord+1]);
+				double currYValue = f.eval(xValues[xCoord], stride);
 				int currYCoord = toYCoord(currYValue);
 				
-				if (Double.isFinite(currYValue) || Double.isFinite(prevYValue))
+				if ((Double.isFinite(currYValue) || Double.isFinite(prevYValue))
+						&& !Double.isNaN(currYValue) && !Double.isNaN(prevYValue))
 					thickLine(g, xCoord-1, prevYCoord, xCoord, currYCoord);
 				
 				prevYValue = currYValue;
 				prevYCoord = currYCoord;
 			}
-		}	
+		}
 	}
+	
 	// Methods to convert Values to Coordinates back and fourth.
 	public int toXCoord(double value) { return (int) (centerX + value * scaleX); }
 	public int toYCoord(double value) { 
 		int coord = (int) (centerY - value * scaleY);
 		int max = getHeight();
 		if (value == Double.NEGATIVE_INFINITY || coord > max)
-			return getHeight()+10;
+			return max+10;
 		if (value == Double.POSITIVE_INFINITY || coord < 0)
 			return -10;
-		return (int) (centerY - value * scaleY);
-//		return coord > max ? max+10 : coord < 0 ? -10 : coord; 
-//		return (int) (centerY - value * scaleY);
-		
-		
+		return coord;
 	}
 	public double toXValue(int coord) { return ((double) (coord - centerX)) / scaleX; }
 	public double toYValue(int coord) { return ((double) -(coord - centerY)) / scaleY; }
 	
+	/*
+	 * Calculate the amount of decimals of a given factor.
+	 * 
+	 * For Example: 
+	 * 100 -> 0 
+	 * 1 -> 0
+	 * 0.01 -> 2 
+	 * 0.00001 -> 5
+	 */
 	private int decimalAmount(double factor) {
-		int decimals = -(int) Math.ceil((Math.log10(factor)));
-		return decimals < 0 ? 0 : decimals;
+		return factor >= 1 ? 0 : -(int) Math.ceil((Math.log10(factor)));
 	}
 	
 	private void thickLine(Graphics g, int x1, int y1, int x2, int y2) {

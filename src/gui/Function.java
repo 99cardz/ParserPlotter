@@ -9,8 +9,8 @@ public class Function {
     private static final Color[] colors =
     	{
     			new Color(39, 88, 216), // blue
-    			new Color(150, 30, 225), // purple
     			new Color(225, 52, 30), // red
+    			new Color(150, 30, 225), // purple
     			new Color(106, 225, 30), // green
     			new Color(223, 205, 32), // yellow
     			new Color(223, 109, 32), // orange
@@ -49,8 +49,8 @@ public class Function {
         this.UUID = generateUUID();
     }
     
-    public double eval(double prev, double x, double next) {
-    	return treeRoot.eval(prev, x, next);
+    public double eval(double prev, double stride) {
+    	return treeRoot.eval(prev, stride);
     }
 
     final private long UUID;

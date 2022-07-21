@@ -53,16 +53,11 @@ public class Window extends JFrame {
 		
 		// just for testing
 		try {
-//			functions.add(new Function("cos(x)*x", p.buildSyntaxTree("cos(x)*x")));
-//			functions.add(new Function("1/x", p.buildSyntaxTree("1/x")));
-//			functions.add(new Function("x^3-4*x", p.buildSyntaxTree("x^3-4*x")));
-//			functions.add(new Function("tan(x)", p.buildSyntaxTree("tan(x)")));
-//			functions.add(new Function("sqrt(x)", p.buildSyntaxTree("sqrt(x)")));
-//			functions.add(new Function("x^(1/2)+1", p.buildSyntaxTree("x^(1/2)+1")));
-//			functions.add(new Function("", p.buildSyntaxTree("1/(2*sqrt(x))")));
-//			functions.add(new Function("1/2*x^(-1/2)", p.buildSyntaxTree("1/2*x^(-1/2) + 1")));
-			functions.add(parser.buildFunction("x^1000"));
-			functions.add(parser.buildFunction("1/sin(x)"));
+//			functions.add(parser.buildFunction("1/tan(x)"));
+//			functions.add(parser.buildFunction("tan(x)"));
+//			functions.add(parser.buildFunction("sin(tan(x))"));
+			functions.add(parser.buildFunction("sqrt(x)"));
+			functions.add(parser.buildFunction("log(x)"));
 		} catch (SyntaxException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
