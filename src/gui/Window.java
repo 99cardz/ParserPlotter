@@ -53,13 +53,16 @@ public class Window extends JFrame {
 		
 		// just for testing
 		try {
-//			functions.add(parser.buildFunction("1/tan(x)"));
-//			functions.add(parser.buildFunction("tan(x)"));
-//			functions.add(parser.buildFunction("sin(tan(x))"));
-			functions.add(parser.buildFunction("sqrt(x)"));
-			functions.add(parser.buildFunction("log(x)"));
+			functions.add(parser.buildFunction("1/sin(x)"));
+//			functions.add(parser.buildFunction("cos(x)"));
+//			functions.add(parser.buildFunction("1/sin(x)"));
+//			functions.add(parser.buildFunction("sin(x)"));
+//			functions.add(parser.buildFunction("log(x)"));
 		} catch (SyntaxException e1) {
 			// TODO Auto-generated catch block
+			System.out.println(e1.getStartIndex());
+			System.out.println(e1.getEndIndex());
+			System.out.println(e1.getString());
 			e1.printStackTrace();
 		}
 		

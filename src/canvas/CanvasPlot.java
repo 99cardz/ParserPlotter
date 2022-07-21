@@ -160,7 +160,7 @@ public class CanvasPlot extends Canvas {
 		for (int xCoord = 0; xCoord <= w; xCoord++)
 			xValues[xCoord] = toXValue(xCoord);
 		
-		double stride = xValues[1] - xValues[0];
+		double stride = toXValue(centerX+1);
 		
 		for (Function f : functions) {
 			g.setColor(f.getColor());
