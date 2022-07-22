@@ -12,7 +12,13 @@ public class SqrtNode extends UnarySyntaxNode {
         System.out.print(")");
     }
 
-    public double eval(double prev, double stride) {
-        return Math.sqrt(left.eval(prev, stride));
+    public double eval(double x, double stride) {
+    	// if the child node evaluates the next calculated pixel to be above zero
+    	// and this pixel to be below or equal to zero
+    	// the sqrt function just passed its limit
+    	double value = left.eval(x, stride);
+    	if (left.eval(x + stride, stride) > 0 && value <= 0)
+    		return 0;
+        return Math.sqrt(value);
     }
 }

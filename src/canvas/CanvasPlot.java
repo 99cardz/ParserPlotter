@@ -13,7 +13,7 @@ public class CanvasPlot extends Canvas {
 	private int centerX, centerY;
 	
 	// pixels per unit
-	private double scaleX, scaleY; // pixels per unit
+	private double scaleX, scaleY;
 	static final int DEFAULT_SCALE = 40;
 	
 	// value indicator line spacing values
@@ -152,12 +152,12 @@ public class CanvasPlot extends Canvas {
 		
 		// paint axies
 		g.setColor(Color.black);
-		thickLine(g, 0, centerY, w, centerY); // x
-		thickLine(g, centerX, 0, centerX, h); // y
+		drawAxies(g, 0, centerY, w, centerY); // x
+		drawAxies(g, centerX, 0, centerX, h); // y
 		
 		// paint graph
-		double[] xValues = new double[w+1];
-		for (int xCoord = 0; xCoord <= w; xCoord++)
+		double[] xValues = new double[w];
+		for (int xCoord = 0; xCoord < w; xCoord++)
 			xValues[xCoord] = toXValue(xCoord);
 		
 		double stride = toXValue(centerX+1);
@@ -186,9 +186,9 @@ public class CanvasPlot extends Canvas {
 		int coord = (int) (centerY - value * scaleY);
 		int max = getHeight();
 		if (value == Double.NEGATIVE_INFINITY || coord > max)
-			return max+10;
+			return max+100;
 		if (value == Double.POSITIVE_INFINITY || coord < 0)
-			return -10;
+			return -100;
 		return coord;
 	}
 	public double toXValue(int coord) { return ((double) (coord - centerX)) / scaleX; }
@@ -207,9 +207,17 @@ public class CanvasPlot extends Canvas {
 		return factor >= 1 ? 0 : -(int) Math.ceil((Math.log10(factor)));
 	}
 	
-	private void thickLine(Graphics g, int x1, int y1, int x2, int y2) {
+	private void drawAxies(Graphics g, int x1, int y1, int x2, int y2) {
 		g.drawLine(x1, y1-1, x2, y2-1);
 		g.drawLine(x1, y1, x2, y2);
 		g.drawLine(x1+1, y1, x2+1, y2);
+	}
+	private void thickLine(Graphics g, int x1, int y1, int x2, int y2) {
+		g.drawLine(x1-1, y1, x2-1, y2);
+		g.drawLine(x1, y1-1, x2, y2-1);
+		g.drawLine(x1, y1, x2, y2);
+		g.drawLine(x1+1, y1, x2+1, y2);
+		g.drawLine(x1, y1+1, x2, y2+1);
+	
 	}
 }
