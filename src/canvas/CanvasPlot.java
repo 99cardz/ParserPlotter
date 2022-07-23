@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 
 import gui.Function;
+import gui.FunctionInput;
 
 public class CanvasPlot extends Canvas {
 	
@@ -26,9 +27,9 @@ public class CanvasPlot extends Canvas {
 	private String valueFormatterX, valueFormatterY;
 	
 	// function list reference
-	ArrayList<Function> functions;
+	ArrayList<FunctionInput> functions;
 
-	public CanvasPlot(ArrayList<Function> f) {
+	public CanvasPlot(ArrayList<FunctionInput> f) {
 		functions = f;
 		scale(0,0); // calculate linespacing and linespacingfactors
 		resetOffset();
@@ -151,7 +152,7 @@ public class CanvasPlot extends Canvas {
 			g.drawString(String.format(valueFormatterY, y), xTextCoord, yCoord);
 		}
 		
-		// paint axies
+		// paint axes
 		g.setColor(Color.black);
 		thickLine(g, 0, centerY, w, centerY); // x
 		thickLine(g, centerX, 0, centerX, h); // y
@@ -160,13 +161,12 @@ public class CanvasPlot extends Canvas {
 		double[] xValues = new double[w];
 		for (int xCoord = 0; xCoord < w; xCoord++)
 			xValues[xCoord] = toXValue(xCoord);
-		
-		for (Function f : functions) {
+		for (FunctionInput f : functions) {
 			g.setColor(f.getColor());
-			double prevYValue = f.eval(xValues[0]);
+			double prevYValue = f.getFunction().eval(xValues[0]);
 			int prevYCoord = toYCoord(prevYValue);
 			for (int xCoord = 1; xCoord < w; xCoord++) {
-				double currYValue = f.eval(xValues[xCoord]);
+				double currYValue = f.getFunction().eval(xValues[xCoord]);
 				int currYCoord = toYCoord(currYValue);
 				if (Double.isFinite(prevYValue) && Double.isFinite(currYValue) && Math.abs(prevYCoord - currYCoord) < h)
 					thickLine(g, xCoord-1, prevYCoord, xCoord, currYCoord);
