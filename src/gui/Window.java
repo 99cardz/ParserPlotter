@@ -7,6 +7,7 @@ import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -17,15 +18,17 @@ public class Window extends JFrame {
 	private ArrayList<Function> functions		= new ArrayList<Function>();
 	
 	// layout
-	private final Dimension	defaultSize			= new Dimension(600, 450);
+	private final Dimension	defaultSize			= new Dimension(1200, 700);
 	
 	// beauty stuff
 	private final String	title 				= "Funktionsplotter";
 	
 	// components
-	private JPanel 			leftPanel 			= new JPanel();
-	private ArrayList<FunctionInput> inputArray 	= new ArrayList<FunctionInput>();
+	private JPanel			leftPanel			= new JPanel(new BorderLayout());
+	
 	private int 			inputPanelSize 		= 8;
+	private JPanel 			inputPanel 			= new JPanel(new GridLayout(inputPanelSize, 1));
+	private ArrayList<FunctionInput> inputArray 	= new ArrayList<FunctionInput>();
 	
 	private JPanel 			canvasPanel 		= new JPanel();
 	private CanvasPlot		canvas;
@@ -37,7 +40,7 @@ public class Window extends JFrame {
 	private JButton 		xZoomInButton 		= new JButton("+");
 	private JButton 		yZoomOutButton 		= new JButton("-");
 	private JButton 		yZoomInButton 		= new JButton("+");
-	private JButton			resetButton 		= new JButton("Reset");
+	private JButton			resetButton 		= new JButton("R");
 	
 	public Window() {
 		
@@ -48,8 +51,8 @@ public class Window extends JFrame {
 		this.setMinimumSize(defaultSize);
 		this.setLayout(new BorderLayout());
 		
-		// leftPanel setup
-		leftPanel = new JPanel(new GridLayout(inputPanelSize, 1));
+		// inputPanel setup
+		inputPanel.setBackground(new Color(232, 235, 252));
 		leftPanel.setPreferredSize(new Dimension((int)(this.getWidth()*.3), this.getHeight()));
 		redrawFields();
 		
@@ -58,10 +61,11 @@ public class Window extends JFrame {
 				resizeEvent();
 		    }
 		});
-		this.add(leftPanel, BorderLayout.WEST);
+		leftPanel.add(inputPanel, BorderLayout.CENTER);
 		
 		canvas = new CanvasPlot(inputArray);
 		canvasPanel.setLayout(new BorderLayout());
+		canvasPanel.setBorder(new EmptyBorder(2, 10, 2, 2));
 		canvasPanel.add(canvas);
 		canvasPanel.addMouseWheelListener(e -> {
 			if(e.getWheelRotation() < 0)
@@ -89,13 +93,10 @@ public class Window extends JFrame {
 		canvasPanel.setBackground(Color.white);
 		
 		// bottomPanel setup
-		bottomPanel.setLayout(new GridLayout(1, 8));
-		bottomPanel.setPreferredSize(new Dimension(this.getWidth(), 50));
+		bottomPanel.setLayout(new FlowLayout());
 		JButton[] buttons = { xZoomOutButton, xZoomInButton, yZoomOutButton, yZoomInButton, resetButton};
 		double[][] scalars = {{2.0, 1.0}, {0.5, 1.0}, {1.0, 2.0}, {1.0, 0.5}, {0.0, 0.0}};
 		for(int i = 0; i < buttons.length; i++) {
-			buttons[i].setMinimumSize(new Dimension(50,50));
-			buttons[i].setMaximumSize(new Dimension(50,50));
 			int j = i;
 			buttons[i].addActionListener(e -> canvas.scale(scalars[j][0], scalars[j][1]));
 		}
@@ -111,15 +112,16 @@ public class Window extends JFrame {
 		bottomPanel.add(resetButton);
 		
 		// add to window
+		leftPanel.add(bottomPanel, BorderLayout.SOUTH);
 		this.add(canvasPanel, BorderLayout.CENTER);
-		this.add(bottomPanel, BorderLayout.SOUTH);
+		this.add(leftPanel, BorderLayout.WEST);
 	}
 
 	private void redrawFields() {
 		inputArray.removeIf(l -> l.isBlank());
-		leftPanel.removeAll();
+		inputPanel.removeAll();
 		for(FunctionInput f: inputArray) {
-			leftPanel.add(f);
+			inputPanel.add(f);
 		}
 		if(inputArray.size() < inputPanelSize) {
 			FunctionInput f = new FunctionInput();
@@ -147,7 +149,7 @@ public class Window extends JFrame {
 			});
 			functions.add(f.getFunction());
 			inputArray.add(f);
-			leftPanel.add(f);
+			inputPanel.add(f);
 		}
 		revalidate();
 		repaint();

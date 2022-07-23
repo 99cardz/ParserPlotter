@@ -10,7 +10,7 @@ public class Function {
  	final private long UUID;
     private String expressionString;
     private SyntaxNode treeRoot;
-    final Color color;
+    private Color color;
     private String error = "";
 	    
     private static final Color[] colors =
@@ -65,7 +65,6 @@ public class Function {
         this.expressionString = expressionString;
         this.treeRoot = root;
         this.color = Color.BLACK;
-        
     }
     
     public double eval(double x) {
@@ -98,6 +97,10 @@ public class Function {
     
     public Color getColor() {
         return color;
+    }
+    
+    public void setColor(Color c) {
+    	color = c;
     }
 
 }

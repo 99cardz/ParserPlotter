@@ -1,6 +1,8 @@
 package gui;
 
 import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
 import javax.swing.event.*;
 
 import java.awt.*;
@@ -36,6 +38,8 @@ public class FunctionInput extends JPanel {
 		super(new BorderLayout());
 		color.setBackground(getNextColor());
 		function = new Function(color.getBackground());
+		setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+		input.setBorder(new EmptyBorder(0, 20, 0, 20));
 		input.setText(EMPTY_INPUT);
 		input.setForeground(Color.GRAY);
 		input.setEditable(true);
@@ -72,6 +76,15 @@ public class FunctionInput extends JPanel {
 				insertUpdate(e);
 			}
 		});
+		color.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				setColor(FunctionInput.getNextColor());
+				String inputString = input.getText();
+				input.setText(" ");
+				input.setText(inputString);
+			}
+		});
+		
 		right.add(input, BorderLayout.CENTER);
 		right.add(label, BorderLayout.SOUTH);
 		this.add(right, BorderLayout.CENTER);
@@ -132,6 +145,7 @@ public class FunctionInput extends JPanel {
 	 */
 	public void setColor(Color c) {
 		color.setBackground(c);
+		function.setColor(c);
 	}
 	
 	/*
