@@ -11,9 +11,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import canvas.CanvasPlot;
-import gui.LabeledInput;
-import parser.Parser;
-import parser.SyntaxException;
 
 public class Window extends JFrame {
 	
@@ -24,17 +21,14 @@ public class Window extends JFrame {
 	
 	// beauty stuff
 	private final String	title 				= "Funktionsplotter";
-	private final Color 	BG_COLOR 			= Color.orange;
-	private Font 			mathFont 			= new Font("Arial", Font.BOLD, 30);
-	private Font 			genericFont 		= new Font("Verdana", Font.PLAIN, 30);
 	
 	// components
 	private JPanel 			leftPanel 			= new JPanel();
-	private ArrayList<LabeledInput> inputArray 	= new ArrayList<LabeledInput>();
+	private ArrayList<FunctionInput> inputArray 	= new ArrayList<FunctionInput>();
 	private int 			inputPanelSize 		= 8;
 	
 	private JPanel 			canvasPanel 		= new JPanel();
-	private CanvasPlot		canvas				= new CanvasPlot(functions);
+	private CanvasPlot		canvas;
 	private JLabel			valueLable 			= new JLabel((""),  SwingConstants.CENTER);
 	
 	private JPanel 			bottomPanel 		= new JPanel();
@@ -47,17 +41,6 @@ public class Window extends JFrame {
 	
 	public Window() {
 		
-		// just for testing
-		Parser p = new Parser();
-		try {
-			functions.add(new Function("cos(x)*x", p.buildSyntaxTree("cos(x)*x")));
-			functions.add(new Function("1/x", p.buildSyntaxTree("1/x")));
-			functions.add(new Function("x^3-4*x", p.buildSyntaxTree("x^3-4*x")));
-			functions.add(new Function("tan(x)", p.buildSyntaxTree("tan(x)")));
-		} catch (SyntaxException e) {
-			e.printStackTrace();
-		}
-		
 		// general stuff
 		this.setTitle(title);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -65,19 +48,10 @@ public class Window extends JFrame {
 		this.setMinimumSize(defaultSize);
 		this.setLayout(new BorderLayout());
 		
-		// topPanel setup
+		// leftPanel setup
 		leftPanel = new JPanel(new GridLayout(inputPanelSize, 1));
 		leftPanel.setPreferredSize(new Dimension((int)(this.getWidth()*.3), this.getHeight()));
-		for(int i = 0; i < inputPanelSize; i++) {
-			LabeledInput l = new LabeledInput();
-			l.getInput().addActionListener(e -> {
-				redrawFields();
-				LabeledInput nextField = inputArray.get((inputArray.indexOf(l) + 1) % inputArray.size());
-				nextField.getInput().requestFocus();
-			});
-			inputArray.add(l);
-			leftPanel.add(l);
-		}
+		redrawFields();
 		
 		this.addComponentListener(new ComponentAdapter() {
 			public void componentResized(ComponentEvent componentEvent) {
@@ -85,8 +59,8 @@ public class Window extends JFrame {
 		    }
 		});
 		this.add(leftPanel, BorderLayout.WEST);
-		redrawFields();
 		
+		canvas = new CanvasPlot(inputArray);
 		canvasPanel.setLayout(new BorderLayout());
 		canvasPanel.add(canvas);
 		canvasPanel.addMouseWheelListener(e -> {
@@ -142,17 +116,40 @@ public class Window extends JFrame {
 	}
 
 	private void redrawFields() {
-		for(int i = 0; i < inputArray.size(); i++) {
-			if(inputArray.get(i).isBlank() ) {
-				for(int j = i+1; j < inputArray.size(); j++) {
-					inputArray.get(j).setVisible(false);
-				}
-				break;
-			}
-			else {
-				inputArray.get((i+1) % inputArray.size()).setVisible(true);
-			}
+		inputArray.removeIf(l -> l.isBlank());
+		leftPanel.removeAll();
+		for(FunctionInput f: inputArray) {
+			leftPanel.add(f);
 		}
+		if(inputArray.size() < inputPanelSize) {
+			FunctionInput f = new FunctionInput();
+			f.getInput().addActionListener(e -> {
+				int prevPos = inputArray.indexOf(f);
+				redrawFields();
+				int nowPos = inputArray.indexOf(f);
+				int next = (nowPos == -1 ? prevPos : nowPos+1) % inputArray.size();
+				inputArray.get(next).transferFocus();
+			});
+			f.getInput().getDocument().addDocumentListener(new DocumentListener() {
+				//this document listener only update the canvas, the rest is handled inside the class
+				@Override
+				public void insertUpdate(DocumentEvent e) {
+					canvas.repaint();
+				}
+				@Override
+				public void removeUpdate(DocumentEvent e) {
+					insertUpdate(e);
+				}
+				@Override
+				public void changedUpdate(DocumentEvent e) {
+					insertUpdate(e);
+				}
+			});
+			functions.add(f.getFunction());
+			inputArray.add(f);
+			leftPanel.add(f);
+		}
+		revalidate();
 		repaint();
 	}
 	
