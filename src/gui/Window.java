@@ -53,11 +53,8 @@ public class Window extends JFrame {
 		
 		// just for testing
 		try {
-//			functions.add(parser.buildFunction("1/x"));
-//			functions.add(parser.buildFunction("cos(x)"));
-//			functions.add(parser.buildFunction("1/sin(x)"));
-			functions.add(parser.buildFunction("-sqrt(x-1.234214) + 1"));
-			functions.add(parser.buildFunction("1/sqrt(x-1)"));
+			functions.add(parser.buildFunction("sin(x)^10"));
+			
 		} catch (SyntaxException e1) {
 			// TODO Auto-generated catch block
 			System.out.println(e1.getStartIndex());

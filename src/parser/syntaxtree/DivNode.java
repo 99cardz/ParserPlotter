@@ -15,9 +15,12 @@ public class DivNode extends BinarySyntaxNode {
 
     public double eval(double x, double stride) {
     	double denomY = right.eval(x, stride);
+    	// if the denominator is infinite the result will 0
     	if (Double.isInfinite(denomY))
     		return 0;
     	
+    	// if 0 was passed by this or the next denominator
+    	// the limit was passed or will be passed
     	double denomPrevY = right.eval(x - stride, stride);
     	double denomNextY = right.eval(x + stride, stride);
     	if (denomPrevY <= 0 && denomY >= 0 || denomNextY <= 0 && denomY >= 0)

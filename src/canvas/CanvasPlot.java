@@ -204,7 +204,7 @@ public class CanvasPlot extends Canvas {
 	 * 0.00001 -> 5
 	 */
 	private int decimalAmount(double factor) {
-		return factor >= 1 ? 0 : -(int) Math.ceil((Math.log10(factor)));
+		return factor >= 1 ? 0 : -(int) Math.ceil(Math.log10(factor));
 	}
 	
 	private void drawAxies(Graphics g, int x1, int y1, int x2, int y2) {
