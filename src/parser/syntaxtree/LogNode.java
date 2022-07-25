@@ -24,8 +24,12 @@ public class LogNode extends UnarySyntaxNode {
 		result[0] = Math.log(inner[0]);
 		result[values.length-1] = Math.log(inner[values.length-1]);
 		for (int i = 1, len = values.length-1; i < len; i++)
-			result[i] = (inner[i-1] <= 0 && inner[i+1] > 0 || inner[i+1] <= 0 && inner[i-1] > 0) 
-					? Double.NEGATIVE_INFINITY : Math.log(inner[i]);
+			if (inner[i-1] <= 0 && inner[i+1] > 0)
+				result[i] = Double.NEGATIVE_INFINITY;
+			else if (inner[i+1] <= 0 && inner[i-1] > 0)
+				result[i] = Double.POSITIVE_INFINITY;
+			else
+				result[i] = Math.log(inner[i]);
 			
 		return result;
 	}
