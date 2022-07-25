@@ -9,8 +9,15 @@ public abstract class SyntaxNode {
     /**
      * Evaluate the given syntax tree.
      * @param x - the value to evaluate
-     * @param stride - the offset to the next/previous value
      * @return the result of the expression represented by the syntax tree.
      */
-    public abstract double eval(double x, double stride);
+    public abstract double eval(double x);
+    
+    /**
+     * Evaluate all given values on this syntax tree.
+     * The array of values can be used to find and adjust limits that are passed.
+     * @param values to evaluate
+     * @return result
+     */
+    public abstract double[] evalAll(double[] values);
 }

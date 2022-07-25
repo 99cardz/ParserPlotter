@@ -12,31 +12,34 @@ public class TanNode extends UnarySyntaxNode {
         System.out.print(")");
     }
 
-    public double eval(double x, double stride) {
-    	double value = left.eval(x, stride);
-    	double y = Math.tan(value);
-    	// if the previous calculated value is bigger than the current,
-    	// the tan crossed its limit.
-    	// Similarly if the next calculated value will be less the the current,
-    	// then the tan will cross its limit.
-    	// This only applies if the all values of which
-    	// the tan is calculated are ascending or descending
-    	double prevValue = left.eval(x - stride, stride);
-    	double nextValue = left.eval(x + stride, stride);
-    	// ascending
-    	if (prevValue < value && value < nextValue) {
-    		double prevY = Math.tan(prevValue);
-    		if (prevY > y) return Double.NEGATIVE_INFINITY;
-    		double nextY = Math.tan(nextValue);
-    		if (y > nextY) return Double.POSITIVE_INFINITY;
-    	}
-    	// descending
-    	if (prevValue > value && value > nextValue) {
-    		double prevY = Math.tan(prevValue);
-    		if (prevY < y) return Double.POSITIVE_INFINITY;
-    		double nextY = Math.tan(nextValue);
-    		if (y < nextY) return Double.NEGATIVE_INFINITY;
-    	}
-    	return y;
+    public double eval(double x) {
+    	return Math.tan(left.eval(x));
     }
+
+	public double[] evalAll(double[] values) {
+		double[] inner = left.evalAll(values);
+    	double[] results = new double[values.length];
+
+    	for (int i = 0; i < results.length; i++)
+    		results[i] = Math.tan(inner[i]);
+    	
+    	// a
+    	for (int i = 1; i < results.length-2; i++) {
+    		// ascending
+    		if (inner[i-1] < inner[i] && inner[i] < inner[i+1]) {
+        		if (results[i-1] > results[i]) 
+        			results[i] =  Double.NEGATIVE_INFINITY;
+        		if (results[i] > results[i+1]) 
+        			results[i] =  Double.POSITIVE_INFINITY;
+        	}
+        	// descending
+        	if (inner[i-1] > inner[i] && inner[i] > inner[i+1]) {
+        		if (results[i-1] < results[i]) 
+        			results[i] = Double.POSITIVE_INFINITY;
+        		if (results[i] < results[i+1]) 
+        			results[i] = Double.NEGATIVE_INFINITY;
+        	}
+    	}
+        return results;
+	}
 }

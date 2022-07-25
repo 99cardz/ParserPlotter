@@ -21,7 +21,7 @@ public class ParserTest {
                 root = parser.buildSyntaxTree(expr);
                 root.print();
                 System.out.println();
-                System.out.println(root.eval(0, 0));
+                System.out.println(root.eval(0));
                 System.out.println();
             }
             catch(SyntaxException e) {

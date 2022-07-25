@@ -13,21 +13,23 @@ public class DivNode extends BinarySyntaxNode {
         System.out.print(")");
     }
 
-    public double eval(double x, double stride) {
-    	double denomY = right.eval(x, stride);
-    	// if the denominator is infinite the result will 0
-    	if (Double.isInfinite(denomY))
-    		return 0;
-    	
-    	// if 0 was passed by this or the next denominator
-    	// the limit was passed or will be passed
-    	double denomPrevY = right.eval(x - stride, stride);
-    	double denomNextY = right.eval(x + stride, stride);
-    	if (denomPrevY <= 0 && denomY >= 0 || denomNextY <= 0 && denomY >= 0)
-    		return Double.POSITIVE_INFINITY;
-    	if (denomY <= 0 && denomNextY >= 0 || denomY <= 0 && denomPrevY >= 0)
-    		return Double.NEGATIVE_INFINITY;
-    	
-        return left.eval(x, stride) / denomY;
+    public double eval(double x) {
+        return left.eval(x) / right.eval(x);
     }
+
+	public double[] evalAll(double[] values) {
+		double[] denoms = right.evalAll(values);
+		double[] result = left.evalAll(values);
+		
+		for (int i = 0; i < result.length; i++)
+			result[i] = Double.isInfinite(denoms[i]) ? 0 : result[i] / denoms[i];
+		
+		for (int i = 1, len = denoms.length - 2; i < len; i++) {
+			if (denoms[i-1] <= 0 && denoms[i] >= 0 || denoms[i+1] <= 0 && denoms[i] >= 0)
+				result[i] = Double.POSITIVE_INFINITY;
+			if (denoms[i] <= 0 && denoms[i+1] >= 0 || denoms[i] <= 0 && denoms[i-1] >= 0)
+				result[i] = Double.NEGATIVE_INFINITY;
+		}
+		return result;
+	}
 }

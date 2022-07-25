@@ -53,8 +53,9 @@ public class Window extends JFrame {
 		
 		// just for testing
 		try {
-			functions.add(parser.buildFunction("sin(x)^10"));
-			
+			functions.add(parser.buildFunction("x+sin(x-4)"));
+			functions.add(parser.buildFunction("x"));
+			functions.add(parser.buildFunction("x*x"));
 		} catch (SyntaxException e1) {
 			// TODO Auto-generated catch block
 			System.out.println(e1.getStartIndex());
@@ -62,6 +63,7 @@ public class Window extends JFrame {
 			System.out.println(e1.getString());
 			e1.printStackTrace();
 		}
+		canvas.repaint();
 		
 		// general stuff
 		this.setTitle(title);

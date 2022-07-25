@@ -50,7 +50,7 @@ public class Function {
     }
     
     public double eval(double prev, double stride) {
-    	return treeRoot.eval(prev, stride);
+    	return treeRoot.eval(prev);
     }
 
     final private long UUID;

@@ -13,7 +13,17 @@ public class SubNode extends BinarySyntaxNode {
         System.out.print(")");
     }
 
-    public double eval(double prev, double stride) {
-        return left.eval(prev, stride) - right.eval(prev, stride);
+    public double eval(double prev) {
+        return left.eval(prev) - right.eval(prev);
     }
+    
+	public double[] evalAll(double[] values) {
+		double[] l = left.evalAll(values);
+		double[] r = right.evalAll(values);
+		
+		for(int i = 0; i < l.length; i++)
+			l[i] -= r[i];
+		
+		return l;
+	}
 }

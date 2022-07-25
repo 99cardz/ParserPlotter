@@ -13,7 +13,18 @@ public class MultNode extends BinarySyntaxNode {
         System.out.print(")");
     }
 
-    public double eval(double x, double stride) {
-        return left.eval(x, stride) * right.eval(x, stride);
+    public double eval(double x) {
+        return left.eval(x) * right.eval(x);
     }
+
+	public double[] evalAll(double[] values) {
+		
+		double[] result = left.evalAll(values);
+		double[] factor = right.evalAll(values);
+		
+		for (int i = 0; i < values.length; i++)
+			result[i] *= factor[i];
+		
+		return result;
+	}
 }

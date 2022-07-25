@@ -160,21 +160,19 @@ public class CanvasPlot extends Canvas {
 		for (int xCoord = 0; xCoord < w; xCoord++)
 			xValues[xCoord] = toXValue(xCoord);
 		
-		double stride = toXValue(centerX+1);
 		
 		for (Function f : functions) {
 			g.setColor(f.getColor());
-			double prevYValue = f.eval(xValues[0], stride);
-			int prevYCoord = toYCoord(prevYValue);
+			double[] yValues = f.getTreeRoot().evalAll(xValues);
+			int prevYCoord = toYCoord(yValues[0]);
+			
 			for (int xCoord = 1; xCoord < w; xCoord++) {
-				double currYValue = f.eval(xValues[xCoord], stride);
-				int currYCoord = toYCoord(currYValue);
+				int currYCoord = toYCoord(yValues[xCoord]);
 				
-				if ((Double.isFinite(currYValue) || Double.isFinite(prevYValue))
-						&& !Double.isNaN(currYValue) && !Double.isNaN(prevYValue))
+				if ((Double.isFinite(yValues[xCoord]) || Double.isFinite(yValues[xCoord-1]))
+						&& !Double.isNaN(yValues[xCoord]) && !Double.isNaN(yValues[xCoord-1]))
 					thickLine(g, xCoord-1, prevYCoord, xCoord, currYCoord);
 				
-				prevYValue = currYValue;
 				prevYCoord = currYCoord;
 			}
 		}
