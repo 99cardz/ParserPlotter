@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 
 import gui.Function;
+import gui.FunctionInput;
 
 public class CanvasPlot extends Canvas {
 	
@@ -23,10 +24,10 @@ public class CanvasPlot extends Canvas {
 	private String valueFormatterX = "%.0f", valueFormatterY= "%.0f";
 	
 	// function list reference
-	ArrayList<Function> functions;
+	ArrayList<FunctionInput> functions;
 
-	public CanvasPlot(ArrayList<Function> f) {
-		functions = f;
+	public CanvasPlot(ArrayList<FunctionInput> inputArray) {
+		functions = inputArray;
 		scaleX = DEFAULT_SCALE;
 		scaleY = DEFAULT_SCALE;
 	}
@@ -161,9 +162,9 @@ public class CanvasPlot extends Canvas {
 			xValues[xCoord] = toXValue(xCoord);
 		
 		
-		for (Function f : functions) {
+		for (FunctionInput f : functions) {
 			g.setColor(f.getColor());
-			double[] yValues = f.getTreeRoot().evalAll(xValues);
+			double[] yValues = f.getFunction().getTreeRoot().evalAll(xValues);
 			int prevYCoord = toYCoord(yValues[0]);
 			
 			for (int xCoord = 1; xCoord < w; xCoord++) {
