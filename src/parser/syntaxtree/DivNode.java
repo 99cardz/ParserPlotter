@@ -18,17 +18,60 @@ public class DivNode extends BinarySyntaxNode {
     }
 
 	public double[] evalAll(double[] values) {
-		double[] denoms = right.evalAll(values);
-		double[] result = left.evalAll(values);
+		double[] d = right.evalAll(values); // denominators
+		double[] n = left.evalAll(values); // numerators
+		double[] result = new double[values.length];
 		
 		for (int i = 0; i < result.length; i++)
-			result[i] = Double.isInfinite(denoms[i]) ? 0 : result[i] / denoms[i];
+			result[i] = Double.isInfinite(d[i]) ? 0 : n[i] / d[i];
 		
-		for (int i = 1, len = denoms.length - 2; i < len; i++) {
-			if (denoms[i-1] <= 0 && denoms[i] >= 0 || denoms[i+1] <= 0 && denoms[i] >= 0)
-				result[i] = Double.POSITIVE_INFINITY;
-			if (denoms[i] <= 0 && denoms[i+1] >= 0 || denoms[i] <= 0 && denoms[i-1] >= 0)
-				result[i] = Double.NEGATIVE_INFINITY;
+		for (int i = 1, len = d.length - 2; i < len; i++) {
+			// only adjust the limit to infinity if the result is changing
+			// this will exclude functions like x/x where x=0 is just undefined
+			if (result[i-1] != result[i] && result[i] != result[i+1]) {
+				// numerator above 0
+				if (n[i] > 0) {
+					// denominator is ascending
+					if (d[i-1] < d[i] && d[i] < d[i+1]) {
+						// denominator will pass 0
+						if (d[i] <= 0 && d[i+1] >= 0)
+							result[i] = Double.NEGATIVE_INFINITY;
+						// denominator just passed 0
+						if (d[i-1] <= 0 && d[i] >= 0)
+							result[i] = Double.POSITIVE_INFINITY;
+					}
+					// denominator is descending
+					if (d[i-1] > d[i] && d[i] > d[i+1]) {
+						// denominator will pass 0
+						if (d[i] >= 0 && d[i+1] <= 0)
+							result[i] = Double.POSITIVE_INFINITY;
+						// denominator just passed 0
+						if (d[i-1] >= 0 && d[i] <= 0)
+							result[i] = Double.NEGATIVE_INFINITY;
+					}
+				}
+				// numerator blow 0
+				else if (n[i] < 0) {
+					// denominator is ascending
+					if (d[i-1] < d[i] && d[i] < d[i+1]) {
+						// denominator will pass 0
+						if (d[i] <= 0 && d[i+1] >= 0)
+							result[i] = Double.POSITIVE_INFINITY;
+						// denominator just passed 0
+						if (d[i-1] <= 0 && d[i] >= 0)
+							result[i] = Double.NEGATIVE_INFINITY;
+					}
+					// denominator is descending
+					if (d[i-1] > d[i] && d[i] > d[i+1]) {
+						// denominator will pass 0
+						if (d[i] >= 0 && d[i+1] <= 0)
+							result[i] = Double.NEGATIVE_INFINITY;
+						// denominator just passed 0
+						if (d[i-1] >= 0 && d[i] <= 0)
+							result[i] = Double.POSITIVE_INFINITY;
+					}
+				}
+			}
 		}
 		return result;
 	}
