@@ -20,17 +20,18 @@ public class LogNode extends UnarySyntaxNode {
 		
 		double[] inner = left.evalAll(values);
 		double[] result = new double[values.length];
+		
+		for (int i = 0; i < values.length; i++)
+			result[i] = Math.log(inner[i]);
 	
-		result[0] = Math.log(inner[0]);
-		result[values.length-1] = Math.log(inner[values.length-1]);
-		for (int i = 1, len = values.length-1; i < len; i++)
-			if (inner[i-1] <= 0 && inner[i+1] > 0)
-				result[i] = Double.NEGATIVE_INFINITY;
-			else if (inner[i+1] <= 0 && inner[i-1] > 0)
+		for (int i = 1, len = values.length-1; i < len; i++) {
+			// just passed 0
+			if (inner[i] <= 0 && inner[i+1] >= 0)
 				result[i] = Double.POSITIVE_INFINITY;
-			else
-				result[i] = Math.log(inner[i]);
-			
+			// will pass 0
+			else if (inner[i-1] <= 0 && inner[i] >= 0)
+				result[i] = Double.NEGATIVE_INFINITY;
+		}
 		return result;
 	}
 }

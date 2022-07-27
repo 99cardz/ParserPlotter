@@ -41,7 +41,7 @@ public class DivNode extends BinarySyntaxNode {
 							result[i] = Double.POSITIVE_INFINITY;
 					}
 					// denominator is descending
-					if (d[i-1] > d[i] && d[i] > d[i+1]) {
+					else if (d[i-1] > d[i] && d[i] > d[i+1]) {
 						// denominator will pass 0
 						if (d[i] >= 0 && d[i+1] <= 0)
 							result[i] = Double.POSITIVE_INFINITY;
@@ -62,7 +62,7 @@ public class DivNode extends BinarySyntaxNode {
 							result[i] = Double.NEGATIVE_INFINITY;
 					}
 					// denominator is descending
-					if (d[i-1] > d[i] && d[i] > d[i+1]) {
+					else if (d[i-1] > d[i] && d[i] > d[i+1]) {
 						// denominator will pass 0
 						if (d[i] >= 0 && d[i+1] <= 0)
 							result[i] = Double.NEGATIVE_INFINITY;
