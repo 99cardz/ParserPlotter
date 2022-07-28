@@ -17,11 +17,15 @@ public class SqrtNode extends UnarySyntaxNode {
     }
 
 	public double[] evalAll(double[] values) {
-		double[] result = left.evalAll(values);
+		double[] inner = left.evalAll(values);
+		double[] result = new double[values.length];
 		
-		result[0] = Math.sqrt(result[0]);
-		for(int i = 1, len = result.length; i < len; i++)
-			result[i] = (result[i-1] > 0 && result[i] <= 0) ? 0 : Math.sqrt(result[i]);
+		result[0] = Math.sqrt(inner[0]);
+		result[result.length-1] = Math.sqrt(inner[result.length-1]);
+		for(int i = 1, len = result.length-1; i < len; i++)
+			result[i] = 
+				inner[i-1] <= 0 && inner[i] >= 0 || inner[i] >= 0 && inner[i+1] <= 0 
+				? 0 : Math.sqrt(inner[i]);
 			
 		return result;
 	}
