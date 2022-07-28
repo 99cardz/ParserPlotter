@@ -275,6 +275,10 @@ public class Parser {
             scanToken();
             SyntaxNode a = parseExpr();
 
+            // Null check
+            if(nextToken == null)
+                throw new SyntaxException("", -1, -1);
+
             if(nextToken.getType() != TokenType.PAR_CLOSE) {
                 throw new SyntaxException(nextToken.getString(), nextToken.getStartIndex(), nextToken.getEndIndex());
             }
