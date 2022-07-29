@@ -269,6 +269,7 @@ public class Parser {
                 case SIN:  return new SinNode(a);
                 case TAN:  return new TanNode(a);
                 case SQRT: return new SqrtNode(a);
+                case ABS:  return new AbsNode(a);
             }
         }
         else if(nextToken.getType() == TokenType.PAR_OPEN) {
