@@ -21,8 +21,9 @@ public class SqrtNode extends UnarySyntaxNode {
 		double[] result = new double[values.length];
 		
 		result[0] = Math.sqrt(inner[0]);
-		result[result.length-1] = Math.sqrt(inner[result.length-1]);
-		for(int i = 1, len = result.length-1; i < len; i++)
+		int len = values.length-1;
+		result[len] = Math.sqrt(inner[len]);
+		for(int i = 1; i < len; i++)
 			result[i] = 
 				inner[i-1] <= 0 && inner[i] >= 0 || inner[i] >= 0 && inner[i+1] <= 0 
 				? 0 : Math.sqrt(inner[i]);

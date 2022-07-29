@@ -25,7 +25,7 @@ public class DivNode extends BinarySyntaxNode {
 		for (int i = 0; i < result.length; i++)
 			result[i] = Double.isInfinite(d[i]) ? 0 : n[i] / d[i];
 		
-		for (int i = 1, len = d.length - 2; i < len; i++) {
+		for (int i = 1, len = d.length - 1; i < len; i++) {
 			// only adjust the limit to infinity if the result is changing
 			// this will exclude functions like x/x where x=0 is just undefined
 			// and doesn't go to infinity
