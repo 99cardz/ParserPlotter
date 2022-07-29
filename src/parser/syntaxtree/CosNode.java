@@ -13,23 +13,27 @@ public class CosNode extends UnarySyntaxNode {
     }
 
     public double eval(double x) {
-//    	double prevY = Math.cos(left.eval(x - stride));
-//    	double y = Math.cos(left.eval(x));
-//    	double nextY = Math.cos(left.eval(x + stride));
-//    	// round to zero if we pass it or will pass it
-//    	if ((prevY < 0 && y >= 0) || (prevY > 0 && y <= 0))
-//    		return 0;
-//    	if ((nextY < 0 && y >= 0) || (nextY > 0 && y <= 0))
-//    		return 0;
         return Math.cos(left.eval(x));
     }
 
 	public double[] evalAll(double[] values) {
 		
-		double[] result = left.evalAll(values);
+		double[] check = left.evalAll(values);
+		double[] result = new double[values.length];
 		
 		for (int i = 0; i < values.length; i++)
-			result[i] = Math.cos(result[i]);
+			check[i] = Math.cos(check[i]);
+		
+		result[0] = check[0];
+		int len = values.length-1;
+		result[len] = check[len];
+		for (int i = 1; i < len; i++) {
+			// round to zero if we pass it or will pass it
+			result[i] = 
+					check[i-1] < 0 && check[i] >= 0 || check[i-1] >= 0 && check[i] < 0
+					|| check[i+1] < 0 && check[i] >= 0 || check[i+1] >= 0 && check[i] < 0
+					? 0 : check[i];
+		}
 		
 		return result;
 	}
