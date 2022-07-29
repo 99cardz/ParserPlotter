@@ -5,5 +5,6 @@ public enum FunctionType {
     COS,
     TAN,
     SQRT,
-    LOG
+    LOG,
+    ABS
 }

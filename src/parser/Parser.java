@@ -269,11 +269,16 @@ public class Parser {
                 case SIN:  return new SinNode(a);
                 case TAN:  return new TanNode(a);
                 case SQRT: return new SqrtNode(a);
+                case ABS:  return new AbsNode(a);
             }
         }
         else if(nextToken.getType() == TokenType.PAR_OPEN) {
             scanToken();
             SyntaxNode a = parseExpr();
+
+            // Null check
+            if(nextToken == null)
+                throw new SyntaxException("", -1, -1);
 
             if(nextToken.getType() != TokenType.PAR_CLOSE) {
                 throw new SyntaxException(nextToken.getString(), nextToken.getStartIndex(), nextToken.getEndIndex());
