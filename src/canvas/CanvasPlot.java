@@ -1,37 +1,35 @@
 package canvas;
-import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
 
-import gui.Function;
+import javax.swing.JPanel;
 
-public class CanvasPlot extends Canvas {
-	
-//	final Parser parser = new Parser();
+import gui.FunctionInput;
+
+public class CanvasPlot extends JPanel {
 	
 	// location of coordinate center on canvas
-	private int centerOffsetX, centerOffsetY;
+	private int centerOffsetX = 0, centerOffsetY = 0;
 	private int centerX, centerY;
 	
 	// pixels per unit
-	private double scaleX, scaleY; // pixels per unit
+	private double scaleX, scaleY;
 	static final int DEFAULT_SCALE = 40;
 	
-	// value indicator line spacing values and factor
-	private double lineSpacingX, lineSpacingY;
-	private double lineSpacingFactorX = 1, lineSpacingFactorY = 1;
+	// value indicator line spacing values
+	private double lineSpacingX = 1, lineSpacingY = 1;
 	
 	// formats to draw values
-	private String valueFormatterX, valueFormatterY;
+	private String valueFormatterX = "%.0f", valueFormatterY= "%.0f";
 	
 	// function list reference
-	ArrayList<Function> functions;
+	ArrayList<FunctionInput> functions;
 
-	public CanvasPlot(ArrayList<Function> f) {
-		functions = f;
-		scale(0,0); // calculate linespacing and linespacingfactors
-		resetOffset();
+	public CanvasPlot(ArrayList<FunctionInput> inputArray) {
+		functions = inputArray;
+		scaleX = DEFAULT_SCALE;
+		scaleY = DEFAULT_SCALE;
 	}
 	/**
 	 * Scales the coordinate system by the provided factors.
@@ -52,28 +50,30 @@ public class CanvasPlot extends Canvas {
 		// recalculate lineSpacingFactor and lineSpacing of both x and y
 		final double[] choices = {1, 2, 5};
 		int iX = 0;
-		while (pixelsPerUnitX * choices[iX] * lineSpacingFactorX < 40) {
-			lineSpacingFactorX *= iX + 1 > 2 ? 10 : 1;
+		factorX = 1;
+		while (pixelsPerUnitX * choices[iX] * factorX < 40) {
+			factorX *= iX + 1 > 2 ? 10 : 1;
 			iX = (iX + 1) % 3;
 		}
-		while (pixelsPerUnitX * choices[iX] * lineSpacingFactorX > 100) {
-			lineSpacingFactorX /= iX - 1 < 0 ? 10 : 1;
+		while (pixelsPerUnitX * choices[iX] * factorX > 100) {
+			factorX /= iX - 1 < 0 ? 10 : 1;
 			iX = (iX + 2) % 3;
 		}
-		lineSpacingX = choices[iX] * lineSpacingFactorX;
-		valueFormatterX = "%." + decimalAmount(lineSpacingFactorX) + "f";
+		lineSpacingX = choices[iX] * factorX;
+		valueFormatterX = "%." + decimalAmount(factorX) + "f";
 		
 		int iY = 0;
-		while (pixelsPerUnitY * choices[iY] * lineSpacingFactorY < 40) {
-			lineSpacingFactorY *= iY + 1 > 2 ? 10 : 1;
+		factorY = 1;
+		while (pixelsPerUnitY * choices[iY] * factorY < 40) {
+			factorY *= iY + 1 > 2 ? 10 : 1;
 			iY = (iY + 1) % 3;
 		}
-		while (pixelsPerUnitY * choices[iY] * lineSpacingFactorY > 100) {
-			lineSpacingFactorY /= iY - 1 < 0 ? 10 : 1;
+		while (pixelsPerUnitY * choices[iY] * factorY > 100) {
+			factorY /= iY - 1 < 0 ? 10 : 1;
 			iY = (iY + 2) % 3;
 		}
-		lineSpacingY = choices[iY] * lineSpacingFactorY;
-		valueFormatterY = "%." + decimalAmount(lineSpacingFactorY) + "f";
+		lineSpacingY = choices[iY] * factorY;
+		valueFormatterY = "%." + decimalAmount(factorY) + "f";
 		
 		repaint();
 	}
@@ -110,6 +110,9 @@ public class CanvasPlot extends Canvas {
 	}
 	
 	public void paint(Graphics g) {
+		
+		super.paint(g);
+		
 		int w = getWidth();
 		int h = getHeight();
 		centerX = w / 2 + centerOffsetX;
@@ -153,42 +156,70 @@ public class CanvasPlot extends Canvas {
 		
 		// paint axies
 		g.setColor(Color.black);
-		thickLine(g, 0, centerY, w, centerY); // x
-		thickLine(g, centerX, 0, centerX, h); // y
+		drawAxies(g, 0, centerY, w, centerY); // x
+		drawAxies(g, centerX, 0, centerX, h); // y
 		
 		// paint graph
 		double[] xValues = new double[w];
 		for (int xCoord = 0; xCoord < w; xCoord++)
 			xValues[xCoord] = toXValue(xCoord);
 		
-		for (Function f : functions) {
+		
+		for (FunctionInput f : functions) {
 			g.setColor(f.getColor());
-			double prevYValue = f.eval(xValues[0]);
-			int prevYCoord = toYCoord(prevYValue);
+			double[] yValues = f.getFunction().getTreeRoot().evalAll(xValues);
+			int prevYCoord = toYCoord(yValues[0]);
+			
 			for (int xCoord = 1; xCoord < w; xCoord++) {
-				double currYValue = f.eval(xValues[xCoord]);
-				int currYCoord = toYCoord(currYValue);
-				if (Double.isFinite(prevYValue) && Double.isFinite(currYValue) && Math.abs(prevYCoord - currYCoord) < h)
+				int currYCoord = toYCoord(yValues[xCoord]);
+				
+				if ((Double.isFinite(yValues[xCoord]) || Double.isFinite(yValues[xCoord-1]))
+						&& !Double.isNaN(yValues[xCoord]) && !Double.isNaN(yValues[xCoord-1]))
 					thickLine(g, xCoord-1, prevYCoord, xCoord, currYCoord);
-				prevYValue = currYValue;
+				
 				prevYCoord = currYCoord;
 			}
-		}	
+		}
 	}
+	
 	// Methods to convert Values to Coordinates back and fourth.
 	public int toXCoord(double value) { return (int) (centerX + value * scaleX); }
-	public int toYCoord(double value) { return (int) (centerY - value * scaleY); }
+	public int toYCoord(double value) { 
+		int coord = (int) (centerY - value * scaleY);
+		int max = getHeight();
+		if (value == Double.NEGATIVE_INFINITY || coord > max)
+			return max+100;
+		if (value == Double.POSITIVE_INFINITY || coord < 0)
+			return -100;
+		return coord;
+	}
 	public double toXValue(int coord) { return ((double) (coord - centerX)) / scaleX; }
 	public double toYValue(int coord) { return ((double) -(coord - centerY)) / scaleY; }
 	
+	/*
+	 * Calculate the amount of decimals of a given factor.
+	 * 
+	 * For Example: 
+	 * 100 -> 0 
+	 * 1 -> 0
+	 * 0.01 -> 2 
+	 * 0.00001 -> 5
+	 */
 	private int decimalAmount(double factor) {
-		int decimals = -(int) Math.ceil((Math.log10(lineSpacingFactorX)));
-		return decimals < 0 ? 0 : decimals;
+		return factor >= 1 ? 0 : -(int) Math.ceil(Math.log10(factor));
 	}
 	
-	private void thickLine(Graphics g, int x1, int y1, int x2, int y2) {
+	private void drawAxies(Graphics g, int x1, int y1, int x2, int y2) {
 		g.drawLine(x1, y1-1, x2, y2-1);
 		g.drawLine(x1, y1, x2, y2);
 		g.drawLine(x1+1, y1, x2+1, y2);
+	}
+	private void thickLine(Graphics g, int x1, int y1, int x2, int y2) {
+		g.drawLine(x1-1, y1, x2-1, y2);
+		g.drawLine(x1, y1-1, x2, y2-1);
+		g.drawLine(x1, y1, x2, y2);
+		g.drawLine(x1+1, y1, x2+1, y2);
+		g.drawLine(x1, y1+1, x2, y2+1);
+	
 	}
 }
