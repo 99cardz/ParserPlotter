@@ -12,11 +12,11 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import canvas.CanvasPlot;
+import viewModel.ViewModel;
 
 public class Window extends JFrame {
 	
-	private ArrayList<Function> functions		= new ArrayList<Function>();
-	
+	ViewModel viewModel;
 	// layout
 	private final Dimension	defaultSize			= new Dimension(1200, 700);
 	
@@ -42,7 +42,9 @@ public class Window extends JFrame {
 	private JButton 		yZoomInButton 		= new JButton("+");
 	private JButton			resetButton 		= new JButton("R");
 	
-	public Window() {
+	public Window(ViewModel vm) {
+		
+		viewModel = vm;
 		
 		// general stuff
 		this.setTitle(title);
@@ -63,7 +65,7 @@ public class Window extends JFrame {
 		});
 		leftPanel.add(inputPanel, BorderLayout.CENTER);
 		
-		canvas = new CanvasPlot(inputArray);
+		canvas = new CanvasPlot(viewModel);
 		canvasPanel.setLayout(new BorderLayout());
 		canvasPanel.setBorder(new EmptyBorder(2, 10, 2, 2));
 		canvasPanel.add(canvas);
@@ -147,7 +149,6 @@ public class Window extends JFrame {
 					insertUpdate(e);
 				}
 			});
-			functions.add(f.getFunction());
 			inputArray.add(f);
 			inputPanel.add(f);
 		}

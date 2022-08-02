@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import javax.swing.JPanel;
 
 import gui.FunctionInput;
+import viewModel.GraphData;
+import viewModel.ViewModel;
 
 public class CanvasPlot extends JPanel {
 	
@@ -23,11 +25,12 @@ public class CanvasPlot extends JPanel {
 	// formats to draw values
 	private String valueFormatterX = "%.0f", valueFormatterY= "%.0f";
 	
-	// function list reference
-	ArrayList<FunctionInput> functions;
+	// viewModel reference
+	ViewModel viewModel;
+	
 
-	public CanvasPlot(ArrayList<FunctionInput> inputArray) {
-		functions = inputArray;
+	public CanvasPlot(ViewModel vm) {
+		viewModel = vm;
 		scaleX = DEFAULT_SCALE;
 		scaleY = DEFAULT_SCALE;
 	}
@@ -75,17 +78,7 @@ public class CanvasPlot extends JPanel {
 		lineSpacingY = choices[iY] * factorY;
 		valueFormatterY = "%." + decimalAmount(factorY) + "f";
 		
-		repaint();
-	}
-	/**
-	 * Offset the coordinate system center by a provided amount of line Spacings.
-	 * The Canvas will be redrawn!
-	 * @param offsetX
-	 * @param offsetY
-	 */
-	public void offset(int offsetX, int offsetY) {
-		centerOffsetX += offsetX * scaleX * lineSpacingX;
-		centerOffsetY += -offsetY * scaleY * lineSpacingY;
+		updateXValues();
 		repaint();
 	}
 	/**
@@ -97,6 +90,7 @@ public class CanvasPlot extends JPanel {
 	public void offsetPx(int x, int y) {
 		centerOffsetX += x;
 		centerOffsetY += y;
+		updateXValues();
 		repaint();
 	}
 	/**
@@ -106,6 +100,7 @@ public class CanvasPlot extends JPanel {
 	public void resetOffset() {
 		centerOffsetX = 0;
 		centerOffsetY = 0;
+		updateXValues();
 		repaint();
 	}
 	
@@ -160,14 +155,9 @@ public class CanvasPlot extends JPanel {
 		drawAxies(g, centerX, 0, centerX, h); // y
 		
 		// paint graph
-		double[] xValues = new double[w];
-		for (int xCoord = 0; xCoord < w; xCoord++)
-			xValues[xCoord] = toXValue(xCoord);
-		
-		
-		for (FunctionInput f : functions) {
-			g.setColor(f.getColor());
-			double[] yValues = f.getFunction().getTreeRoot().evalAll(xValues);
+		for (GraphData gd : viewModel.getGraphData()) {
+			g.setColor(gd.getColor());
+			double[] yValues = gd.getYValues();
 			int prevYCoord = toYCoord(yValues[0]);
 			
 			for (int xCoord = 1; xCoord < w; xCoord++) {
@@ -196,6 +186,14 @@ public class CanvasPlot extends JPanel {
 	public double toXValue(int coord) { return ((double) (coord - centerX)) / scaleX; }
 	public double toYValue(int coord) { return ((double) -(coord - centerY)) / scaleY; }
 	
+	public void updateXValues() {
+		int w = getWidth();
+		double[] xValues = new double[w];
+		for (int xCoord = 0; xCoord < w; xCoord++)
+			xValues[xCoord] = toXValue(xCoord);
+		
+		viewModel.updateXValues(xValues);
+	}
 	/*
 	 * Calculate the amount of decimals of a given factor.
 	 * 
