@@ -8,8 +8,7 @@ import canvas.CanvasPlot;
 public class Main {
 	
 	public static void main(String[] args) {
-		ViewModel viewModel = new ViewModel();
-		Window window = new Window(viewModel);
+		Window window = new Window();
 		window.setVisible(true); 
 	}
 }

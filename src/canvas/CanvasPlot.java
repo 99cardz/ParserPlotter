@@ -1,11 +1,9 @@
 package canvas;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
-import gui.FunctionInput;
 import viewModel.GraphData;
 import viewModel.ViewModel;
 
@@ -26,11 +24,10 @@ public class CanvasPlot extends JPanel {
 	private String valueFormatterX = "%.0f", valueFormatterY= "%.0f";
 	
 	// viewModel reference
-	ViewModel viewModel;
+	ViewModel viewModel = ViewModel.getInstance();
 	
 
-	public CanvasPlot(ViewModel vm) {
-		viewModel = vm;
+	public CanvasPlot() {
 		scaleX = DEFAULT_SCALE;
 		scaleY = DEFAULT_SCALE;
 		setBackground(Color.white);
@@ -114,8 +111,6 @@ public class CanvasPlot extends JPanel {
 		
 		int w = getWidth();
 		int h = getHeight();
-		centerX = w / 2 + centerOffsetX;
-		centerY = h / 2 + centerOffsetY;
 		
 		// paint value indicator lines
 		double minX = toXValue(0);
@@ -194,6 +189,10 @@ public class CanvasPlot extends JPanel {
 	
 	public void updateXValues() {
 		int w = getWidth();
+		int h = getHeight();
+		centerX = w / 2 + centerOffsetX;
+		centerY = h / 2 + centerOffsetY;
+		
 		double[] xValues = new double[w];
 		for (int xCoord = 0; xCoord < w; xCoord++)
 			xValues[xCoord] = toXValue(xCoord);

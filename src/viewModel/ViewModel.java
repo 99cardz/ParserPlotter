@@ -8,7 +8,15 @@ import parser.Parser;
 import parser.SyntaxException;
 
 public class ViewModel {
-	private static Parser parser = new Parser();
+	
+	private static final ViewModel INSTANCE = new ViewModel();
+	
+	private ViewModel() {}
+	public static ViewModel getInstance() {
+		return INSTANCE;
+	}
+	
+	private Parser parser = new Parser();
 	private double[] xValues;
 	private HashMap<UUID, GraphData> graphs = new HashMap<UUID, GraphData>();
 	
@@ -38,6 +46,9 @@ public class ViewModel {
 				return "Unexpected end of Expression";
 			return "Syntax error at position " + e.getStartIndex() + " with Symbol " + e.getString();
 		}
+	}
+	public void updateFunctionColor(UUID id, Color c) {
+		graphs.get(id).setColor(c);
 	}
 	public void deleteFunction(UUID id) {
 		graphs.remove(id);

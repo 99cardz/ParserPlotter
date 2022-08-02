@@ -19,7 +19,7 @@ public class FunctionInput extends JPanel {
 	private static final String 	EMPTY_INPUT = "Enter a function.";
 	
 	// references
-	private ViewModel viewModel;
+	private ViewModel viewModel = ViewModel.getInstance();
 	private CanvasPlot canvas;
 	
     private static final Color[] colors = {
@@ -44,10 +44,9 @@ public class FunctionInput extends JPanel {
 	private JLabel 			label 		= new JLabel("", SwingConstants.CENTER);
 	private JPanel			right		= new JPanel(new BorderLayout());
 	
-	FunctionInput(ViewModel vm, CanvasPlot cp) {
+	FunctionInput(CanvasPlot cp) {
 		super(new BorderLayout());
 		
-		viewModel = vm;
 		canvas = cp;
 		
 		id = viewModel.addFunction(color);
@@ -99,9 +98,8 @@ public class FunctionInput extends JPanel {
 			public void mouseClicked(MouseEvent e) {
 				color = getNextColor();
 				colorLine.setBackground(color);
-				String inputString = input.getText();
-				input.setText(" ");
-				input.setText(inputString);
+				viewModel.updateFunctionColor(id, color);
+				canvas.repaint();
 			}
 		});
 		

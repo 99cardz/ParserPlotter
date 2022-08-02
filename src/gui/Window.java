@@ -8,15 +8,14 @@ import java.util.ArrayList;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 import canvas.CanvasPlot;
 import viewModel.ViewModel;
 
 public class Window extends JFrame {
 	
-	ViewModel viewModel;
+	ViewModel viewModel							= ViewModel.getInstance();
+	
 	// layout
 	private final Dimension	defaultSize			= new Dimension(1200, 700);
 	
@@ -28,23 +27,20 @@ public class Window extends JFrame {
 	
 	private int 			inputPanelSize 		= 8;
 	private JPanel 			inputPanel 			= new JPanel(new GridLayout(inputPanelSize, 1));
-	private ArrayList<FunctionInput> inputArray 	= new ArrayList<FunctionInput>();
+	private ArrayList<FunctionInput> inputArray = new ArrayList<FunctionInput>();
 	
 	private JPanel 			canvasPanel 		= new JPanel();
-	private CanvasPlot		canvas;
+	private CanvasPlot		canvas				= new CanvasPlot();
 	private JLabel			valueLable 			= new JLabel((""),  SwingConstants.CENTER);
 	
 	private JPanel 			bottomPanel 		= new JPanel();
-	private double[]		currScale 			= {1., 1.};
 	private JButton 		xZoomOutButton 		= new JButton("-");
 	private JButton 		xZoomInButton 		= new JButton("+");
 	private JButton 		yZoomOutButton 		= new JButton("-");
 	private JButton 		yZoomInButton 		= new JButton("+");
 	private JButton			resetButton 		= new JButton("R");
 	
-	public Window(ViewModel vm) {
-		
-		viewModel = vm;
+	public Window() {
 		
 		// general stuff
 		this.setTitle(title);
@@ -65,7 +61,6 @@ public class Window extends JFrame {
 		});
 		leftPanel.add(inputPanel, BorderLayout.CENTER);
 		
-		canvas = new CanvasPlot(viewModel);
 		canvasPanel.setLayout(new BorderLayout());
 		canvasPanel.setBorder(new EmptyBorder(2, 10, 2, 2));
 		canvasPanel.add(canvas);
@@ -132,7 +127,7 @@ public class Window extends JFrame {
 			inputPanel.add(f);
 		}
 		if(inputArray.size() < inputPanelSize) {
-			FunctionInput f = new FunctionInput(viewModel, canvas);
+			FunctionInput f = new FunctionInput(canvas);
 			f.getInput().addActionListener(e -> {
 				int prevPos = inputArray.indexOf(f);
 				redrawFields();

@@ -18,9 +18,8 @@ public class GraphData {
 		return yValues;
 	}
 	public void calculateYValues(double[] xValues) {
-		if (root != null) {
+		if (root != null)
 			yValues = root.evalAll(xValues);
-		}
 	}
 	
 	public Color getColor() {
