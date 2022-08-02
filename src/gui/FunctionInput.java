@@ -29,15 +29,16 @@ public class FunctionInput extends JPanel {
 	public boolean			status		= true;
 	
 	private JTextField 		input 		= new JTextField(EMPTY_INPUT);
-	private JPanel 			color 		= new JPanel();
+	private JPanel 			coloredLine 		= new JPanel();
+	private Color			color		= getNextColor();
 	private JLabel 			label 		= new JLabel("", SwingConstants.CENTER);
 	private JPanel			right		= new JPanel(new BorderLayout());
 	private Function		function;
 	
 	FunctionInput() {
 		super(new BorderLayout());
-		color.setBackground(getNextColor());
-		function = new Function(color.getBackground());
+		coloredLine.setBackground(getNextColor());
+		function = new Function(coloredLine.getBackground());
 		setBorder(new EtchedBorder(EtchedBorder.LOWERED));
 		input.setBorder(new EmptyBorder(0, 20, 0, 20));
 		input.setText(EMPTY_INPUT);
@@ -76,19 +77,28 @@ public class FunctionInput extends JPanel {
 				insertUpdate(e);
 			}
 		});
-		color.addMouseListener(new MouseAdapter() {
+		coloredLine.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-				setColor(FunctionInput.getNextColor());
-				String inputString = input.getText();
-				input.setText(" ");
-				input.setText(inputString);
+				JFrame pickerWindow = new JFrame();
+				pickerWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				pickerWindow.setSize(400, 400);
+				pickerWindow.setLayout(new BorderLayout());
+				JColorChooser colorPicker = new JColorChooser(getNextColor());
+				pickerWindow.add(colorPicker, BorderLayout.CENTER);
+				JButton selectButton = new JButton("Bestätigen");
+				selectButton.addActionListener(e2 -> {
+					setColor(colorPicker.getColor());
+					pickerWindow.dispose();
+				});
+				pickerWindow.add(selectButton, BorderLayout.SOUTH);
+				pickerWindow.setVisible(true);
 			}
 		});
 		
 		right.add(input, BorderLayout.CENTER);
 		right.add(label, BorderLayout.SOUTH);
 		this.add(right, BorderLayout.CENTER);
-		this.add(color, BorderLayout.WEST);	
+		this.add(coloredLine, BorderLayout.WEST);	
 	}
 	
 	/*
@@ -137,15 +147,15 @@ public class FunctionInput extends JPanel {
 	 * @returns: Color of colored line
 	 */
 	public Color getColor() {
-		return color.getBackground();
+		return coloredLine.getBackground();
 	}
 	
 	/*
 	 * @param c: sets the colored line on the left to the chosen Color
 	 */
 	public void setColor(Color c) {
-		color.setBackground(c);
-		function.setColor(c);
+		coloredLine.setBackground(c);
+		color = c;
 	}
 	
 	/*
