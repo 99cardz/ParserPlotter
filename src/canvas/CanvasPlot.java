@@ -34,8 +34,8 @@ public class CanvasPlot extends JPanel {
 	}
 	/**
 	 * Scales the coordinate system by the provided factors.
-	 * 'Zooming in' would be a factor above 1 and 
-	 * 'Zooming out' would be a factor below 1.
+	 * Zoom in with a factor above 1 and 
+	 * zoom out with a factor below 1.
 	 * A factor of 0 will will reset the scale to the default value.
 	 * The Canvas will be redrawn!
 	 * @param factorX
@@ -153,12 +153,13 @@ public class CanvasPlot extends JPanel {
 		drawAxies(g, 0, centerY, w, centerY); // x
 		drawAxies(g, centerX, 0, centerX, h); // y
 		
-		// paint graph
+		// paint graphs
 		for (GraphData gd : viewModel.getGraphData()) {
+			
 			g.setColor(gd.getColor());
 			double[] yValues = gd.getYValues();
-			if (yValues == null)
-				continue;
+			if (yValues == null) continue;
+			
 			int prevYCoord = toYCoord(yValues[0]);
 			
 			for (int xCoord = 1; xCoord < w; xCoord++) {
