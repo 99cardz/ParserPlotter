@@ -4,10 +4,12 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
 
+import javax.swing.JPanel;
+
 import gui.Function;
 import gui.FunctionInput;
 
-public class CanvasPlot extends Canvas {
+public class CanvasPlot extends JPanel {
 	
 	// location of coordinate center on canvas
 	private int centerOffsetX = 0, centerOffsetY = 0;
@@ -27,6 +29,8 @@ public class CanvasPlot extends Canvas {
 	ArrayList<FunctionInput> functions;
 
 	public CanvasPlot(ArrayList<FunctionInput> inputArray) {
+		
+		setBackground(Color.white);
 		functions = inputArray;
 		scaleX = DEFAULT_SCALE;
 		scaleY = DEFAULT_SCALE;
@@ -41,6 +45,8 @@ public class CanvasPlot extends Canvas {
 	 * @param factorY
 	 */
 	public void scale(double factorX, double factorY) {
+		
+		
 		scaleX = factorX == 0 ? DEFAULT_SCALE : scaleX * factorX;
 		scaleY = factorY == 0 ? DEFAULT_SCALE : scaleY * factorY;
 		
@@ -110,6 +116,8 @@ public class CanvasPlot extends Canvas {
 	}
 	
 	public void paint(Graphics g) {
+		
+		super.paint(g);
 		int w = getWidth();
 		int h = getHeight();
 		centerX = w / 2 + centerOffsetX;
