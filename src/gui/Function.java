@@ -1,11 +1,18 @@
 package gui;
 
+import parser.Parser;
+import parser.SyntaxException;
 import parser.syntaxtree.SyntaxNode;
 import java.awt.Color;
-import java.util.List;
 
 public class Function {
-    // ! If more than eight functions are in use, expect undefined behaviour.
+
+ 	final private long UUID;
+    private String expressionString;
+    private SyntaxNode treeRoot;
+    private Color color;
+    private String error = "";
+	    
     private static final Color[] colors =
     	{
     			new Color(39, 88, 216), // blue
@@ -18,8 +25,8 @@ public class Function {
     			new Color(119, 136, 119) // gray
     	};
     private static int colorIndex = 0;
-
     private static long  uuidCounter = 1L;
+    private static final Parser parser = new Parser();
 
     /**
      * Generate a unique identifier.
@@ -34,7 +41,18 @@ public class Function {
      * @return The next color from the pool.
      */
     private static Color getNextColor() {
-        return colors[colorIndex++ % 8];
+        return colors[colorIndex++ % colors.length];
+    }
+    
+    public Function(Color color) {
+    	this.UUID = generateUUID();
+    	this.expressionString = "";
+    	try {
+			this.treeRoot = parser.buildSyntaxTree("0");
+		} catch (SyntaxException e) {
+			error = "Error during initialization";
+		}
+    	this.color = color;
     }
 
     /**
@@ -43,20 +61,15 @@ public class Function {
      * @param root - The root of the syntax tree that was parsed from the expression string.
      */
     public Function(String expressionString, SyntaxNode root) {
+        this.UUID = generateUUID();
         this.expressionString = expressionString;
         this.treeRoot = root;
-        this.color = getNextColor();
-        this.UUID = generateUUID();
+        this.color = Color.BLACK;
     }
     
     public double eval(double x) {
     	return treeRoot.eval(x);
     }
-
-    final private long UUID;
-    final private String expressionString;
-    final private SyntaxNode treeRoot;
-    final private Color color;
 
     public long getUUID() {
         return UUID;
@@ -67,8 +80,27 @@ public class Function {
     public SyntaxNode getTreeRoot() {
         return treeRoot;
     }
+    
+    public void update(String input) {
+    	try {
+			treeRoot = parser.buildSyntaxTree(input);
+			expressionString = input;
+			error = "";
+		} catch (SyntaxException e) {
+			error = "Syntax error at position " + e.getStartIndex();
+		}
+    }
+    
+    public String getError() {
+    	return error;
+    }
+    
     public Color getColor() {
         return color;
+    }
+    
+    public void setColor(Color c) {
+    	color = c;
     }
 
 }

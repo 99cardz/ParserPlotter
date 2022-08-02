@@ -12,7 +12,16 @@ public class AbsNode extends UnarySyntaxNode {
         System.out.print(")");
     }
 
-    public double eval(double x) {
-        return Math.abs(left.eval(x));
+    public double eval(double prev) {
+        return Math.abs(left.eval(prev));
     }
+
+	public double[] evalAll(double[] values) {
+		double[] result = left.evalAll(values);
+		
+		for (int i = 0; i < values.length; i++)
+			result[i] = Math.abs(result[i]);
+			
+		return result;
+	}
 }
