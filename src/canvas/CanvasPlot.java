@@ -1,13 +1,13 @@
 package canvas;
-import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
 
-import gui.Function;
+import javax.swing.JPanel;
+
 import gui.FunctionInput;
 
-public class CanvasPlot extends Canvas {
+public class CanvasPlot extends JPanel {
 	
 	// location of coordinate center on canvas
 	private int centerOffsetX = 0, centerOffsetY = 0;
@@ -110,6 +110,9 @@ public class CanvasPlot extends Canvas {
 	}
 	
 	public void paint(Graphics g) {
+		
+		super.paint(g);
+		
 		int w = getWidth();
 		int h = getHeight();
 		centerX = w / 2 + centerOffsetX;
