@@ -56,7 +56,7 @@ public class Window extends JFrame {
 		// inputPanel setup
 		inputPanel.setBackground(new Color(232, 235, 252));
 		leftPanel.setPreferredSize(new Dimension((int)(this.getWidth()*.3), this.getHeight()));
-		redrawFields();
+		
 		
 		this.addComponentListener(new ComponentAdapter() {
 			public void componentResized(ComponentEvent componentEvent) {
@@ -94,6 +94,8 @@ public class Window extends JFrame {
 		canvasPanel.add(valueLable, BorderLayout.SOUTH);
 		canvasPanel.setBackground(Color.white);
 		
+		redrawFields();
+		
 		// bottomPanel setup
 		bottomPanel.setLayout(new FlowLayout());
 		JButton[] buttons = { xZoomOutButton, xZoomInButton, yZoomOutButton, yZoomInButton, resetButton};
@@ -120,13 +122,17 @@ public class Window extends JFrame {
 	}
 
 	private void redrawFields() {
+		
+		for (FunctionInput fi : inputArray)
+			if (fi.isBlank())
+				viewModel.deleteFunction(fi.id);
 		inputArray.removeIf(l -> l.isBlank());
 		inputPanel.removeAll();
 		for(FunctionInput f: inputArray) {
 			inputPanel.add(f);
 		}
 		if(inputArray.size() < inputPanelSize) {
-			FunctionInput f = new FunctionInput();
+			FunctionInput f = new FunctionInput(viewModel, canvas);
 			f.getInput().addActionListener(e -> {
 				int prevPos = inputArray.indexOf(f);
 				redrawFields();
@@ -134,21 +140,21 @@ public class Window extends JFrame {
 				int next = (nowPos == -1 ? prevPos : nowPos+1) % inputArray.size();
 				inputArray.get(next).transferFocus();
 			});
-			f.getInput().getDocument().addDocumentListener(new DocumentListener() {
-				//this document listener only update the canvas, the rest is handled inside the class
-				@Override
-				public void insertUpdate(DocumentEvent e) {
-					canvas.repaint();
-				}
-				@Override
-				public void removeUpdate(DocumentEvent e) {
-					insertUpdate(e);
-				}
-				@Override
-				public void changedUpdate(DocumentEvent e) {
-					insertUpdate(e);
-				}
-			});
+//			f.getInput().getDocument().addDocumentListener(new DocumentListener() {
+//				//this document listener only update the canvas, the rest is handled inside the class
+//				@Override
+//				public void insertUpdate(DocumentEvent e) {
+//					canvas.repaint();
+//				}
+//				@Override
+//				public void removeUpdate(DocumentEvent e) {
+//					insertUpdate(e);
+//				}
+//				@Override
+//				public void changedUpdate(DocumentEvent e) {
+//					insertUpdate(e);
+//				}
+//			});
 			inputArray.add(f);
 			inputPanel.add(f);
 		}

@@ -30,6 +30,8 @@ public class ViewModel {
 		GraphData graph = graphs.get(id);
 		try {
 			graph.setRoot(parser.buildSyntaxTree(expr));
+			if (hasXValues())
+				graph.calculateYValues(xValues);
 			return null;
 		} catch (SyntaxException e) {
 			if (e.getStartIndex() == -1) 
@@ -39,5 +41,8 @@ public class ViewModel {
 	}
 	public void deleteFunction(UUID id) {
 		graphs.remove(id);
+	}
+	public boolean hasXValues() {
+		return xValues != null;
 	}
 }

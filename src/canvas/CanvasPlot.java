@@ -33,6 +33,7 @@ public class CanvasPlot extends JPanel {
 		viewModel = vm;
 		scaleX = DEFAULT_SCALE;
 		scaleY = DEFAULT_SCALE;
+		setBackground(Color.white);
 	}
 	/**
 	 * Scales the coordinate system by the provided factors.
@@ -108,6 +109,9 @@ public class CanvasPlot extends JPanel {
 		
 		super.paint(g);
 		
+		if (!viewModel.hasXValues())
+			updateXValues();
+		
 		int w = getWidth();
 		int h = getHeight();
 		centerX = w / 2 + centerOffsetX;
@@ -158,6 +162,8 @@ public class CanvasPlot extends JPanel {
 		for (GraphData gd : viewModel.getGraphData()) {
 			g.setColor(gd.getColor());
 			double[] yValues = gd.getYValues();
+			if (yValues == null)
+				continue;
 			int prevYCoord = toYCoord(yValues[0]);
 			
 			for (int xCoord = 1; xCoord < w; xCoord++) {

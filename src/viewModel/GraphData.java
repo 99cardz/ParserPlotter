@@ -5,6 +5,7 @@ import java.awt.Color;
 import parser.syntaxtree.SyntaxNode;
 
 public class GraphData {
+	
 	private SyntaxNode root;
 	private double[] yValues;
 	private Color color;

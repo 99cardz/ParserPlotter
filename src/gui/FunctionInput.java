@@ -5,13 +5,22 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.*;
 
+import canvas.CanvasPlot;
+import viewModel.ViewModel;
+
 import java.awt.*;
 import java.awt.event.*;
+import java.util.UUID;
+
 import javax.swing.*;
 
 public class FunctionInput extends JPanel {
 
 	private static final String 	EMPTY_INPUT = "Enter a function.";
+	
+	// references
+	private ViewModel viewModel;
+	private CanvasPlot canvas;
 	
     private static final Color[] colors = {
 		new Color(39, 88, 216), // blue
@@ -25,19 +34,25 @@ public class FunctionInput extends JPanel {
 	};
     
     private static int colorIndex = 0;
+    private Color color = getNextColor();
+    final UUID id;
 	
 	public boolean			status		= true;
 	
 	private JTextField 		input 		= new JTextField(EMPTY_INPUT);
-	private JPanel 			color 		= new JPanel();
+	private JPanel 			colorLine 	= new JPanel();
 	private JLabel 			label 		= new JLabel("", SwingConstants.CENTER);
 	private JPanel			right		= new JPanel(new BorderLayout());
-	private Function		function;
 	
-	FunctionInput() {
+	FunctionInput(ViewModel vm, CanvasPlot cp) {
 		super(new BorderLayout());
-		color.setBackground(getNextColor());
-		function = new Function(color.getBackground());
+		
+		viewModel = vm;
+		canvas = cp;
+		
+		id = viewModel.addFunction(color);
+		
+		colorLine.setBackground(color);
 		setBorder(new EtchedBorder(EtchedBorder.LOWERED));
 		input.setBorder(new EmptyBorder(0, 20, 0, 20));
 		input.setText(EMPTY_INPUT);
@@ -63,8 +78,12 @@ public class FunctionInput extends JPanel {
 			@Override
 			public void insertUpdate(DocumentEvent e) {
 				if(!isBlank()) {
-					function.update(getInputText());
-					label.setText(function.getError());
+					String error = viewModel.updateFunctionExpression(id, getInputText());
+					if (error != null)
+						label.setText(error);
+					else 
+						label.setText("");
+					canvas.repaint();
 				}
 			}
 			@Override
@@ -76,9 +95,10 @@ public class FunctionInput extends JPanel {
 				insertUpdate(e);
 			}
 		});
-		color.addMouseListener(new MouseAdapter() {
+		colorLine.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-				setColor(FunctionInput.getNextColor());
+				color = getNextColor();
+				colorLine.setBackground(color);
 				String inputString = input.getText();
 				input.setText(" ");
 				input.setText(inputString);
@@ -88,7 +108,7 @@ public class FunctionInput extends JPanel {
 		right.add(input, BorderLayout.CENTER);
 		right.add(label, BorderLayout.SOUTH);
 		this.add(right, BorderLayout.CENTER);
-		this.add(color, BorderLayout.WEST);	
+		this.add(colorLine, BorderLayout.WEST);	
 	}
 	
 	/*
@@ -137,23 +157,9 @@ public class FunctionInput extends JPanel {
 	 * @returns: Color of colored line
 	 */
 	public Color getColor() {
-		return color.getBackground();
+		return colorLine.getBackground();
 	}
 	
-	/*
-	 * @param c: sets the colored line on the left to the chosen Color
-	 */
-	public void setColor(Color c) {
-		color.setBackground(c);
-		function.setColor(c);
-	}
-	
-	/*
-	 * @returns: Function inside LabeledInput
-	 */
-	public Function getFunction() {
-		return function;
-	}
 	
 	public static Color getNextColor() {
 		return colors[(colorIndex++) % colors.length];
