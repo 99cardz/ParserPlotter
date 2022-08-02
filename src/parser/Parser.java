@@ -20,7 +20,7 @@ public class Parser {
         List<Token> tokens = new ArrayList<Token>();
 
         // The matcher for numbers
-        final Pattern numberPattern = Pattern.compile("([0-9]*[.])?[0-9]+");
+        final Pattern numberPattern = Pattern.compile("([0-9]*[.,])?[0-9]+");
         final Matcher numberMatcher = numberPattern.matcher(string);
 
         // Current position in the string
@@ -68,7 +68,7 @@ public class Parser {
 
                 int start = numberMatcher.start();
                 int end = numberMatcher.end();
-                String numberString = string.substring(start, end);
+                String numberString = string.substring(start, end).replace(',', '.');
                 tokens.add(new Token(numberString, start, end, TokenType.NUMBER, Double.parseDouble(numberString)));
 
                 pos = end;
