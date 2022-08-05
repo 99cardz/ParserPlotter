@@ -32,7 +32,9 @@ public class ViewModel {
 	private double[] xValues;
 	
 	/**
-	 * 
+	 * This HashMap contains a GraphData Object for each 
+	 * function the user chooses to view on the canvas.
+	 * Public methods to add, update and delete are below.
 	 */
 	private HashMap<UUID, GraphData> graphs = new HashMap<UUID, GraphData>();
 	
@@ -60,7 +62,7 @@ public class ViewModel {
 	 * Adds a new Graph Data Object to the ViewModel with a
 	 * initial color.
 	 * @param color
-	 * @return the ID of the new GraphData Object for future use.
+	 * @return the ID of the new GraphData Object for future reference.
 	 */
 	public UUID addFunction(Color c) {
 		UUID id = UUID.randomUUID();
@@ -73,13 +75,14 @@ public class ViewModel {
 	 * This will parse the expression and recalculate the
 	 * y Values of the new Function. Returns null if the
 	 * expression was parsed without a SyntaxException or
-	 * a Error String if a Exception was catched.
+	 * a Error String if a Exception was caught.
 	 * @param id
 	 * @param exprpression
 	 * @return null or Error string 
 	 */
 	public String updateFunctionExpression(UUID id, String expr) {
 		GraphData graph = graphs.get(id);
+		if (graph == null) return null;
 		try {
 			graph.setRoot(parser.buildSyntaxTree(expr));
 			if (hasXValues())
@@ -93,7 +96,9 @@ public class ViewModel {
 	}
 	
 	public void updateFunctionColor(UUID id, Color c) {
-		graphs.get(id).setColor(c);
+		GraphData graph = graphs.get(id);
+		if (graph == null) return;
+		graph.setColor(c);
 	}
 	
 

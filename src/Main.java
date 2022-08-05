@@ -1,9 +1,4 @@
-
-import java.awt.Frame;
-import java.awt.Canvas;
 import gui.Window;
-import viewModel.ViewModel;
-import canvas.CanvasPlot;
 
 public class Main {
 	

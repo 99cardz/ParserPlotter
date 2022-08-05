@@ -41,9 +41,12 @@ public class CanvasPlot extends JPanel {
 	 * @param factorX
 	 * @param factorY
 	 */
-	public void scale(double factorX, double factorY) {
+	public void scale(double factorX, double factorY, int scaleCenterX, int scaleCenterY) {
 		scaleX = factorX == 0 ? DEFAULT_SCALE : scaleX * factorX;
 		scaleY = factorY == 0 ? DEFAULT_SCALE : scaleY * factorY;
+		
+//		centerOffsetX += (centerX - scaleCenterX) / factorX;
+//		centerOffsetY += (centerY - scaleCenterY) / factorY;
 		
 		double pixelsPerUnitX = getWidth() / (toXValue(getWidth()) - toXValue(0));
 		double pixelsPerUnitY = getHeight() / (toYValue(0) - toYValue(getHeight()));

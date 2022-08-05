@@ -14,7 +14,7 @@ import viewModel.ViewModel;
 
 public class Window extends JFrame {
 	
-	ViewModel viewModel							= ViewModel.getInstance();
+	ViewModel				viewModel			= ViewModel.getInstance();
 	
 	// layout
 	private final Dimension	defaultSize			= new Dimension(1200, 700);
@@ -66,9 +66,9 @@ public class Window extends JFrame {
 		canvasPanel.add(canvas);
 		canvasPanel.addMouseWheelListener(e -> {
 			if(e.getWheelRotation() < 0)
-				canvas.scale(.9, .9);
+				canvas.scale(.9, .9, e.getX(), e.getY());
 			else if (e.getWheelRotation() > 0)
-				canvas.scale(1.1, 1.1);
+				canvas.scale(1.1, 1.1, e.getX(), e.getY());
 			valueLable.setText("x: " + canvas.toXValue(e.getX()) + " y: " + canvas.toYValue(e.getY()));
 		});
 		canvas.addMouseMotionListener(new MouseMotionListener() {
@@ -97,7 +97,7 @@ public class Window extends JFrame {
 		double[][] scalars = {{2.0, 1.0}, {0.5, 1.0}, {1.0, 2.0}, {1.0, 0.5}, {0.0, 0.0}};
 		for(int i = 0; i < buttons.length; i++) {
 			int j = i;
-			buttons[i].addActionListener(e -> canvas.scale(scalars[j][0], scalars[j][1]));
+			buttons[i].addActionListener(e -> canvas.scale(scalars[j][0], scalars[j][1], 0, 0));
 		}
 		resetButton.addActionListener(e -> canvas.resetOffset());
 
