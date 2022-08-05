@@ -69,7 +69,7 @@ public class Window extends JFrame {
 				canvas.scale(.95, .95, e.getX(), e.getY());
 			else if (e.getWheelRotation() > 0)
 				canvas.scale(1.05, 1.05, e.getX(), e.getY());
-			valueLable.setText("x: " + canvas.toXValue(e.getX()) + " y: " + canvas.toYValue(e.getY()));
+			setValueLableText(e.getX(), e.getY());
 		});
 		canvas.addMouseMotionListener(new MouseMotionListener() {
 			private int beforeX, beforeY;
@@ -78,13 +78,13 @@ public class Window extends JFrame {
 				canvas.offsetPx(e.getX() - beforeX, e.getY() - beforeY);
 				beforeX = e.getX();
 				beforeY = e.getY();
-				valueLable.setText("x: " + canvas.toXValue(beforeX) + " y: " + canvas.toYValue(beforeY));
+				setValueLableText(beforeX, beforeY);
 			}
 			@Override
 			public void mouseMoved(MouseEvent e) {
 				beforeX = e.getX();
 				beforeY = e.getY();
-				valueLable.setText("x: " + canvas.toXValue(beforeX) + " y: " + canvas.toYValue(beforeY));
+				setValueLableText(beforeX, beforeY);
 			}
 		});
 		canvasPanel.add(valueLable, BorderLayout.SOUTH);
@@ -136,26 +136,15 @@ public class Window extends JFrame {
 				int next = (nowPos == -1 ? prevPos : nowPos+1) % inputArray.size();
 				inputArray.get(next).transferFocus();
 			});
-//			f.getInput().getDocument().addDocumentListener(new DocumentListener() {
-//				//this document listener only update the canvas, the rest is handled inside the class
-//				@Override
-//				public void insertUpdate(DocumentEvent e) {
-//					canvas.repaint();
-//				}
-//				@Override
-//				public void removeUpdate(DocumentEvent e) {
-//					insertUpdate(e);
-//				}
-//				@Override
-//				public void changedUpdate(DocumentEvent e) {
-//					insertUpdate(e);
-//				}
-//			});
 			inputArray.add(f);
 			inputPanel.add(f);
 		}
 		revalidate();
 		repaint();
+	}
+	
+	private void setValueLableText(int x, int y) {
+		valueLable.setText(canvas.formatValues(x, y));
 	}
 	
 	private void resizeEvent() {

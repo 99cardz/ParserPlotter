@@ -22,6 +22,7 @@ public class CanvasPlot extends JPanel {
 	
 	// formats to draw values
 	private String valueFormatterX = "%.0f", valueFormatterY= "%.0f";
+	private String valueFormatterXPublic = "%.3f", valueFormatterYPublic = "%.3f";
 	
 	// viewModel reference
 	ViewModel viewModel = ViewModel.getInstance();
@@ -31,6 +32,11 @@ public class CanvasPlot extends JPanel {
 		scaleX = DEFAULT_SCALE;
 		scaleY = DEFAULT_SCALE;
 		setBackground(Color.white);
+	}
+	
+	public String formatValues(int x, int y) {
+		return "x: " + String.format(valueFormatterXPublic, toXValue(x)) +
+				" y: " + String.format(valueFormatterYPublic, toYValue(y));
 	}
 	
 	/**
@@ -79,7 +85,9 @@ public class CanvasPlot extends JPanel {
 			iX = (iX + 2) % 3;
 		}
 		lineSpacingX = choices[iX] * factorX;
-		valueFormatterX = "%." + decimalAmount(factorX) + "f";
+		int decimalAmountX = decimalAmount(factorX);
+		valueFormatterX = "%." + decimalAmountX + "f";
+		valueFormatterXPublic = "%." + (decimalAmountX + 3) + "f";
 		
 		int iY = 0;
 		factorY = 1;
@@ -92,7 +100,10 @@ public class CanvasPlot extends JPanel {
 			iY = (iY + 2) % 3;
 		}
 		lineSpacingY = choices[iY] * factorY;
-		valueFormatterY = "%." + decimalAmount(factorY) + "f";
+		int decimalAmountY = decimalAmount(factorY);
+		valueFormatterY = "%." + decimalAmountY + "f";
+		valueFormatterYPublic = "%." + (decimalAmountY + 3) + "f";
+		
 		
 		updateXValues();
 		repaint();
