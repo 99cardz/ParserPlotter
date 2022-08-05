@@ -66,9 +66,9 @@ public class Window extends JFrame {
 		canvasPanel.add(canvas);
 		canvasPanel.addMouseWheelListener(e -> {
 			if(e.getWheelRotation() < 0)
-				canvas.scale(.9, .9, e.getX(), e.getY());
+				canvas.scale(.95, .95, e.getX(), e.getY());
 			else if (e.getWheelRotation() > 0)
-				canvas.scale(1.1, 1.1, e.getX(), e.getY());
+				canvas.scale(1.05, 1.05, e.getX(), e.getY());
 			valueLable.setText("x: " + canvas.toXValue(e.getX()) + " y: " + canvas.toYValue(e.getY()));
 		});
 		canvas.addMouseMotionListener(new MouseMotionListener() {
