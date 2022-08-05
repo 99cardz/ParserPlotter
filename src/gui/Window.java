@@ -53,7 +53,7 @@ public class Window extends JFrame {
 		
 		// general stuff
 		this.setTitle(title);
-		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setSize(defaultSize);
 		this.setMinimumSize(defaultSize);
 		this.setLayout(new BorderLayout());
@@ -122,11 +122,12 @@ public class Window extends JFrame {
 		leftPanel.add(bottomPanel, BorderLayout.SOUTH);
 		
 		aboutMenu.addActionListener(e -> {
-			JFrame aboutWindow = new JFrame("About");
+			JFrame aboutWindow = new JFrame("Über dieses Programm");
 			aboutWindow.setLayout(new BorderLayout());
 			JTextPane aboutText = new JTextPane();
+			aboutText.setEditable(false);
 			aboutText.setContentType("text/html");
-			aboutText.setText("<!DOCTYPE html> <html> <body> <center> <h1><br><br></br></br>" + title + "</h1><p>Dieses Projekt entstand im Rahmen des Moduls \"Anwendungsorientierte Programmierung\".</p><p>Urheberrecht Jonathan Schulze, Hans Schreiter, Wieland Zweynert (2022) </p></center></body></html>");
+			aboutText.setText("<!DOCTYPE html> <html> <body> <center> <h1><br><br></br></br>" + title + "</h1><p>Dieses Projekt entstand im Rahmen des Moduls \"Anwendungsorientierte Programmierung\" bei Prof. Heinrich Krämer.</p><p>Urheberrecht Jonathan Schulze, Hans Schreiter, Wieland Zweynert (2022) </p></center></body></html>");
 			aboutWindow.add(aboutText);
 			aboutWindow.setSize(aboutWindowSize);
 			aboutWindow.setResizable(false);
@@ -135,9 +136,11 @@ public class Window extends JFrame {
 		});
 		
 		helpMenu.addActionListener(e -> {
-			JFrame helpWindow = new JFrame("Help");
+			JFrame helpWindow = new JFrame("Kurzanleitung");
 			helpWindow.setLayout(new BorderLayout());
 			JTextPane helpText = new JTextPane();
+			helpText.setEditable(false);
+			helpText.setBorder(new EmptyBorder(40, 40, 40, 40));
 			helpText.setContentType("text/html");
 			helpText.setText("<!DOCTYPE html> <html><p>Das Programm liest beliebige mathematische Funktionen, wertet diese aus und zeichnet sie. Die mathematischen Ausdrücke können auf der linken Seite eingegeben werden.</p><p> Bis zu acht Ausdrücke/Funktionen können parallel bearbeitet und gezeichnet werden. Ist die Eingabe syntaktisch nicht korrekt, wird dies vom Programm gemeldet.<p>Es sind beliebige mathematische Ausdrücke möglich, mit den Operatoren +, -, *, / und ^. Zusätzlich sind einige wichtige Funktionen implementiert: sin(), cos(), tan(), abs(), log(), und sqrt(). </p>Die unbekannte muss immer mit dem Namen “x” bezeichnet werden. Es können aber auch mathematische Ausdrücke bearbeitet werden, die keine Unbekannte enthalten.<p>Auf der rechten Seite der Benutzeroberfläche wird nun der Ausdruck / die Funktion visualisiert.</p></p>Durch das Drücken und Halten der linken Maustaste lässt sich das Sichtfenster verschieben. Durch Drehen des Mausrades kann hinein- und herausgezoomt werden. Alternativ kann dies auch durch das Betätigen der “+” und “-” Bedienelemente am unteren Rand der Oberfläche erreicht werden. Durch drücken des “R” Buttons wird das Sichtfenster auf die Ausgangsposition zurückgesetzt. Zusätzlich kann die Farbe des Graphen durch Klicken auf das farbige Rechteck links neben dem Textfeld geändert werden.</p></html>");
 			helpText.setFont(new Font("Arial", Font.PLAIN, 20));

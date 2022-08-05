@@ -86,7 +86,10 @@ public class Function {
 			expressionString = input;
 			error = "";
 		} catch (SyntaxException se) {
-			error = "Syntax error at position " + se.getStartIndex();
+			if(se.getStartIndex() == -1)
+				error = "Incomplete expression";
+			else
+				error = "Syntax error at position " + se.getStartIndex();
 		} catch (NullPointerException pe) {
 			error = "Unbekannter Fehler.";
 		}
@@ -94,6 +97,10 @@ public class Function {
     
     public String getError() {
     	return error;
+    }
+    
+    public void setError(String e) {
+    	error = e;
     }
     
     public Color getColor() {
