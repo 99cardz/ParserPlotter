@@ -32,8 +32,25 @@ public class CanvasPlot extends JPanel {
 		scaleY = DEFAULT_SCALE;
 		setBackground(Color.white);
 	}
+	
 	/**
-	 * Scales the coordinate system by the provided factors.
+	 * Scales the coordinate system around a provided point.
+	 * Zoom in with a factor above 1 and 
+	 * zoom out with a factor below 1.
+	 * A factor of 0 will will reset the scale to the default value.
+	 * The Canvas will be redrawn!
+	 * @param factorX
+	 * @param factorY
+	 * @param x coordinate of the point to scale around 
+	 * @param y coordinate of the point to scale around 
+	 */
+	public void scale(double factorX, double factorY, int scaleCenterX, int scaleCenterY) { 
+		centerOffsetX += (1.0 - factorX) * (scaleCenterX - centerX);
+		centerOffsetY += (1.0 - factorY) * (scaleCenterY - centerY);
+		scale(factorX, factorY);
+	}
+	/**
+	 * Scales the coordinate system around the coordinate center.
 	 * Zoom in with a factor above 1 and 
 	 * zoom out with a factor below 1.
 	 * A factor of 0 will will reset the scale to the default value.
@@ -41,12 +58,10 @@ public class CanvasPlot extends JPanel {
 	 * @param factorX
 	 * @param factorY
 	 */
-	public void scale(double factorX, double factorY, int scaleCenterX, int scaleCenterY) {
+	public void scale(double factorX, double factorY) {
+		
 		scaleX = factorX == 0 ? DEFAULT_SCALE : scaleX * factorX;
 		scaleY = factorY == 0 ? DEFAULT_SCALE : scaleY * factorY;
-		
-//		centerOffsetX += (centerX - scaleCenterX) / factorX;
-//		centerOffsetY += (centerY - scaleCenterY) / factorY;
 		
 		double pixelsPerUnitX = getWidth() / (toXValue(getWidth()) - toXValue(0));
 		double pixelsPerUnitY = getHeight() / (toYValue(0) - toYValue(getHeight()));

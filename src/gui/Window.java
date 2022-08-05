@@ -78,6 +78,7 @@ public class Window extends JFrame {
 				canvas.offsetPx(e.getX() - beforeX, e.getY() - beforeY);
 				beforeX = e.getX();
 				beforeY = e.getY();
+				valueLable.setText("x: " + canvas.toXValue(beforeX) + " y: " + canvas.toYValue(beforeY));
 			}
 			@Override
 			public void mouseMoved(MouseEvent e) {
@@ -97,7 +98,7 @@ public class Window extends JFrame {
 		double[][] scalars = {{2.0, 1.0}, {0.5, 1.0}, {1.0, 2.0}, {1.0, 0.5}, {0.0, 0.0}};
 		for(int i = 0; i < buttons.length; i++) {
 			int j = i;
-			buttons[i].addActionListener(e -> canvas.scale(scalars[j][0], scalars[j][1], 0, 0));
+			buttons[i].addActionListener(e -> canvas.scale(scalars[j][0], scalars[j][1]));
 		}
 		resetButton.addActionListener(e -> canvas.resetOffset());
 
