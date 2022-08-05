@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import gui.Function;
 import parser.syntaxtree.*;
 
 public class Parser {
@@ -131,19 +130,6 @@ public class Parser {
         }
 
         return root;
-    }
-
-    /**
-     * Returns a function object.
-     * @param string - The expression.
-     * @return The Function object containing the input string, syntax tree and color.
-     * @throws SyntaxException - if the input expression is not syntacically correct.
-     */
-    public Function buildFunction(final String string) throws SyntaxException {
-
-        SyntaxNode root = buildSyntaxTree(string);
-
-        return new Function(string, root);
     }
 
     // expr production rule
