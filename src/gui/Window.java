@@ -8,14 +8,13 @@ import java.util.ArrayList;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 import canvas.CanvasPlot;
+import viewModel.ViewModel;
 
 public class Window extends JFrame {
 	
-	private ArrayList<Function> functions		= new ArrayList<Function>();
+	ViewModel				viewModel			= ViewModel.getInstance();
 	
 	// layout
 	private final Dimension	defaultSize			= new Dimension(1200, 700);	
@@ -36,10 +35,10 @@ public class Window extends JFrame {
 	
 	private int 			inputPanelSize 		= 8;
 	private JPanel 			inputPanel 			= new JPanel(new GridLayout(inputPanelSize, 1));
-	private ArrayList<FunctionInput> inputArray 	= new ArrayList<FunctionInput>();
+	private ArrayList<FunctionInput> inputArray = new ArrayList<FunctionInput>();
 	
 	private JPanel 			canvasPanel 		= new JPanel();
-	private CanvasPlot		canvas;
+	private CanvasPlot		canvas				= new CanvasPlot();
 	private JLabel			valueLable 			= new JLabel((""),  SwingConstants.CENTER);
 	
 	private JPanel 			bottomPanel 		= new JPanel();
@@ -61,7 +60,7 @@ public class Window extends JFrame {
 		// inputPanel setup
 		inputPanel.setBackground(new Color(232, 235, 252));
 		leftPanel.setPreferredSize(new Dimension((int)(this.getWidth()*.3), this.getHeight()));
-		redrawFields();
+		
 		
 		this.addComponentListener(new ComponentAdapter() {
 			public void componentResized(ComponentEvent componentEvent) {
@@ -70,15 +69,14 @@ public class Window extends JFrame {
 		});
 		leftPanel.add(inputPanel, BorderLayout.CENTER);
 		
-		canvas = new CanvasPlot(inputArray);
 		canvasPanel.setLayout(new BorderLayout());
 		canvasPanel.setBorder(new EmptyBorder(2, 10, 2, 2));
 		canvasPanel.add(canvas);
 		canvasPanel.addMouseWheelListener(e -> {
 			if(e.getWheelRotation() < 0)
-				canvas.scale(.9, .9);
+				canvas.scale(.9, .9, e.getX(), e.getY());
 			else if (e.getWheelRotation() > 0)
-				canvas.scale(1.1, 1.1);
+				canvas.scale(1.1, 1.1, e.getX(), e.getY());
 			valueLable.setText("x: " + canvas.toXValue(e.getX()) + " y: " + canvas.toYValue(e.getY()));
 		});
 		canvas.addMouseMotionListener(new MouseMotionListener() {
@@ -88,6 +86,7 @@ public class Window extends JFrame {
 				canvas.offsetPx(e.getX() - beforeX, e.getY() - beforeY);
 				beforeX = e.getX();
 				beforeY = e.getY();
+				valueLable.setText("x: " + canvas.toXValue(beforeX) + " y: " + canvas.toYValue(beforeY));
 			}
 			@Override
 			public void mouseMoved(MouseEvent e) {
@@ -98,6 +97,8 @@ public class Window extends JFrame {
 		});
 		canvasPanel.add(valueLable, BorderLayout.SOUTH);
 		canvasPanel.setBackground(Color.white);
+		
+		redrawFields();
 		
 		// bottomPanel setup
 		bottomPanel.setLayout(new FlowLayout());
@@ -159,13 +160,17 @@ public class Window extends JFrame {
 	}
 
 	private void redrawFields() {
+		
+		for (FunctionInput fi : inputArray)
+			if (fi.isBlank())
+				viewModel.deleteFunction(fi.id);
 		inputArray.removeIf(l -> l.isBlank());
 		inputPanel.removeAll();
 		for(FunctionInput f: inputArray) {
 			inputPanel.add(f);
 		}
 		if(inputArray.size() < inputPanelSize) {
-			FunctionInput f = new FunctionInput();
+			FunctionInput f = new FunctionInput(canvas);
 			f.getInput().addActionListener(e -> {
 				int prevPos = inputArray.indexOf(f);
 				redrawFields();
@@ -173,22 +178,21 @@ public class Window extends JFrame {
 				int next = (nowPos == -1 ? prevPos : nowPos+1) % inputArray.size();
 				inputArray.get(next).transferFocus();
 			});
-			f.getInput().getDocument().addDocumentListener(new DocumentListener() {
-				//this document listener only update the canvas, the rest is handled inside the class
-				@Override
-				public void insertUpdate(DocumentEvent e) {
-					canvas.repaint();
-				}
-				@Override
-				public void removeUpdate(DocumentEvent e) {
-					insertUpdate(e);
-				}
-				@Override
-				public void changedUpdate(DocumentEvent e) {
-					insertUpdate(e);
-				}
-			});
-			functions.add(f.getFunction());
+//			f.getInput().getDocument().addDocumentListener(new DocumentListener() {
+//				//this document listener only update the canvas, the rest is handled inside the class
+//				@Override
+//				public void insertUpdate(DocumentEvent e) {
+//					canvas.repaint();
+//				}
+//				@Override
+//				public void removeUpdate(DocumentEvent e) {
+//					insertUpdate(e);
+//				}
+//				@Override
+//				public void changedUpdate(DocumentEvent e) {
+//					insertUpdate(e);
+//				}
+//			});
 			inputArray.add(f);
 			inputPanel.add(f);
 		}

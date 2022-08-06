@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import gui.Function;
 import parser.syntaxtree.*;
 
 public class Parser {
@@ -20,7 +19,7 @@ public class Parser {
         List<Token> tokens = new ArrayList<Token>();
 
         // The matcher for numbers
-        final Pattern numberPattern = Pattern.compile("([0-9]*[.])?[0-9]+");
+        final Pattern numberPattern = Pattern.compile("([0-9]*[.,])?[0-9]+");
         final Matcher numberMatcher = numberPattern.matcher(string);
 
         // Current position in the string
@@ -68,7 +67,7 @@ public class Parser {
 
                 int start = numberMatcher.start();
                 int end = numberMatcher.end();
-                String numberString = string.substring(start, end);
+                String numberString = string.substring(start, end).replace(',', '.');
                 tokens.add(new Token(numberString, start, end, TokenType.NUMBER, Double.parseDouble(numberString)));
 
                 pos = end;
@@ -131,19 +130,6 @@ public class Parser {
         }
 
         return root;
-    }
-
-    /**
-     * Returns a function object.
-     * @param string - The expression.
-     * @return The Function object containing the input string, syntax tree and color.
-     * @throws SyntaxException - if the input expression is not syntacically correct.
-     */
-    public Function buildFunction(final String string) throws SyntaxException {
-
-        SyntaxNode root = buildSyntaxTree(string);
-
-        return new Function(string, root);
     }
 
     // expr production rule
