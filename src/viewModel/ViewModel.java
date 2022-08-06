@@ -84,7 +84,7 @@ public class ViewModel {
 		GraphData graph = graphs.get(id);
 		if (graph == null) return null;
 		try {
-			graph.setRoot(parser.buildSyntaxTree(expr));
+			graph.setRoot(expr == null ? null : parser.buildSyntaxTree(expr));
 			if (hasXValues())
 				graph.calculateYValues(xValues);
 			return null;

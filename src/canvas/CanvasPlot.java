@@ -110,8 +110,8 @@ public class CanvasPlot extends JPanel {
 		if (!viewModel.hasXValues())
 			updateXValues();
 		
-		int w = getWidth();
-		int h = getHeight();
+		final int w = getWidth();
+		final int h = getHeight();
 		
 		// paint value indicator lines
 		double minX = toXValue(0);
@@ -163,7 +163,7 @@ public class CanvasPlot extends JPanel {
 			
 			int prevYCoord = toYCoord(yValues[0]);
 			
-			for (int xCoord = 1; xCoord < w; xCoord++) {
+			for (int xCoord = 1; xCoord < yValues.length; xCoord++) {
 				int currYCoord = toYCoord(yValues[xCoord]);
 				
 				if ((Double.isFinite(yValues[xCoord]) || Double.isFinite(yValues[xCoord-1]))

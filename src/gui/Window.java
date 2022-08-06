@@ -65,6 +65,7 @@ public class Window extends JFrame {
 		this.addComponentListener(new ComponentAdapter() {
 			public void componentResized(ComponentEvent componentEvent) {
 				resizeEvent();
+				canvas.updateXValues();
 		    }
 		});
 		leftPanel.add(inputPanel, BorderLayout.CENTER);

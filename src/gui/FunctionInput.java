@@ -78,8 +78,8 @@ public class FunctionInput extends JPanel {
 			@Override
 			public void insertUpdate(DocumentEvent e) {
 				String input = getInputText();
-				if (!input.isBlank())
-					label.setText(viewModel.updateFunctionExpression(id, input));
+				System.out.println("input: " + input);
+				label.setText(viewModel.updateFunctionExpression(id, input.isBlank() ? null: input));
 				canvas.repaint();
 			}
 			@Override
