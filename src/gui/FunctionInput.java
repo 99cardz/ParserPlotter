@@ -34,13 +34,13 @@ public class FunctionInput extends JPanel {
 	};
     
     private static int colorIndex = 0;
-    private Color color = getNextColor();
+	private Color			color		= getNextColor();
     final UUID id;
 	
 	public boolean			status		= true;
 	
 	private JTextField 		input 		= new JTextField(EMPTY_INPUT);
-	private JPanel 			colorLine 	= new JPanel();
+	private JPanel 			colorLine = new JPanel();
 	private JLabel 			label 		= new JLabel("", SwingConstants.CENTER);
 	private JPanel			right		= new JPanel(new BorderLayout());
 	
@@ -52,6 +52,7 @@ public class FunctionInput extends JPanel {
 		id = viewModel.addFunction(color);
 		
 		colorLine.setBackground(color);
+//>>>>>>> main
 		setBorder(new EtchedBorder(EtchedBorder.LOWERED));
 		input.setBorder(new EmptyBorder(0, 20, 0, 20));
 		input.setText(EMPTY_INPUT);
@@ -70,43 +71,77 @@ public class FunctionInput extends JPanel {
 				if(input.getText().isBlank()) {
 					input.setText(EMPTY_INPUT);
 					input.setForeground(Color.GRAY);
+					label.setText("");
 				}
 			}
 		});
 		input.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
 			public void insertUpdate(DocumentEvent e) {
-				if(!isBlank()) {
-					String error = viewModel.updateFunctionExpression(id, getInputText());
-					if (error != null)
-						label.setText(error);
-					else 
-						label.setText("");
+					label.setText(viewModel.updateFunctionExpression(id, getInputText()));
 					canvas.repaint();
-				}
 			}
 			@Override
 			public void removeUpdate(DocumentEvent e) {
 				insertUpdate(e);
 			}
+			
 			@Override
 			public void changedUpdate(DocumentEvent e) {
 				insertUpdate(e);
 			}
 		});
+		
 		colorLine.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				color = getNextColor();
-				colorLine.setBackground(color);
-				viewModel.updateFunctionColor(id, color);
-				canvas.repaint();
+			public void mouseClicked(MouseEvent e1) {
+				JFrame pickerWindow = new JFrame("Neue Farbe");
+				pickerWindow.setLayout(new BorderLayout());
+				pickerWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				pickerWindow.setSize(300, 400);
+				
+				JPanel colorChange = new JPanel(new GridLayout(1,2));
+				colorChange.setPreferredSize(new Dimension(300, 80));
+				JPanel oldCol = new JPanel();
+				oldCol.setBackground(color);
+				JPanel nextCol = new JPanel();
+				nextCol.setBackground(color);
+				colorChange.add(oldCol);
+				colorChange.add(nextCol);
+				pickerWindow.add(colorChange, BorderLayout.SOUTH);
+				
+				JPanel sliderPanel = new JPanel(new GridLayout(3,1));
+				JPanel labelPanel = new JPanel(new GridLayout(3,1));
+				
+				int[] previousCol = {color.getRed(), color.getGreen(), color.getBlue()};
+				Color[] colors = {Color.red, Color.green, Color.blue};
+				JSlider[] sliders = new JSlider[3];
+				JPanel[] labels = new JPanel[3];
+				
+ 				for (int i = 0; i < 3; i++) {
+ 					labels[i] = new JPanel();
+ 					labels[i].setBackground(colors[i]);
+ 					labelPanel.add(labels[i]);
+					sliders[i] = new JSlider(0, 255, previousCol[i]);
+					sliders[i].setForeground(Color.blue);
+					sliders[i].addChangeListener(e -> {
+						color = new Color(sliders[0].getValue(), sliders[1].getValue(), sliders[2].getValue());
+						viewModel.updateFunctionColor(id, color);
+						nextCol.setBackground(color);
+						colorLine.setBackground(color);
+						canvas.repaint();
+					});
+					sliderPanel.add(sliders[i]);
+				}
+ 				pickerWindow.add(labelPanel, BorderLayout.WEST);
+ 				pickerWindow.add(sliderPanel, BorderLayout.CENTER);
+				pickerWindow.setVisible(true);
 			}
 		});
 		
 		right.add(input, BorderLayout.CENTER);
 		right.add(label, BorderLayout.SOUTH);
+		this.add(colorLine, BorderLayout.WEST);
 		this.add(right, BorderLayout.CENTER);
-		this.add(colorLine, BorderLayout.WEST);	
 	}
 	
 	/*
@@ -150,15 +185,7 @@ public class FunctionInput extends JPanel {
 	public void setLabelText(String s) {
 		label.setText(s);
 	}
-	
-	/*
-	 * @returns: Color of colored line
-	 */
-	public Color getColor() {
-		return colorLine.getBackground();
-	}
-	
-	
+		
 	public static Color getNextColor() {
 		return colors[(colorIndex++) % colors.length];
 	}

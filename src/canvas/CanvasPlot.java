@@ -25,9 +25,9 @@ public class CanvasPlot extends JPanel {
 	
 	// viewModel reference
 	ViewModel viewModel = ViewModel.getInstance();
-	
 
 	public CanvasPlot() {
+
 		scaleX = DEFAULT_SCALE;
 		scaleY = DEFAULT_SCALE;
 		setBackground(Color.white);
@@ -59,7 +59,7 @@ public class CanvasPlot extends JPanel {
 	 * @param factorY
 	 */
 	public void scale(double factorX, double factorY) {
-		
+
 		scaleX = factorX == 0 ? DEFAULT_SCALE : scaleX * factorX;
 		scaleY = factorY == 0 ? DEFAULT_SCALE : scaleY * factorY;
 		
