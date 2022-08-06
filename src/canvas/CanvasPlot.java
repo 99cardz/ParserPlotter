@@ -27,7 +27,6 @@ public class CanvasPlot extends JPanel {
 	ViewModel viewModel = ViewModel.getInstance();
 
 	public CanvasPlot() {
-
 		scaleX = DEFAULT_SCALE;
 		scaleY = DEFAULT_SCALE;
 		setBackground(Color.white);

@@ -52,7 +52,6 @@ public class FunctionInput extends JPanel {
 		id = viewModel.addFunction(color);
 		
 		colorLine.setBackground(color);
-//>>>>>>> main
 		setBorder(new EtchedBorder(EtchedBorder.LOWERED));
 		input.setBorder(new EmptyBorder(0, 20, 0, 20));
 		input.setText(EMPTY_INPUT);
@@ -78,8 +77,10 @@ public class FunctionInput extends JPanel {
 		input.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
 			public void insertUpdate(DocumentEvent e) {
-					label.setText(viewModel.updateFunctionExpression(id, getInputText()));
-					canvas.repaint();
+				String input = getInputText();
+				if (!input.isBlank())
+					label.setText(viewModel.updateFunctionExpression(id, input));
+				canvas.repaint();
 			}
 			@Override
 			public void removeUpdate(DocumentEvent e) {
