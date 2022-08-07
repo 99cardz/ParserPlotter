@@ -21,12 +21,12 @@ public class PowNode extends BinarySyntaxNode {
 
 	@Override
 	public double[] evalAll(double[] values) {
-		double[] result = left.evalAll(values);
-		double[] power = right.evalAll(values);
+		double[] base = left.evalAll(values);
+		double[] exponent = right.evalAll(values);
 
 		for (int i = 0; i < values.length; i++)
-			result[i] = Math.pow(result[i], power[i]);
+			base[i] = Math.pow(base[i], exponent[i]);
 
-		return result;
+		return base;
 	}
 }

@@ -22,12 +22,12 @@ public class MultNode extends BinarySyntaxNode {
 	@Override
 	public double[] evalAll(double[] values) {
 
-		double[] result = left.evalAll(values);
-		double[] factor = right.evalAll(values);
+		double[] a = left.evalAll(values);
+		double[] b = right.evalAll(values);
 
 		for (int i = 0; i < values.length; i++)
-			result[i] *= factor[i];
+			a[i] *= b[i];
 
-		return result;
+		return a;
 	}
 }
