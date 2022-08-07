@@ -15,6 +15,9 @@ import java.util.UUID;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
+/*
+ *  combination of label and input to display error during parsing process and provide a visual link to the graph color
+ */
 public class FunctionInput extends JPanel {
 
 	private static final String 	EMPTY_INPUT = "Enter a function.";
@@ -76,6 +79,7 @@ public class FunctionInput extends JPanel {
 				}
 			}
 		});
+		
 		input.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
 			public void insertUpdate(DocumentEvent e) {
@@ -104,6 +108,7 @@ public class FunctionInput extends JPanel {
 				colorChange.setPreferredSize(new Dimension(300, 80));
 				JPanel oldCol = new JPanel();
 				oldCol.setBackground(color);
+				
 				JPanel nextCol = new JPanel();
 				nextCol.setBackground(color);
 				colorChange.add(oldCol);
@@ -118,6 +123,7 @@ public class FunctionInput extends JPanel {
 				JSlider[] sliders = new JSlider[3];
 				JPanel[] labels = new JPanel[3];
 				
+				// construct sliders corresponding to RGB values
  				for (int i = 0; i < 3; i++) {
  					labels[i] = new JPanel();
  					labels[i].setBackground(colors[i]);
@@ -133,6 +139,17 @@ public class FunctionInput extends JPanel {
 					});
 					sliderPanel.add(sliders[i]);
 				}
+ 				// clicking previous color panel resets changes
+ 				oldCol.addMouseListener(new MouseAdapter() {
+					@Override
+					public void mouseClicked(MouseEvent e) {
+						viewModel.updateFunctionColor(id, oldCol.getBackground());
+						nextCol.setBackground(oldCol.getBackground());
+						colorLine.setBackground(oldCol.getBackground());
+						canvas.repaint();
+					}
+				});
+ 				
  				pickerWindow.add(labelPanel, BorderLayout.WEST);
  				pickerWindow.add(sliderPanel, BorderLayout.CENTER);
 				pickerWindow.setVisible(true);

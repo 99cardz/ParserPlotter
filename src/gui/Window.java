@@ -19,7 +19,7 @@ public class Window extends JFrame {
 	
 	// layout
 	private final Dimension	launchSize			= new Dimension(1200, 700);
-	private final Dimension minSize				= new Dimension((int)launchSize.getWidth()/3, 600);
+	private final Dimension minSize				= new Dimension(900, 700);
 	private final int		lowerWidth			= (int)launchSize.getWidth()/3;
 	
 	// beauty stuff
@@ -32,7 +32,7 @@ public class Window extends JFrame {
 	private JPanel			hintPanel			= new JPanel(new BorderLayout());
 	private JPanel			otherPanel			= new JPanel(new BorderLayout());
 	private String			aboutHTML			= "<body style=\"font:Arial;\"> <meta charset=\"UTF-8\"><center><p>Dieses Projekt entstand im Rahmen des Moduls \"Anwendungsorientierte Programmierung\" bei Prof. Heinrich Krämer.</p><p>Urheberrecht Jonathan Schulze, Hans Schreiter, Wieland Zweynert (2022)</p></center> <p>&nbsp; </p> </body>";
-	private String			manualString		= "<html> <body style=\"font:Arial;\"><meta charset=\"UTF-8\"><p>Das Programm liest beliebige mathematische Funktionen, wertet diese aus und zeichnet sie. Die mathematischen Ausdrücke können auf der linken Seite eingegeben werden.</p><p> Bis zu acht Ausdrücke/Funktionen können parallel bearbeitet und gezeichnet werden. Ist die Eingabe syntaktisch nicht korrekt, wird dies vom Programm gemeldet.<p>Es sind beliebige mathematische Ausdrücke möglich, mit den Operatoren +, -, *, / und ^. Zusätzlich sind einige wichtige Funktionen implementiert: sin(), cos(), tan(), abs(), log(), und sqrt(). </p>Die unbekannte muss immer mit dem Namen x bezeichnet werden. Es können aber auch mathematische Ausdrücke bearbeitet werden, die keine Unbekannte enthalten.<p>Auf der rechten Seite der Benutzeroberfläche wird nun der Ausdruck / die Funktion visualisiert.</p></p>Durch das Drücken und Halten der linken Maustaste lässt sich das Sichtfenster verschieben. Durch Drehen des Mausrads kann hinein- und herausgezoomt werden. Alternativ kann dies auch durch das Betätigen der Zoom-Bedienelemente am unteren Rand der Oberfläche erreicht werden. Durch Drücken des R-Buttons wird das Sichtfenster auf die Ausgangsposition zurückgesetzt. Zusätzlich kann die Farbe des Graphen durch Klicken auf das farbige Rechteck links neben dem Textfeld geändert werden.</p> </body> </html>";
+	private String			manualString		= "<html> <body style=\"font:Arial;\"><meta charset=\"UTF-8\"><p><b>Funktionsweise</b><br>Das Programm liest beliebige mathematische Funktionen, wertet diese aus und zeichnet sie. Die mathematischen Ausdrücke können auf der linken Seite eingegeben werden.</p><p> Bis zu acht Ausdrücke/Funktionen können parallel bearbeitet und gezeichnet werden. Ist die Eingabe syntaktisch nicht korrekt, wird dies vom Eingabefeld gemeldet.<p>Es sind beliebige mathematische Ausdrücke mit den Operatoren <b>+, -, *, /, ^</b> möglich. Zusätzlich sind einige wichtige Funktionen implementiert: <b>sin(), cos(), tan(), abs(), log(), sqrt()</b>. </p>Die unbekannte muss immer mit dem Namen x bezeichnet werden. Es können aber auch mathematische Ausdrücke bearbeitet werden, die keine Unbekannte enthalten.</p> <p><b>Navigation</b><br>Durch das Drücken und Halten der linken Maustaste lässt sich das Sichtfenster des Graphs verschieben. Durch Drehen des Mausrads kann hinein- und herausgezoomt werden. Alternativ kann dies auch durch das Betätigen der Zoom-Bedienelemente im Weiteres-Tab erreicht werden. Durch Drücken des Zurücksetzen-Buttons wird das Sichtfenster auf die Ausgangsposition zurückgesetzt. Zusätzlich kann die Farbe des Graphen durch Klicken auf das farbige Rechteck links neben dem Textfeld geändert werden.</p> </body> </html>";
 
 	private int 			inputPanelSize 		= 8;
 	private JPanel 			inputPanel 			= new JPanel(new GridLayout(inputPanelSize, 1));
@@ -42,7 +42,7 @@ public class Window extends JFrame {
 	private CanvasPlot		canvas				= new CanvasPlot();
 	private JLabel			valueLable 			= new JLabel((""),  SwingConstants.CENTER);
 	
-	private JPanel 			zoomButtonPanel 		= new JPanel();
+	private JPanel 			zoomButtonPanel 	= new JPanel();
 	private JButton 		xZoomOutButton 		= new JButton("-");
 	private JButton 		xZoomInButton 		= new JButton("+");
 	private JButton 		yZoomOutButton 		= new JButton("-");
@@ -60,17 +60,22 @@ public class Window extends JFrame {
 		
 		// inputPanel setup
 		inputPanel.setBackground(background);
-		tabs.setPreferredSize(new Dimension((int)(this.getWidth()*.3), this.getHeight()));
-		
+		tabs.setPreferredSize(new Dimension((int)(this.getWidth()/3), this.getHeight()));
+		tabs.setBackground(background);
 		
 		this.addComponentListener(new ComponentAdapter() {
 			public void componentResized(ComponentEvent componentEvent) {
-				resizeEvent();
+				if (getWidth()/3 < 400)
+					tabs.setPreferredSize(new Dimension((int)(getWidth()/3), getHeight()));
+				else
+					tabs.setPreferredSize(new Dimension(lowerWidth, getHeight()));
+				repaint();
 				canvas.updateXValues();
 		    }
 		});
 		mainPanel.add(inputPanel, BorderLayout.CENTER);
 		
+		// canvas setup
 		canvasPanel.setLayout(new BorderLayout());
 		canvasPanel.setBorder(new EmptyBorder(2, 10, 2, 2));
 		canvasPanel.add(canvas);
@@ -100,8 +105,6 @@ public class Window extends JFrame {
 		canvasPanel.add(valueLable, BorderLayout.SOUTH);
 		canvasPanel.setBackground(Color.white);
 		
-		redrawFields();
-		
 		// zoom button row setup
 		zoomButtonPanel.setLayout(new FlowLayout());
 		zoomButtonPanel.setBorder(new TitledBorder("Individueller Zoom"));
@@ -126,9 +129,11 @@ public class Window extends JFrame {
 		// add to window
 		mainPanel.add(zoomButtonPanel, BorderLayout.SOUTH);
 		
+		// main tab
 		tabs.setBorder(null);
 		tabs.addTab("Eingabe", mainPanel);
 		
+		// manual tab
 		tabs.addTab("Anleitung", hintPanel);
 		JTextPane hintText = new JTextPane();
 		hintText.setEditable(false);
@@ -137,6 +142,8 @@ public class Window extends JFrame {
 		hintText.setBackground(background);
 		hintText.setBorder(new EmptyBorder(10,20,10,20));
 		hintPanel.add(hintText);
+		
+		// other tab
 		tabs.addTab("Weiteres", otherPanel);
 		otherPanel.setBackground(background);
 		otherPanel.setBorder(new EmptyBorder(10,10,10,10));
@@ -149,12 +156,13 @@ public class Window extends JFrame {
 		otherPanel.add(aboutText, BorderLayout.NORTH);
 		otherPanel.add(zoomButtonPanel, BorderLayout.CENTER);
 		
+		redrawFields();
 		this.add(canvasPanel, BorderLayout.CENTER);
 		this.add(tabs, BorderLayout.WEST);
 	}
-
+	
+	// redraws FunctionInputs dropping any that are empty and adding a new one at the end. Focus is then shifted to the next input.
 	private void redrawFields() {
-		
 		for (FunctionInput fi : inputArray)
 			if (fi.isBlank())
 				viewModel.deleteFunction(fi.id);
@@ -170,14 +178,7 @@ public class Window extends JFrame {
 		repaint();
 	}
 	
-	private void resizeEvent() {
-		if (this.getWidth()/3 < 400)
-			tabs.setPreferredSize(new Dimension((int)(this.getWidth()*.3), this.getHeight()));
-		else
-			tabs.setPreferredSize(new Dimension(lowerWidth, this.getHeight()));
-		this.repaint();
-	}
-	
+	// generate FunctionInput and insert it into both array and panel
 	private void insertFunctionInput() {
 		FunctionInput f = new FunctionInput(canvas);
 		f.getInput().addActionListener(e -> {
