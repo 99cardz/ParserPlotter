@@ -87,6 +87,7 @@ public class CanvasPlot extends JPanel {
 			valueFormatterY = "%." + decimalAmount(factorY) + "f";
 		}
 		updateXValues();
+		repaint();
 	}
 	/**
 	 * Offset the coordinate system center by a provided amount of pixels.
