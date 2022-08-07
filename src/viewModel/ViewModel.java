@@ -101,7 +101,6 @@ public class ViewModel {
 		graph.setColor(c);
 	}
 	
-
 	public void deleteFunction(UUID id) {
 		graphs.remove(id);
 	}
