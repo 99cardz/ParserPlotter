@@ -6,23 +6,26 @@ public class SinNode extends UnarySyntaxNode {
         super(left);
     }
 
-    public void print() {
+    @Override
+	public void print() {
         System.out.print("sin(");
         left.print();
         System.out.print(")");
     }
 
-    public double eval(double prev) {
+    @Override
+	public double eval(double prev) {
         return Math.sin(left.eval(prev));
     }
 
+	@Override
 	public double[] evalAll(double[] values) {
-		
+
 		double[] result = left.evalAll(values);
-		
+
 		for (int i = 0; i < values.length; i++)
 			result[i] = Math.sin(result[i]);
-		
+
 		return result;
 	}
 }

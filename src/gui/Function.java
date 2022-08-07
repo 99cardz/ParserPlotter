@@ -1,9 +1,10 @@
 package gui;
 
+import java.awt.Color;
+
 import parser.Parser;
 import parser.SyntaxException;
 import parser.syntaxtree.SyntaxNode;
-import java.awt.Color;
 
 public class Function {
 
@@ -12,7 +13,7 @@ public class Function {
     private SyntaxNode treeRoot;
     private Color color;
     private String error = "";
-	    
+
     private static final Color[] colors = {
 		new Color(39, 88, 216), 	// blue
 		new Color(150, 30, 225), 	// purple
@@ -42,7 +43,7 @@ public class Function {
     private static Color getNextColor() {
         return colors[colorIndex++ % colors.length];
     }
-    
+
     public Function(Color color) {
     	this.UUID = generateUUID();
     	this.expressionString = "";
@@ -65,7 +66,7 @@ public class Function {
         this.treeRoot = root;
         this.color = Color.BLACK;
     }
-    
+
     public double eval(double x) {
     	return treeRoot.eval(x);
     }
@@ -79,7 +80,7 @@ public class Function {
     public SyntaxNode getTreeRoot() {
         return treeRoot;
     }
-    
+
     public void update(String input) {
     	try {
 			treeRoot = parser.buildSyntaxTree(input);
@@ -94,19 +95,19 @@ public class Function {
 			error = "Unbekannter Fehler.";
 		}
     }
-    
+
     public String getError() {
     	return error;
     }
-    
+
     public void setError(String e) {
     	error = e;
     }
-    
+
     public Color getColor() {
         return color;
     }
-    
+
     public void setColor(Color c) {
     	color = c;
     }

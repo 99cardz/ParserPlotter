@@ -12,7 +12,7 @@ public abstract class SyntaxNode {
      * @return the result of the expression represented by the syntax tree.
      */
     public abstract double eval(double x);
-    
+
     /**
      * Evaluate all given values on this syntax tree.
      * The array of values can be used to find and adjust limits that are passed.

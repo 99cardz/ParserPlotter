@@ -5,7 +5,8 @@ public class DivNode extends BinarySyntaxNode {
         super(left, right);
     }
 
-    public void print() {
+    @Override
+	public void print() {
         System.out.print("(");
         left.print();
         System.out.print(" / ");
@@ -13,18 +14,20 @@ public class DivNode extends BinarySyntaxNode {
         System.out.print(")");
     }
 
-    public double eval(double x) {
+    @Override
+	public double eval(double x) {
         return left.eval(x) / right.eval(x);
     }
 
+	@Override
 	public double[] evalAll(double[] values) {
 		double[] d = right.evalAll(values); // denominators
 		double[] n = left.evalAll(values); // numerators
 		double[] result = new double[values.length];
-		
+
 		for (int i = 0; i < result.length; i++)
 			result[i] = Double.isInfinite(d[i]) ? 0 : n[i] / d[i];
-		
+
 		for (int i = 1, len = d.length - 1; i < len; i++) {
 			// only adjust the limit to infinity if the result is changing
 			// this will exclude functions like x/x where x=0 is just undefined
@@ -32,7 +35,7 @@ public class DivNode extends BinarySyntaxNode {
 			if (result[i-1] != result[i] && result[i] != result[i+1]) {
 				// ensuring the neighboring numerators are either above or below 0
 				// makes sure that cases where 0/infinity don't get a result of infinity
-				
+
 				// numerator above 0
 				if (n[i-1] > 0 && n[i] > 0 && n[i+1] > 0) {
 					// denominator is ascending

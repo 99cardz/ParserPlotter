@@ -1,28 +1,42 @@
 package gui;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import canvas.CanvasPlot;
-import viewModel.ViewModel;
+import viewmodel.ViewModel;
 
 public class Window extends JFrame {
-	
+
 	ViewModel				viewModel			= ViewModel.getInstance();
-	
+
 	// layout
-	private final Dimension	defaultSize			= new Dimension(1200, 700);	
-	
-	
+	private final Dimension	defaultSize			= new Dimension(1200, 700);
+
+
 	// beauty stuff
 	private final String	title 				= "Funktionsplotter";
-	
+
 	// components
 	private JMenuBar		menuBar				= new JMenuBar();
 	private JMenu			menu				= new JMenu("Menü");
@@ -30,46 +44,47 @@ public class Window extends JFrame {
 	private JMenuItem		helpMenu			= new JMenuItem("Kurzanleitung");
 	private final Dimension aboutWindowSize		= new Dimension(400, 400);
 	private final Dimension helpWindowSize 		= new Dimension(600, 600);
-	
+
 	private JPanel			leftPanel			= new JPanel(new BorderLayout());
-	
+
 	private int 			inputPanelSize 		= 8;
 	private JPanel 			inputPanel 			= new JPanel(new GridLayout(inputPanelSize, 1));
-	private ArrayList<FunctionInput> inputArray = new ArrayList<FunctionInput>();
-	
+	private ArrayList<FunctionInput> inputArray = new ArrayList<>();
+
 	private JPanel 			canvasPanel 		= new JPanel();
 	private CanvasPlot		canvas				= new CanvasPlot();
 	private JLabel			valueLable 			= new JLabel((""),  SwingConstants.CENTER);
-	
+
 	private JPanel 			bottomPanel 		= new JPanel();
 	private JButton 		xZoomOutButton 		= new JButton("-");
 	private JButton 		xZoomInButton 		= new JButton("+");
 	private JButton 		yZoomOutButton 		= new JButton("-");
 	private JButton 		yZoomInButton 		= new JButton("+");
 	private JButton			resetButton 		= new JButton("R");
-	
+
 	public Window() {
-		
+
 		// general stuff
 		this.setTitle(title);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setSize(defaultSize);
 		this.setMinimumSize(defaultSize);
 		this.setLayout(new BorderLayout());
-		
+
 		// inputPanel setup
 		inputPanel.setBackground(new Color(232, 235, 252));
 		leftPanel.setPreferredSize(new Dimension((int)(this.getWidth()*.3), this.getHeight()));
-		
-		
+
+
 		this.addComponentListener(new ComponentAdapter() {
+			@Override
 			public void componentResized(ComponentEvent componentEvent) {
 				resizeEvent();
 				canvas.updateXValues();
 		    }
 		});
 		leftPanel.add(inputPanel, BorderLayout.CENTER);
-		
+
 		canvasPanel.setLayout(new BorderLayout());
 		canvasPanel.setBorder(new EmptyBorder(2, 10, 2, 2));
 		canvasPanel.add(canvas);
@@ -98,9 +113,9 @@ public class Window extends JFrame {
 		});
 		canvasPanel.add(valueLable, BorderLayout.SOUTH);
 		canvasPanel.setBackground(Color.white);
-		
+
 		redrawFields();
-		
+
 		// bottomPanel setup
 		bottomPanel.setLayout(new FlowLayout());
 		JButton[] buttons = { xZoomOutButton, xZoomInButton, yZoomOutButton, yZoomInButton, resetButton};
@@ -119,10 +134,10 @@ public class Window extends JFrame {
 		bottomPanel.add(yZoomOutButton);
 		bottomPanel.add(new JPanel());
 		bottomPanel.add(resetButton);
-		
+
 		// add to window
 		leftPanel.add(bottomPanel, BorderLayout.SOUTH);
-		
+
 		aboutMenu.addActionListener(e -> {
 			JFrame aboutWindow = new JFrame("Über dieses Programm");
 			aboutWindow.setLayout(new BorderLayout());
@@ -136,7 +151,7 @@ public class Window extends JFrame {
 			aboutWindow.setBackground(Color.WHITE);
 			aboutWindow.setVisible(true);
 		});
-		
+
 		helpMenu.addActionListener(e -> {
 			JFrame helpWindow = new JFrame("Kurzanleitung");
 			helpWindow.setLayout(new BorderLayout());
@@ -161,7 +176,7 @@ public class Window extends JFrame {
 	}
 
 	private void redrawFields() {
-		
+
 		for (FunctionInput fi : inputArray)
 			if (fi.isBlank())
 				viewModel.deleteFunction(fi.id);
@@ -200,7 +215,7 @@ public class Window extends JFrame {
 		revalidate();
 		repaint();
 	}
-	
+
 	private void resizeEvent() {
 		leftPanel.setPreferredSize(new Dimension((int)(this.getWidth()*.3), this.getHeight()));
 		this.repaint();
