@@ -9,11 +9,13 @@ public class NumberNode extends SyntaxNode {
         this.value = value;
     }
 
-    public void print() {
+    @Override
+	public void print() {
         System.out.print(value);
     }
 
-    public double eval(double x) {
+    @Override
+	public double eval(double x) {
         return value;
     }
 

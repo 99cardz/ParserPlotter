@@ -6,12 +6,13 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.event.*;
 
 import canvas.CanvasPlot;
-import viewModel.ViewModel;
+import viewmodel.ViewModel;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.util.UUID;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 public class FunctionInput extends JPanel {
@@ -40,9 +41,10 @@ public class FunctionInput extends JPanel {
 	public boolean			status		= true;
 	
 	private JTextField 		input 		= new JTextField(EMPTY_INPUT);
-	private JPanel 			colorLine = new JPanel();
+	private JPanel 			colorLine 	= new JPanel();
 	private JLabel 			label 		= new JLabel("", SwingConstants.CENTER);
 	private JPanel			right		= new JPanel(new BorderLayout());
+	private JButton			delete		= new JButton();
 	
 	FunctionInput(CanvasPlot cp) {
 		super(new BorderLayout());
@@ -77,9 +79,7 @@ public class FunctionInput extends JPanel {
 		input.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
 			public void insertUpdate(DocumentEvent e) {
-				String input = getInputText();
-				System.out.println("input: " + input);
-				label.setText(viewModel.updateFunctionExpression(id, input.isBlank() ? null: input));
+				label.setText(viewModel.updateFunctionExpression(id, getInputText()));
 				canvas.repaint();
 			}
 			@Override
@@ -98,7 +98,7 @@ public class FunctionInput extends JPanel {
 				JFrame pickerWindow = new JFrame("Neue Farbe");
 				pickerWindow.setLayout(new BorderLayout());
 				pickerWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				pickerWindow.setSize(300, 400);
+				pickerWindow.setSize(300, 250);
 				
 				JPanel colorChange = new JPanel(new GridLayout(1,2));
 				colorChange.setPreferredSize(new Dimension(300, 80));
@@ -139,6 +139,23 @@ public class FunctionInput extends JPanel {
 			}
 		});
 		
+		delete.setBorderPainted(false);
+		delete.setContentAreaFilled(false);
+		delete.setFocusPainted(false);
+		right.setBackground(Color.WHITE);
+		try {
+			Image img = ImageIO.read(getClass().getResource("./deleteIcon.png"));
+			img = img.getScaledInstance(15, 15, Image.SCALE_SMOOTH);
+			delete.setIcon(new ImageIcon(img));
+			Image img2 = ImageIO.read(getClass().getResource("./deletePressed.png"));
+			img2 = img2.getScaledInstance(15, 15, Image.SCALE_SMOOTH);
+			delete.setPressedIcon(new ImageIcon(img2));
+		} catch (Exception ex) {
+			delete.setIcon(null);
+			delete.setText("x");
+		}
+
+		right.add(delete, BorderLayout.EAST);
 		right.add(input, BorderLayout.CENTER);
 		right.add(label, BorderLayout.SOUTH);
 		this.add(colorLine, BorderLayout.WEST);
@@ -150,6 +167,10 @@ public class FunctionInput extends JPanel {
 	 */
 	public JTextField getInput() {
 		return input;
+	}
+	
+	public JButton getDeleteButton() {
+		return delete;
 	}
 	
 	/*

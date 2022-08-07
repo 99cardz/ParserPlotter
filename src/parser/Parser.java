@@ -5,7 +5,21 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import parser.syntaxtree.*;
+import parser.syntaxtree.AbsNode;
+import parser.syntaxtree.AddNode;
+import parser.syntaxtree.CosNode;
+import parser.syntaxtree.DivNode;
+import parser.syntaxtree.LogNode;
+import parser.syntaxtree.MultNode;
+import parser.syntaxtree.NegateNode;
+import parser.syntaxtree.NumberNode;
+import parser.syntaxtree.PowNode;
+import parser.syntaxtree.SinNode;
+import parser.syntaxtree.SqrtNode;
+import parser.syntaxtree.SubNode;
+import parser.syntaxtree.SyntaxNode;
+import parser.syntaxtree.TanNode;
+import parser.syntaxtree.VariableNode;
 
 public class Parser {
 
@@ -16,7 +30,7 @@ public class Parser {
      * @throws SyntaxException if invalid symbol is found.
      */
     private static List<Token> lex(final String string) throws SyntaxException {
-        List<Token> tokens = new ArrayList<Token>();
+        List<Token> tokens = new ArrayList<>();
 
         // The matcher for numbers
         final Pattern numberPattern = Pattern.compile("([0-9]*[.,])?[0-9]+");

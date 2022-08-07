@@ -1,9 +1,8 @@
 package parser;
 
-import parser.syntaxtree.SyntaxNode;
-
-import java.util.List;
 import java.util.Scanner;
+
+import parser.syntaxtree.SyntaxNode;
 
 public class ParserTest {
 

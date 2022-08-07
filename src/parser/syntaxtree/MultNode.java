@@ -5,7 +5,8 @@ public class MultNode extends BinarySyntaxNode {
         super(left, right);
     }
 
-    public void print() {
+    @Override
+	public void print() {
         System.out.print("(");
         left.print();
         System.out.print(" * ");
@@ -13,18 +14,20 @@ public class MultNode extends BinarySyntaxNode {
         System.out.print(")");
     }
 
-    public double eval(double x) {
+    @Override
+	public double eval(double x) {
         return left.eval(x) * right.eval(x);
     }
 
+	@Override
 	public double[] evalAll(double[] values) {
-		
-		double[] result = left.evalAll(values);
-		double[] factor = right.evalAll(values);
-		
+
+		double[] a = left.evalAll(values);
+		double[] b = right.evalAll(values);
+
 		for (int i = 0; i < values.length; i++)
-			result[i] *= factor[i];
-		
-		return result;
+			a[i] *= b[i];
+
+		return a;
 	}
 }
