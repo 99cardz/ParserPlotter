@@ -19,8 +19,8 @@ public class CanvasPlot extends JPanel {
 	private int originX, originY;
 
 	// pixels per unit
-	private double scaleX, scaleY;
-	static final double DEFAULT_SCALE = 40;
+	private double scalarX, scalarY;
+	static final double DEFAULT_SCALAR = 40;
 
 	// value indicator line spacing values
 	private double lineSpacingX = 1, lineSpacingY = 1;
@@ -32,11 +32,22 @@ public class CanvasPlot extends JPanel {
 	ViewModel viewModel = ViewModel.getInstance();
 
 	public CanvasPlot() {
-		scaleX = DEFAULT_SCALE;
-		scaleY = DEFAULT_SCALE;
+		scalarX = DEFAULT_SCALAR;
+		scalarY = DEFAULT_SCALAR;
 		setBackground(Color.white);
 	}
 
+	/**
+	 * Scales the coordinate system around a fixed point.
+	 * Zoom in with a factor above 1 and
+	 * zoom out with a factor below 1.
+	 * A factor of 0 will will reset the scale to the default value.
+	 * The Canvas will be redrawn!
+	 * @param factorX
+	 * @param factorY
+	 * @param fixedX
+	 * @param fixedY
+	 */
 	public void scale(double factorX, double factorY, int fixedX, int fixedY) {
 		offsetX += (1.0 - factorX) * (fixedX - originX);
 		offsetY += (1.0 - factorY) * (fixedY - originY);
@@ -53,33 +64,33 @@ public class CanvasPlot extends JPanel {
 	 */
 	public void scale(double factorX, double factorY) {
 
-		scaleX = factorX == 0 ? DEFAULT_SCALE : scaleX * factorX;
-		scaleY = factorY == 0 ? DEFAULT_SCALE : scaleY * factorY;
+		scalarX = factorX == 0 ? DEFAULT_SCALAR : scalarX * factorX;
+		scalarY = factorY == 0 ? DEFAULT_SCALAR : scalarY * factorY;
 		
 		// recalculate lineSpacingFactor and lineSpacing of both x and y
 		final double[] choices = {1, 2, 5};
-		if (scaleX < 100000) {
+		if (scalarX < 100000) {
 			int iX = 0;
 			factorX = 1;
-			while (scaleX * choices[iX] * factorX < 40) {
+			while (scalarX * choices[iX] * factorX < 40) {
 				factorX *= iX + 1 > 2 ? 10 : 1;
 				iX = (iX + 1) % 3;
 			}
-			while (scaleX * choices[iX] * factorX > 100) {
+			while (scalarX * choices[iX] * factorX > 100) {
 				factorX /= iX - 1 < 0 ? 10 : 1;
 				iX = (iX + 2) % 3;
 			}
 			lineSpacingX = choices[iX] * factorX;
 			valueFormatterX = "%." + decimalAmount(factorX) + "f";
 		}
-		if (scaleY < 100000) {
+		if (scalarY < 100000) {
 			int iY = 0;
 			factorY = 1;
-			while (scaleY * choices[iY] * factorY < 40) {
+			while (scalarY * choices[iY] * factorY < 40) {
 				factorY *= iY + 1 > 2 ? 10 : 1;
 				iY = (iY + 1) % 3;
 			}
-			while (scaleY * choices[iY] * factorY > 100) {
+			while (scalarY * choices[iY] * factorY > 100) {
 				factorY /= iY - 1 < 0 ? 10 : 1;
 				iY = (iY + 2) % 3;
 			}
@@ -186,9 +197,9 @@ public class CanvasPlot extends JPanel {
 	}
 
 	// Methods to convert Values to Coordinates back and fourth.
-	private int toXCoord(double value) { return (int) (originX + value * scaleX); }
+	private int toXCoord(double value) { return (int) (originX + value * scalarX); }
 	private int toYCoord(double value) {
-		int coord = (int) (originY - value * scaleY);
+		int coord = (int) (originY - value * scalarY);
 		int max = getHeight();
 		if (value == Double.NEGATIVE_INFINITY || coord > max)
 			return max+100;
@@ -196,8 +207,8 @@ public class CanvasPlot extends JPanel {
 			return -100;
 		return coord;
 	}
-	public double toXValue(int coord) { return (coord - originX) / scaleX; }
-	public double toYValue(int coord) { return (-(coord - originY)) / scaleY; }
+	public double toXValue(int coord) { return (coord - originX) / scalarX; }
+	public double toYValue(int coord) { return (-(coord - originY)) / scalarY; }
 
 	public void updateXValues() {
 		int w = getWidth();
