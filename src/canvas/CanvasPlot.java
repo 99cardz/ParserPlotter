@@ -10,7 +10,7 @@ import viewmodel.ViewModel;
 
 /**
  * Class to display the graphs of the functions the user wants to plot.
- * 
+ *
  */
 public class CanvasPlot extends JPanel {
 
@@ -27,7 +27,7 @@ public class CanvasPlot extends JPanel {
 
 	// formats to draw values
 	private String valueFormatterX = "%.0f", valueFormatterY= "%.0f";
-
+	
 	// viewModel reference
 	ViewModel viewModel = ViewModel.getInstance();
 
@@ -37,6 +37,11 @@ public class CanvasPlot extends JPanel {
 		setBackground(Color.white);
 	}
 
+	public void scale(double factorX, double factorY, int fixedX, int fixedY) {
+		offsetX += (1.0 - factorX) * (fixedX - originX);
+		offsetY += (1.0 - factorY) * (fixedY - originY);
+		scale(factorX, factorY);
+	}
 	/**
 	 * Scales the coordinate system around the coordinate center.
 	 * Zoom in with a factor above 1 and
@@ -50,40 +55,38 @@ public class CanvasPlot extends JPanel {
 
 		scaleX = factorX == 0 ? DEFAULT_SCALE : scaleX * factorX;
 		scaleY = factorY == 0 ? DEFAULT_SCALE : scaleY * factorY;
-
-		double pixelsPerUnitX = getWidth() / (toXValue(getWidth()) - toXValue(0));
-		double pixelsPerUnitY = getHeight() / (toYValue(0) - toYValue(getHeight()));
-
+		
 		// recalculate lineSpacingFactor and lineSpacing of both x and y
 		final double[] choices = {1, 2, 5};
-		int iX = 0;
-		factorX = 1;
-		while (pixelsPerUnitX * choices[iX] * factorX < 40) {
-			factorX *= iX + 1 > 2 ? 10 : 1;
-			iX = (iX + 1) % 3;
+		if (scaleX < 100000) {
+			int iX = 0;
+			factorX = 1;
+			while (scaleX * choices[iX] * factorX < 40) {
+				factorX *= iX + 1 > 2 ? 10 : 1;
+				iX = (iX + 1) % 3;
+			}
+			while (scaleX * choices[iX] * factorX > 100) {
+				factorX /= iX - 1 < 0 ? 10 : 1;
+				iX = (iX + 2) % 3;
+			}
+			lineSpacingX = choices[iX] * factorX;
+			valueFormatterX = "%." + decimalAmount(factorX) + "f";
 		}
-		while (pixelsPerUnitX * choices[iX] * factorX > 100) {
-			factorX /= iX - 1 < 0 ? 10 : 1;
-			iX = (iX + 2) % 3;
+		if (scaleY < 100000) {
+			int iY = 0;
+			factorY = 1;
+			while (scaleY * choices[iY] * factorY < 40) {
+				factorY *= iY + 1 > 2 ? 10 : 1;
+				iY = (iY + 1) % 3;
+			}
+			while (scaleY * choices[iY] * factorY > 100) {
+				factorY /= iY - 1 < 0 ? 10 : 1;
+				iY = (iY + 2) % 3;
+			}
+			lineSpacingY = choices[iY] * factorY;
+			valueFormatterY = "%." + decimalAmount(factorY) + "f";
 		}
-		lineSpacingX = choices[iX] * factorX;
-		valueFormatterX = "%." + decimalAmount(factorX) + "f";
-
-		int iY = 0;
-		factorY = 1;
-		while (pixelsPerUnitY * choices[iY] * factorY < 40) {
-			factorY *= iY + 1 > 2 ? 10 : 1;
-			iY = (iY + 1) % 3;
-		}
-		while (pixelsPerUnitY * choices[iY] * factorY > 100) {
-			factorY /= iY - 1 < 0 ? 10 : 1;
-			iY = (iY + 2) % 3;
-		}
-		lineSpacingY = choices[iY] * factorY;
-		valueFormatterY = "%." + decimalAmount(factorY) + "f";
-
 		updateXValues();
-		repaint();
 	}
 	/**
 	 * Offset the coordinate system center by a provided amount of pixels.
