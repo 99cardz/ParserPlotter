@@ -7,6 +7,11 @@ import javax.swing.JPanel;
 import viewmodel.GraphData;
 import viewmodel.ViewModel;
 
+
+/**
+ * Class to display the graphs of the functions the user wants to plot.
+ * 
+ */
 public class CanvasPlot extends JPanel {
 
 	// location of coordinate origin on canvas
