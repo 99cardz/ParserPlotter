@@ -9,13 +9,13 @@ import viewmodel.ViewModel;
 
 public class CanvasPlot extends JPanel {
 
-	// location of coordinate center on canvas
-	private int centerOffsetX = 0, centerOffsetY = 0;
-	private int centerX, centerY;
+	// location of coordinate origin on canvas
+	private int offsetX, offsetY;
+	private int originX, originY;
 
 	// pixels per unit
 	private double scaleX, scaleY;
-	static final int DEFAULT_SCALE = 40;
+	static final double DEFAULT_SCALE = 40;
 
 	// value indicator line spacing values
 	private double lineSpacingX = 1, lineSpacingY = 1;
@@ -87,8 +87,8 @@ public class CanvasPlot extends JPanel {
 	 * @param y
 	 */
 	public void offsetPx(int x, int y) {
-		centerOffsetX += x;
-		centerOffsetY += y;
+		offsetX += x;
+		offsetY += y;
 		updateXValues();
 		repaint();
 	}
@@ -97,8 +97,8 @@ public class CanvasPlot extends JPanel {
 	 * The Canvas will be redrawn!
 	 */
 	public void resetOffset() {
-		centerOffsetX = 0;
-		centerOffsetY = 0;
+		offsetX = 0;
+		offsetY = 0;
 		updateXValues();
 		repaint();
 	}
@@ -117,7 +117,7 @@ public class CanvasPlot extends JPanel {
 		// paint value indicator lines
 		double minX = toXValue(0);
 		double maxX = toXValue(w);
-		int yTextCoord = centerY < 0 || centerY > h ? h - 10 : centerY - 10;
+		int yTextCoord = originY < 0 || originY > h ? h - 10 : originY - 10;
 		for (double x = lineSpacingX; x < maxX; x += lineSpacingX) {
 			int xCoord = toXCoord(x);
 			g.setColor(Color.lightGray);
@@ -134,7 +134,7 @@ public class CanvasPlot extends JPanel {
 		}
 		double minY = toYValue(h);
 		double maxY = toYValue(0);
-		int xTextCoord = centerX < 0 || centerX > w ? 10 : centerX + 10;
+		int xTextCoord = originX < 0 || originX > w ? 10 : originX + 10;
 		for (double y = lineSpacingY; y < maxY; y += lineSpacingY) {
 			int yCoord = toYCoord(y);
 			g.setColor(Color.lightGray);
@@ -152,8 +152,8 @@ public class CanvasPlot extends JPanel {
 
 		// paint axies
 		g.setColor(Color.black);
-		drawAxies(g, 0, centerY, w, centerY); // x
-		drawAxies(g, centerX, 0, centerX, h); // y
+		drawAxies(g, 0, originY, w, originY); // x
+		drawAxies(g, originX, 0, originX, h); // y
 
 		// paint graphs
 		for (GraphData gd : viewModel.getGraphData()) {
@@ -177,9 +177,9 @@ public class CanvasPlot extends JPanel {
 	}
 
 	// Methods to convert Values to Coordinates back and fourth.
-	public int toXCoord(double value) { return (int) (centerX + value * scaleX); }
-	public int toYCoord(double value) {
-		int coord = (int) (centerY - value * scaleY);
+	private int toXCoord(double value) { return (int) (originX + value * scaleX); }
+	private int toYCoord(double value) {
+		int coord = (int) (originY - value * scaleY);
 		int max = getHeight();
 		if (value == Double.NEGATIVE_INFINITY || coord > max)
 			return max+100;
@@ -187,14 +187,14 @@ public class CanvasPlot extends JPanel {
 			return -100;
 		return coord;
 	}
-	public double toXValue(int coord) { return (coord - centerX) / scaleX; }
-	public double toYValue(int coord) { return (-(coord - centerY)) / scaleY; }
+	public double toXValue(int coord) { return (coord - originX) / scaleX; }
+	public double toYValue(int coord) { return (-(coord - originY)) / scaleY; }
 
 	public void updateXValues() {
 		int w = getWidth();
 		int h = getHeight();
-		centerX = w / 2 + centerOffsetX;
-		centerY = h / 2 + centerOffsetY;
+		originX = w / 2 + offsetX;
+		originY = h / 2 + offsetY;
 
 		double[] xValues = new double[w];
 		for (int xCoord = 0; xCoord < w; xCoord++)
