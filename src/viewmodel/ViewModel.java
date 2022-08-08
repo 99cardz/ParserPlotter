@@ -41,13 +41,13 @@ public class ViewModel {
 	/**
 	 * Setting value
 	 */
-	private boolean fixedPointZoom = true;
+	private boolean fixedPointZoom = false;
 
-	private boolean getFixedPointZoomSetting() {
+	public boolean getFixedPointZoomSetting() {
 		return fixedPointZoom;
 	}
 	
-	private void setFixedPointZoomSetting(boolean b) {
+	public void setFixedPointZoomSetting(boolean b) {
 		fixedPointZoom = b;
 	}
 	/**
@@ -102,8 +102,8 @@ public class ViewModel {
 			return null;
 		} catch (SyntaxException e) {
 			if (e.getStartIndex() == -1)
-				return "Unexpected end of Expression";
-			return "Syntax error at position " + e.getStartIndex() + " with Symbol " + e.getString();
+				return "Unerwartetes Ausdrucksende.";
+			return "Syntaxfehler an Stelle " + e.getStartIndex() + " (Unerwartetes Symbol \"" + e.getString() + "\")";
 		}
 	}
 

@@ -1,5 +1,6 @@
 package gui;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
@@ -81,9 +82,9 @@ public class Window extends JFrame {
 		canvasPanel.add(canvas);
 		canvasPanel.addMouseWheelListener(e -> {
 			if(e.getWheelRotation() < 0)
-				canvas.scalePoint(.9, .9, e.getX(), e.getY());
+				canvas.scale(.9, .9, e.getX(), e.getY());
 			else if (e.getWheelRotation() > 0)
-				canvas.scalePoint(1.1, 1.1, e.getX(), e.getY());
+				canvas.scale(1.1, 1.1, e.getX(), e.getY());
 			valueLable.setText("x: " + canvas.toXValue(e.getX()) + " y: " + canvas.toYValue(e.getY()));
 		});
 		canvas.addMouseMotionListener(new MouseMotionListener() {
@@ -104,30 +105,6 @@ public class Window extends JFrame {
 		});
 		canvasPanel.add(valueLable, BorderLayout.SOUTH);
 		canvasPanel.setBackground(Color.white);
-		
-		// zoom button row setup
-		zoomButtonPanel.setLayout(new FlowLayout());
-		zoomButtonPanel.setBorder(new TitledBorder("Individueller Zoom"));
-		zoomButtonPanel.setBackground(background);
-		JButton[] buttons = { xZoomOutButton, xZoomInButton, yZoomOutButton, yZoomInButton, resetButton};
-		double[][] scalars = {{0.9, 1.0}, {1.1, 1.0}, {1.0, 0.9}, {1.0, 1.1}, {0.0, 0.0}};
-		for(int i = 0; i < buttons.length; i++) {
-			int j = i;
-			buttons[i].addActionListener(e -> canvas.scaleOrigin(scalars[j][0], scalars[j][1]));
-		}
-		resetButton.addActionListener(e -> canvas.resetOffset());
-
-		zoomButtonPanel.add(new JLabel("X:", SwingConstants.CENTER));
-		zoomButtonPanel.add(xZoomInButton);
-		zoomButtonPanel.add(xZoomOutButton);
-		zoomButtonPanel.add(new JLabel("Y:", SwingConstants.CENTER));
-		zoomButtonPanel.add(yZoomInButton);
-		zoomButtonPanel.add(yZoomOutButton);
-		zoomButtonPanel.add(new JPanel());
-		zoomButtonPanel.add(resetButton);
-		
-		// add to window
-		mainPanel.add(zoomButtonPanel, BorderLayout.SOUTH);
 		
 		// main tab
 		tabs.setBorder(null);
@@ -155,6 +132,36 @@ public class Window extends JFrame {
 		aboutText.setBorder(new TitledBorder("Über dieses Programm"));
 		otherPanel.add(aboutText, BorderLayout.NORTH);
 		otherPanel.add(zoomButtonPanel, BorderLayout.CENTER);
+		
+		// zoom button row setup
+		zoomButtonPanel.setLayout(new FlowLayout());
+		zoomButtonPanel.setBorder(new TitledBorder("Individueller Zoom"));
+		zoomButtonPanel.setBackground(background);
+		JButton[] buttons = { xZoomOutButton, xZoomInButton, yZoomOutButton, yZoomInButton, resetButton};
+		double[][] scalars = {{0.9, 1.0}, {1.1, 1.0}, {1.0, 0.9}, {1.0, 1.1}, {0.0, 0.0}};
+		for(int i = 0; i < buttons.length; i++) {
+			int j = i;
+			buttons[i].addActionListener(e -> canvas.scaleOrigin(scalars[j][0], scalars[j][1]));
+		}
+		resetButton.addActionListener(e -> canvas.resetOffset());
+
+		zoomButtonPanel.add(new JLabel("X:", SwingConstants.CENTER));
+		zoomButtonPanel.add(xZoomInButton);
+		zoomButtonPanel.add(xZoomOutButton);
+		zoomButtonPanel.add(new JLabel("Y:", SwingConstants.CENTER));
+		zoomButtonPanel.add(yZoomInButton);
+		zoomButtonPanel.add(yZoomOutButton);
+		zoomButtonPanel.add(new JPanel());
+		zoomButtonPanel.add(resetButton);
+		JCheckBox zoomToggle = new JCheckBox("Zoom auf Koordinatenursprung");
+		zoomToggle.setBackground(background);
+		zoomToggle.setSelected(viewModel.getFixedPointZoomSetting());
+		zoomToggle.setFocusPainted(false);
+		zoomToggle.addItemListener(e -> {
+			viewModel.setFixedPointZoomSetting(zoomToggle.isSelected());
+			System.out.println(zoomToggle.isSelected());
+		});
+		zoomButtonPanel.add(zoomToggle);
 		
 		redrawFields();
 		this.add(canvasPanel, BorderLayout.CENTER);

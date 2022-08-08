@@ -20,7 +20,7 @@ import javax.swing.*;
  */
 public class FunctionInput extends JPanel {
 
-	private static final String 	EMPTY_INPUT = "Enter a function.";
+	private static final String 	EMPTY_INPUT = "Ausdruck eingeben";
 	
 	// references
 	private ViewModel viewModel = ViewModel.getInstance();

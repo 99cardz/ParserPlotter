@@ -36,6 +36,17 @@ public class CanvasPlot extends JPanel {
 		scalarY = DEFAULT_SCALAR;
 		setBackground(Color.white);
 	}
+	
+	/*
+	 * Dynamically selects which scaling to apply depending on the current setting.
+	 * The actual scaling is realized in the methods below.
+	 */
+	public void scale(double factorX, double factorY, int fixedX, int fixedY) {
+		if (!viewModel.getFixedPointZoomSetting())
+			scalePoint(factorX, factorY, fixedX, fixedY);
+		else
+			scaleOrigin(factorX, factorY);
+	} 
 
 	/**
 	 * Scales the coordinate system around a fixed point.
