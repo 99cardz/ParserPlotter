@@ -32,8 +32,8 @@ public class Window extends JFrame {
 	private JPanel			mainPanel			= new JPanel(new BorderLayout());
 	private JPanel			hintPanel			= new JPanel(new BorderLayout());
 	private JPanel			otherPanel			= new JPanel(new BorderLayout());
-	private String			aboutHTML			= "<body style=\"font:Arial;\"> <meta charset=\"UTF-8\"><center><p>Dieses Projekt entstand im Rahmen des Moduls \"Anwendungsorientierte Programmierung\" bei Prof. Heinrich Krämer.</p><p>Urheberrecht Jonathan Schulze, Hans Schreiter, Wieland Zweynert (2022)</p></center> <p>&nbsp; </p> </body>";
-	private String			manualString		= "<html> <body style=\"font:Arial;\"><meta charset=\"UTF-8\"><p><b>Funktionsweise</b><br>Das Programm liest beliebige mathematische Funktionen, wertet diese aus und zeichnet sie. Die mathematischen Ausdrücke können auf der linken Seite eingegeben werden.</p><p> Bis zu acht Ausdrücke/Funktionen können parallel bearbeitet und gezeichnet werden. Ist die Eingabe syntaktisch nicht korrekt, wird dies vom Eingabefeld gemeldet.<p>Es sind beliebige mathematische Ausdrücke mit den Operatoren <b>+, -, *, /, ^</b> möglich. Zusätzlich sind einige wichtige Funktionen implementiert: <b>sin(), cos(), tan(), abs(), log(), sqrt()</b>. </p>Die unbekannte muss immer mit dem Namen x bezeichnet werden. Es können aber auch mathematische Ausdrücke bearbeitet werden, die keine Unbekannte enthalten.</p> <p><b>Navigation</b><br>Durch das Drücken und Halten der linken Maustaste lässt sich das Sichtfenster des Graphs verschieben. Durch Drehen des Mausrads kann hinein- und herausgezoomt werden. Alternativ kann dies auch durch das Betätigen der Zoom-Bedienelemente im Weiteres-Tab erreicht werden. Durch Drücken des Zurücksetzen-Buttons wird das Sichtfenster auf die Ausgangsposition zurückgesetzt. Zusätzlich kann die Farbe des Graphen durch Klicken auf das farbige Rechteck links neben dem Textfeld geändert werden.</p> </body> </html>";
+	private String			aboutHTML			= "<body style=\"font:Arial;\"> <meta charset=\"UTF-8\"><center><p>Dieses Projekt entstand im Rahmen des Moduls \"Anwendungsorientierte Programmierung\" bei Prof. Heinrich Kraemer.</p><p>Urheberrecht Jonathan Schulze, Hans Schreiter, Wieland Zweynert (2022)</p></center> <p>&nbsp; </p> </body>";
+	private String			manualString		= "<html> <body style=\"font:Arial;\"><meta charset=\"UTF-8\"><p><b>Funktionsweise</b><br>Das Programm liest beliebige mathematische Funktionen, wertet diese aus und zeichnet sie. Die mathematischen Ausdruecke koennen auf der linken Seite eingegeben werden.</p><p> Bis zu acht Ausdruecke/Funktionen koennen parallel bearbeitet und gezeichnet werden. Ist die Eingabe syntaktisch nicht korrekt, wird dies vom Eingabefeld gemeldet.<p>Es sind beliebige mathematische Ausdruecke mit den Operatoren <b>+, -, *, /, ^</b> moeglich. Zusaetzlich sind einige wichtige Funktionen implementiert: <b>sin(), cos(), tan(), abs(), log(), sqrt()</b>. </p>Die unbekannte muss immer mit dem Namen x bezeichnet werden. Es koennen aber auch mathematische Ausdruecke bearbeitet werden, die keine Unbekannte enthalten.</p> <p><b>Navigation</b><br>Durch das Druecken und Halten der linken Maustaste laesst sich das Sichtfenster des Graphs verschieben. Durch Drehen des Mausrads kann hinein- und herausgezoomt werden. Alternativ kann dies auch durch das Betaetigen der Zoom-Bedienelemente im Weiteres-Tab erreicht werden. Durch Druecken des Zuruecksetzen-Buttons wird das Sichtfenster auf die Ausgangsposition zurueckgesetzt. Zusaetzlich kann die Farbe des Graphen durch Klicken auf das farbige Rechteck links neben dem Textfeld geaendert werden.</p> </body> </html>";
 
 	private int 			inputPanelSize 		= 8;
 	private JPanel 			inputPanel 			= new JPanel(new GridLayout(inputPanelSize, 1));
@@ -48,7 +48,7 @@ public class Window extends JFrame {
 	private JButton 		xZoomInButton 		= new JButton("+");
 	private JButton 		yZoomOutButton 		= new JButton("-");
 	private JButton 		yZoomInButton 		= new JButton("+");
-	private JButton			resetButton 		= new JButton("Zurücksetzen");
+	private JButton			resetButton 		= new JButton("Zuruecksetzen");
 	
 	public Window() {
 		
@@ -129,7 +129,7 @@ public class Window extends JFrame {
 		aboutText.setEditable(false);
 		aboutText.setContentType("text/html");
 		aboutText.setText(aboutHTML);
-		aboutText.setBorder(new TitledBorder("Über dieses Programm"));
+		aboutText.setBorder(new TitledBorder("Ueber dieses Programm"));
 		otherPanel.add(aboutText, BorderLayout.NORTH);
 		otherPanel.add(zoomButtonPanel, BorderLayout.CENTER);
 		
@@ -159,7 +159,6 @@ public class Window extends JFrame {
 		zoomToggle.setFocusPainted(false);
 		zoomToggle.addItemListener(e -> {
 			viewModel.setFixedPointZoomSetting(zoomToggle.isSelected());
-			System.out.println(zoomToggle.isSelected());
 		});
 		zoomButtonPanel.add(zoomToggle);
 		
