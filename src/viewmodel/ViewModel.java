@@ -37,7 +37,19 @@ public class ViewModel {
 	 * Public methods to add, update and delete are below.
 	 */
 	private HashMap<UUID, GraphData> graphs = new HashMap<>();
+	
+	/**
+	 * Setting value
+	 */
+	private boolean fixedPointZoom = true;
 
+	private boolean getFixedPointZoomSetting() {
+		return fixedPointZoom;
+	}
+	
+	private void setFixedPointZoomSetting(boolean b) {
+		fixedPointZoom = b;
+	}
 	/**
 	 * Retrieve the collection of Graph Data
 	 * @return all Graph Data
