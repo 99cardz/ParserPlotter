@@ -48,10 +48,10 @@ public class CanvasPlot extends JPanel {
 	 * @param fixedX
 	 * @param fixedY
 	 */
-	public void scale(double factorX, double factorY, int fixedX, int fixedY) {
+	public void scalePoint(double factorX, double factorY, int fixedX, int fixedY) {
 		offsetX += (1.0 - factorX) * (fixedX - originX);
 		offsetY += (1.0 - factorY) * (fixedY - originY);
-		scale(factorX, factorY);
+		scaleOrigin(factorX, factorY);
 	}
 	/**
 	 * Scales the coordinate system around the coordinate center.
@@ -62,7 +62,7 @@ public class CanvasPlot extends JPanel {
 	 * @param factorX
 	 * @param factorY
 	 */
-	public void scale(double factorX, double factorY) {
+	public void scaleOrigin(double factorX, double factorY) {
 
 		scalarX = factorX == 0 ? DEFAULT_SCALAR : scalarX * factorX;
 		scalarY = factorY == 0 ? DEFAULT_SCALAR : scalarY * factorY;
