@@ -1,20 +1,25 @@
-package gui;
+package localization;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Localizer {
-	
+	private final int DEFAULT;
 	public static final int GERMAN = 0;
 	public static final int ENGLISH = 1;
+	private static final int AVAILABLE_LANGUAGES = 2;
+	public int currentLanguage;
 	
 	private HashMap<String, String[]> translationMap = new HashMap<String, String[]>();
-	private HashMap<Object, String> registeredComponents = new HashMap<Object, String>();
+	private ArrayList<Localizable> components = new ArrayList<Localizable>();
 	
-	public Localizer(String path) {
+	public Localizer(String path, int defaultLanguage) {
+		DEFAULT = defaultLanguage;
+		currentLanguage = DEFAULT;
 		String[] errors = {"fehler", "error"};
 		translationMap.put("STRING_UNAVAILABLE", errors);
 		try {
@@ -31,36 +36,30 @@ public class Localizer {
 		} catch (FileNotFoundException e1) {
 			System.out.println(e1.getMessage());
 			e1.printStackTrace();
-			System.out.println("Datei nicht gefunden.");
+			System.out.println("Translation file not found");
 		} catch (IOException e2) {
 			System.out.println(e2.getMessage());
 			System.out.println("Formatfehler.");
 		}
 	}
-	
-	public void register(Object object, String identifier) {
-		if(translationMap.containsKey(identifier)) {
-			registeredComponents.put(object, identifier);
-		}
- 	}
-	
-	// only for testing
-	
-	public void printAll() {
-		for (String s: translationMap.keySet()) {
-			System.out.println(s + ":");
-			for (String s1: translationMap.get(s))
-				System.out.println(s1);
-			System.out.println();
-		}
+
+	public void register(Localizable l) {
+		components.add(l);
+		l.update();
 	}
 	
-	public String[] get(String identifier) {
-		return translationMap.get(identifier);
+	public String getTranslation(String key) {
+		String ret = translationMap.get(key)[currentLanguage];
+		if(ret == null)
+			return translationMap.get(key)[DEFAULT];
+		return ret;
 	}
 	
-	public static void main(String... args) {
-		Localizer test = new Localizer("src/gui/translations.txt");
-		test.printAll();
+	public void updateLanguage(int language) {
+		if (language >= AVAILABLE_LANGUAGES || language < 0)
+			currentLanguage = DEFAULT;
+		this.currentLanguage = language;
+		for (Localizable l: components)
+			l.update();
 	}
 }

@@ -9,9 +9,9 @@ import java.util.ArrayList;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
 
 import canvas.CanvasPlot;
+import localization.*;
 import viewmodel.ViewModel;
 
 public class Window extends JFrame {
@@ -24,7 +24,7 @@ public class Window extends JFrame {
 	private final int		lowerWidth			= (int)launchSize.getWidth()/3;
 	
 	// beauty stuff
-	private final String	title 				= "Funktionsplotter";
+	private final String	title 				= "Plotter";
 	private final Color		background			= new Color(232, 235, 252);
 			
 	// components
@@ -32,9 +32,8 @@ public class Window extends JFrame {
 	private JPanel			mainPanel			= new JPanel(new BorderLayout());
 	private JPanel			hintPanel			= new JPanel(new BorderLayout());
 	private JPanel			otherPanel			= new JPanel(new BorderLayout());
-	private String			aboutHTML			= "<body style=\"font:Arial;\"> <meta charset=\"UTF-8\"><center><p>Dieses Projekt entstand im Rahmen des Moduls \"Anwendungsorientierte Programmierung\" bei Prof. Heinrich Kraemer.</p><p>Urheberrecht Jonathan Schulze, Hans Schreiter, Wieland Zweynert (2022)</p></center> <p>&nbsp; </p> </body>";
-	private String			manualString		= "<html> <body style=\"font:Arial;\"><meta charset=\"UTF-8\"><p><b>Funktionsweise</b><br>Das Programm liest beliebige mathematische Funktionen, wertet diese aus und zeichnet sie. Die mathematischen Ausdruecke koennen auf der linken Seite eingegeben werden.</p><p> Bis zu acht Ausdruecke/Funktionen koennen parallel bearbeitet und gezeichnet werden. Ist die Eingabe syntaktisch nicht korrekt, wird dies vom Eingabefeld gemeldet.<p>Es sind beliebige mathematische Ausdruecke mit den Operatoren <b>+, -, *, /, ^</b> moeglich. Zusaetzlich sind einige wichtige Funktionen implementiert: <b>sin(), cos(), tan(), abs(), log(), sqrt()</b>. </p>Die unbekannte muss immer mit dem Namen x bezeichnet werden. Es koennen aber auch mathematische Ausdruecke bearbeitet werden, die keine Unbekannte enthalten.</p> <p><b>Navigation</b><br>Durch das Druecken und Halten der linken Maustaste laesst sich das Sichtfenster des Graphs verschieben. Durch Drehen des Mausrads kann hinein- und herausgezoomt werden. Alternativ kann dies auch durch das Betaetigen der Zoom-Bedienelemente im Weiteres-Tab erreicht werden. Durch Druecken des Zuruecksetzen-Buttons wird das Sichtfenster auf die Ausgangsposition zurueckgesetzt. Zusaetzlich kann die Farbe des Graphen durch Klicken auf das farbige Rechteck links neben dem Textfeld geaendert werden.</p> </body> </html>";
-
+	private LocalizableString aboutHTML			= new LocalizableString("TXT_ABOUT", viewModel.getLocalizer());
+	private LocalizableString manualString		= new LocalizableString("TXT_MANUAL", viewModel.getLocalizer());
 	private int 			inputPanelSize 		= 8;
 	private JPanel 			inputPanel 			= new JPanel(new GridLayout(inputPanelSize, 1));
 	private ArrayList<FunctionInput> inputArray = new ArrayList<FunctionInput>();
@@ -48,7 +47,7 @@ public class Window extends JFrame {
 	private JButton 		xZoomInButton 		= new JButton("+");
 	private JButton 		yZoomOutButton 		= new JButton("-");
 	private JButton 		yZoomInButton 		= new JButton("+");
-	private JButton			resetButton 		= new JButton("Zuruecksetzen");
+	private JButton			resetButton 		= new LocalizableButton("BTN_RESET", viewModel.getLocalizer());
 	
 	public Window() {
 		
@@ -108,14 +107,14 @@ public class Window extends JFrame {
 		
 		// main tab
 		tabs.setBorder(null);
-		tabs.addTab("Eingabe", mainPanel);
+		tabs.addTab(new LocalizableString("TAB_MAIN", viewModel.getLocalizer()).get(), mainPanel);
 		
 		// manual tab
 		tabs.addTab("Anleitung", hintPanel);
 		JTextPane hintText = new JTextPane();
 		hintText.setEditable(false);
 		hintText.setContentType("text/html");
-		hintText.setText(manualString);
+		hintText.setText(manualString.get());
 		hintText.setBackground(background);
 		hintText.setBorder(new EmptyBorder(10,20,10,20));
 		hintPanel.add(hintText);
@@ -128,14 +127,14 @@ public class Window extends JFrame {
 		aboutText.setBackground(background);
 		aboutText.setEditable(false);
 		aboutText.setContentType("text/html");
-		aboutText.setText(aboutHTML);
-		aboutText.setBorder(new TitledBorder("Ueber dieses Programm"));
+		aboutText.setText(aboutHTML.get());
+		aboutText.setBorder(new LocalizableTitledBorder("BORDER_ABOUT", viewModel.getLocalizer()));
 		otherPanel.add(aboutText, BorderLayout.NORTH);
 		otherPanel.add(zoomButtonPanel, BorderLayout.CENTER);
 		
 		// zoom button row setup
 		zoomButtonPanel.setLayout(new FlowLayout());
-		zoomButtonPanel.setBorder(new TitledBorder("Individueller Zoom"));
+		zoomButtonPanel.setBorder(new LocalizableTitledBorder("BORDER_ZOOM", viewModel.getLocalizer()));
 		zoomButtonPanel.setBackground(background);
 		JButton[] buttons = { xZoomOutButton, xZoomInButton, yZoomOutButton, yZoomInButton, resetButton};
 		double[][] scalars = {{0.9, 1.0}, {1.1, 1.0}, {1.0, 0.9}, {1.0, 1.1}, {0.0, 0.0}};
@@ -143,7 +142,11 @@ public class Window extends JFrame {
 			int j = i;
 			buttons[i].addActionListener(e -> canvas.scaleOrigin(scalars[j][0], scalars[j][1]));
 		}
-		resetButton.addActionListener(e -> canvas.resetOffset());
+		resetButton.addActionListener(e -> {
+			canvas.resetOffset();
+			viewModel.getLocalizer().updateLanguage(Localizer.GERMAN);
+			repaint();
+		});
 
 		zoomButtonPanel.add(new JLabel("X:", SwingConstants.CENTER));
 		zoomButtonPanel.add(xZoomInButton);
@@ -153,7 +156,7 @@ public class Window extends JFrame {
 		zoomButtonPanel.add(yZoomOutButton);
 		zoomButtonPanel.add(new JPanel());
 		zoomButtonPanel.add(resetButton);
-		JCheckBox zoomToggle = new JCheckBox("Zoom auf Koordinatenursprung");
+		JCheckBox zoomToggle = new LocalizableCheckBox("BTN_ZOOM_MODE", viewModel.getLocalizer());
 		zoomToggle.setBackground(background);
 		zoomToggle.setSelected(viewModel.getFixedPointZoomSetting());
 		zoomToggle.setFocusPainted(false);

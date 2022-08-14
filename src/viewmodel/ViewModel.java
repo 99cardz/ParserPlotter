@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.UUID;
 
+import localization.Localizer;
 import parser.Parser;
 import parser.SyntaxException;
 
@@ -23,6 +24,15 @@ public class ViewModel {
 	}
 
 	private Parser parser = new Parser();
+	
+
+	private	String			translationPath		= "src/localization/translations.txt";
+	private int				defaultLanguage		= Localizer.ENGLISH;
+	private Localizer		localizer			= new Localizer(translationPath, defaultLanguage);
+	
+	public Localizer getLocalizer() {
+		return localizer;
+	}
 
 	/**
 	 * x Values are the same for each Graph.
@@ -102,8 +112,8 @@ public class ViewModel {
 			return null;
 		} catch (SyntaxException e) {
 			if (e.getStartIndex() == -1)
-				return "Unerwartetes Ausdrucksende.";
-			return "Syntaxfehler an Stelle " + e.getStartIndex() + " (Unerwartetes Symbol \"" + e.getString() + "\")";
+				return localizer.getTranslation("INPUT_EXPR_END");
+			return String.format(localizer.getTranslation("INPUT_SYNTAX"), e.getStartIndex(), e.getString());
 		}
 	}
 
@@ -121,4 +131,5 @@ public class ViewModel {
 	public boolean hasXValues() {
 		return xValues != null;
 	}
+
 }

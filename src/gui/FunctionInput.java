@@ -1,11 +1,12 @@
 package gui;
 
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
+import javax.swing.border.*;
 import javax.swing.event.*;
 
 import canvas.CanvasPlot;
+import localization.Localizable;
+import localization.Localizer;
 import viewmodel.ViewModel;
 
 import java.awt.*;
@@ -18,9 +19,7 @@ import javax.swing.*;
 /*
  *  combination of label and input to display error during parsing process and provide a visual link to the graph color
  */
-public class FunctionInput extends JPanel {
-
-	private static String 	EMPTY_INPUT = "Ausdruck eingeben";
+public class FunctionInput extends JPanel implements Localizable {
 	
 	// references
 	private ViewModel viewModel = ViewModel.getInstance();
@@ -37,13 +36,13 @@ public class FunctionInput extends JPanel {
 		new Color(119, 136, 119) // gray
 	};
     
+    private String 		inputEmpty = new LocalizableString("INPUT_EMPTY", viewModel.getLocalizer()).get();
+    
     private static int colorIndex = 0;
 	private Color			color		= getNextColor();
     final UUID id;
 	
-	public boolean			status		= true;
-	
-	private JTextField 		input 		= new JTextField(EMPTY_INPUT);
+	private JTextField 		input 		= new JTextField(inputEmpty);
 	private JPanel 			colorLine 	= new JPanel();
 	private JLabel 			label 		= new JLabel("", SwingConstants.CENTER);
 	private JPanel			right		= new JPanel(new BorderLayout());
@@ -59,13 +58,13 @@ public class FunctionInput extends JPanel {
 		colorLine.setBackground(color);
 		setBorder(new EtchedBorder(EtchedBorder.LOWERED));
 		input.setBorder(new EmptyBorder(0, 20, 0, 20));
-		input.setText(EMPTY_INPUT);
+		input.setText(inputEmpty);
 		input.setForeground(Color.GRAY);
 		input.setEditable(true);
 		input.addFocusListener(new FocusListener() {
 			@Override
 			public void focusGained(FocusEvent e) {
-				if(input.getText().equals(EMPTY_INPUT)) {
+				if(input.getText().equals(inputEmpty)) {
 					input.setText("");
 					input.setForeground(Color.BLACK);
 				}
@@ -73,7 +72,7 @@ public class FunctionInput extends JPanel {
 			@Override
 			public void focusLost(FocusEvent e) {
 				if(input.getText().isBlank()) {
-					input.setText(EMPTY_INPUT);
+					input.setText(inputEmpty);
 					input.setForeground(Color.GRAY);
 					label.setText("");
 				}
@@ -99,7 +98,7 @@ public class FunctionInput extends JPanel {
 		
 		colorLine.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e1) {
-				JFrame pickerWindow = new JFrame("Neue Farbe");
+				JFrame pickerWindow = new JFrame(new LocalizableString("FRAME_COLOR", viewModel.getLocalizer()).get());
 				pickerWindow.setLayout(new BorderLayout());
 				pickerWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				pickerWindow.setSize(300, 250);
@@ -201,7 +200,7 @@ public class FunctionInput extends JPanel {
 	 * @returns: true if input contains only whitespace or the empty field prompt
 	 */
 	public boolean isBlank() {
-		return input.getText().isBlank() || input.getText().equals(EMPTY_INPUT);
+		return input.getText().isBlank() || input.getText().equals(inputEmpty);
 	}
 	
 	/*
@@ -227,5 +226,15 @@ public class FunctionInput extends JPanel {
 		
 	public static Color getNextColor() {
 		return colors[(colorIndex++) % colors.length];
+	}
+
+	@Override
+	public void setTranslations(String key, Localizer localizer) {
+		 localizer.register(this);
+	}
+
+	@Override
+	public void update() {
+		inputEmpty = viewModel.getLocalizer().getTranslation("INPUT_EMPTY");
 	}
 }
