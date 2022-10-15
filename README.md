@@ -2,9 +2,9 @@
 
 Joint programming assignment SS/2022 HTWK Leipzig.
 
-Program that can parse mathematical expressions with operators *****, **+**, **/**, **^**, **-** and functions **cos()**, **sin()**, **tan()**, **log()**, **sqrt()**, **abs()** and plot their graphs in the x/y Plane.
+Program that can parse mathematical expressions with operators `*`, `+`, `/`, `^`, `-` and functions `cos()`, `sin()`, `tan()`, `log()`, `sqrt()`, `abs()` and plot their graphs in the x/y Plane.
 
-<img src="./docs/media/preview.png" height="50%">
+<img src="./docs/media/preview.png" width="50%">
 
 The viewport of the plane can be scaled around the origin or the mouse pointer and moved by dragging.
 
