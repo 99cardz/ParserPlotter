@@ -8,7 +8,7 @@ Program that can parse mathematical expressions with operators `*`, `+`, `/`, `^
 
 The viewport of the plane can be scaled around the origin or the mouse pointer and moved by dragging.
 
-## Contributers
+## Contributors
 - [bubba2k](https://github.com/bubba2k): [Parser](./src/parser/)
 - [nessel2nert](https://github.com/nessel2nert): [GUI](./src/gui/)
 - [99cardz](https://github.com/99cardz): [Canvas](./src/canvas/)
