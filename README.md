@@ -4,7 +4,7 @@ Joint programming assignment SS/2022 HTWK Leipzig.
 
 Program that can parse mathematical expressions with operators `*`, `+`, `/`, `^`, `-` and functions `cos()`, `sin()`, `tan()`, `log()`, `sqrt()`, `abs()` and plot their graphs in the x/y plane.
 
-<img src="./docs/media/preview.png" width="50%" align=>
+<img src="./docs/media/preview.png" width="50%">
 
 ## Contributors
 - [bubba2k](https://github.com/bubba2k): [Parser](./src/parser/)
